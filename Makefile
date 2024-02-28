@@ -3,7 +3,7 @@ default: dcc.out
 all: test default
 
 test: default
-	echo '<div>aaa<div>bbb</div></div>' | ./dcc.out
+	cat test.c | ./dcc.out
 
 clean:
 	rm *.out *.tab.c *.tab.h *.yy.c *.output
