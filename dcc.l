@@ -11,16 +11,27 @@
 \/\/[^\n]*
 \/\*([^*]|[*][^/])*\*\/
 [ \t\n]+
-"if"            printf("tIF\n");
-"else"          printf("tELSE\n");
-"while"         printf("tWHILE\n");
-"print"         printf("tPRINT\n");
-"return"        printf("tRETURN\n");
-"int"           printf("tINT\n");
-"void"          printf("tVOID\n");
-[a-z][a-z0-9]*  printf("tID: '%s'\n", yytext);
-0x[0-9a-fA-F]+  printf("tNB: '%ld[%s]'\n", strtol(yytext, NULL, 0), yytext);
-[0-9]+          printf("tNB: '%s[0x%x]'\n", yytext, atoi(yytext));
+"if"                    printf("tIF\n");
+"else"                  printf("tELSE\n");
+"while"                 printf("tWHILE\n");
+"print"                 printf("tPRINT\n");
+"return"                printf("tRETURN\n");
+
+"int" {
+    return tINT;
+}
+
+"void" {
+    return tVOID;
+}
+
+[a-z][a-z0-9]* {
+    yylval.s = strdup(yytext);
+    return tID;
+}
+
+0x[0-9a-fA-F]{1,16}     printf("tNB: '%ld[%s]'\n", strtol(yytext, NULL, 16), yytext);
+[0-9]+                  printf("tNB: '%s[0x%lx]'\n", yytext, strtol(yytext, NULL, 10));
 "+"             printf("tADD\n");
 "-"             printf("tSUB\n");
 "*"             printf("tMUL\n");
@@ -31,14 +42,39 @@
 "=="            printf("tEQ\n");
 ">="            printf("tGE\n");
 "<="            printf("tLE\n");
-"="             printf("tASSIGN\n");
+
+"=" {
+    return tASSIGN;
+}
+
 "&&"            printf("tAND\n");
 "||"            printf("tOR\n");
 "!"             printf("tNOT\n");
-"{"             printf("tLBRACE\n");
-"}"             printf("tRBRACE\n");
-"("             printf("tLPAR\n");
-")"             printf("tRPAR\n");
-";"             printf("tSEMI\n");
-","             printf("tCOMMA\n");
-.               printf("tERROR\n");
+
+"{" {
+    return tLBRACE;
+}
+
+"}" {
+    return tRBRACE;
+}
+
+"(" {
+    return tLPAR;
+}
+
+")" {
+    return tRPAR;
+}
+
+";" {
+    return tSEMI;
+}
+
+"," {
+    return tCOMMA;
+}
+
+. {
+    return tERROR;
+}
