@@ -1,6 +1,7 @@
 %option noyywrap
 %option noinput
 %option nounput
+%option yylineno
 
 %{
 #include "dcc.tab.h"
@@ -45,8 +46,15 @@
     return tID;
 }
 
-0x[0-9a-fA-F]{1,16}     printf("tNB: '%ld[%s]'\n", strtol(yytext, NULL, 16), yytext);
-[0-9]+                  printf("tNB: '%s[0x%lx]'\n", yytext, strtol(yytext, NULL, 10));
+0x[0-9a-fA-F]+ {
+    yylval.i = strtoul(yytext, NULL, 16);
+    return tNB;
+}
+
+[0-9]+ {
+    yylval.i = strtoul(yytext, NULL, 10);
+    return tNB;
+}
 
 "+" {
     return tADD;

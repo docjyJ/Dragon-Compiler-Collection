@@ -16,3 +16,5 @@ clean:
 
 %.out: %.yy.c %.tab.c
 	gcc -o $@ $^
+
+.PRECIOUS: %.yy.c %.tab.c
