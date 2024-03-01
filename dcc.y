@@ -21,7 +21,7 @@
 %token ADD SUB MUL tDIV LOW GRT tNE EQ ASSIGN LBRACE RBRACE LPAR RPAR END COMMA tLE tGE tAND tOR tNOT
 %token tERROR
 
-%type <s> number unary multiplicative additive relational equality operators
+%type <s> number unary multiplicative additive relational equality operators assignement_list
 %type <i> callable_args_list functions_args functions_args_list
 
 %start global_code_list
@@ -126,8 +126,12 @@ defvars_list: assignment
             ;
 
 
-assignment: LABEL ASSIGN operators { printf("%d %s <- %s\n", yylineno, $1, $3);}
-          ;
+assignement: assignment_list operator { printf("%d %s <- %s\n", yylineno, $1, $2);}
+           ;
+
+assignement_list: LABEL ASSIGN { $$ = $1 }
+                | assignment LABEL ASSIGN { printf("%d %s <- %s\n", yylineno, $1, $2); $$ = $2;}
+                ;
 
 
 
