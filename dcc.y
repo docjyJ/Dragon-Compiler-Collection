@@ -15,88 +15,134 @@
   unsigned long i;
 }
 
-%token <s> tID
-%token <i> tNB
-%token tIF tELSE tWHILE tPRINT tRETURN tINT tVOID tADD tSUB tMUL tDIV tLT tGT tNE tEQ tLE tGE tASSIGN tAND tOR tNOT tLBRACE tRBRACE tLPAR tRPAR tSEMI tCOMMA tERROR
+%token <s> LABEL
+%token <i> STATIC_INT
+%token IF ELSE WHILE PRINT TYPE_INT TYPE_VOID tRETURN
+%token ADD SUB MUL tDIV LOW GRT tNE EQ ASSIGN LBRACE RBRACE LPAR RPAR END COMMA tLE tGE tAND tOR tNOT
+%token tERROR
 
-%type <s> callname
+%type <s> number unary multiplicative additive relational equality operators
+%type <i> callable_args_list functions_args functions_args_list
+
+%start global_code_list
 
 %%
 
-globals:
-    %empty
-  | funs globals
-  ;
+global_code_list: global_code
+                | global_code_list global_code
+                ;
 
-boddies:
-    %empty
-  | operators tSEMI boddies
-  | defvars tSEMI boddies
-  | tIF tLPAR operators tRPAR tLBRACE boddies tRBRACE tELSE tLBRACE boddies tRBRACE boddies { printf("get a if-else\n"); }
-  | tWHILE tLPAR operators tRPAR tLBRACE boddies tRBRACE boddies { printf("get a while\n"); }
-  ;
+global_code: functions
+           ;
 
+code_block: LBRACE code_line_list RBRACE { printf("%d get a code block\n", yylineno); }
+          ;
 
+code_line_list: code_line
+              | code_line code_line_list
+              ;
+
+code_line: operators END
+         | assignment END
+         | defvars END
+         | if_header code_block else_header code_block { printf(" -IFELSE\n"); }
+         | while_header code_block { printf(" -WHILE\n"); }
+         ;
+
+if_header: IF LPAR operators RPAR { printf(" +IF %s\n", $3); }
+         ;
+
+else_header: ELSE { printf(" +ELSE\n", yylineno); }
+         ;
+
+while_header: WHILE LPAR operators RPAR { printf("+ START WHILE %s\n", $3); }
+            ;
 
 /* Gestion des fonctions */
 
-funs:
-    funtypes tID tLPAR funargs tRPAR tLBRACE boddies tRBRACE { printf("get a function: %s\n", $2); }
-  ;
+functions: functions_header code_block { printf(" -FUNCTION\n"); }
+         ;
 
-funtypes:
-    tVOID { printf("get a void type\n"); }
-  | tINT { printf("get a int type\n"); }
-  ;
+functions_header: TYPE_VOID LABEL functions_args { printf(" +FUNCTION %s(len_arg %d type VOID)\n", $2, $3); }
+                | TYPE_INT LABEL functions_args { printf(" +FUNCTION %s(len_arg %d type INT)\n", $2, $3); }
+                ;
 
-funargs:
-    %empty { printf("get no args\n"); }
-  | tVOID { printf("get no args\n"); }
-  | defargs { printf("get a args\n"); }
-  ;
+functions_args: LPAR functions_args_list RPAR { $$ = $2;}
+              | LPAR TYPE_VOID RPAR { $$ = 0;}
+              | LPAR RPAR { $$ = 0;}
+              ;
 
-defargs:
-    defvars tCOMMA defargs
-  | defvars
-  ;
+functions_args_list: TYPE_INT LABEL { printf(" |ARG %s(num 0 type INT)\n", yylineno, $2); $$ = 1;}
+                   | functions_args_list COMMA TYPE_INT LABEL { printf("|ARG %s(num %d type INT)\n", yylineno, $4, $1); $$ = $1 + 1;}
+                   ;
 
 
 
-/* Gestion des définition de variables */
 
-defvars:
-    tINT tID { printf("get a new int var: %s\n", $2); }
-  ;
+/* Gestion ses opérations */
+
+number: STATIC_INT { printf("%d rNB <- %lu\n", yylineno, $1); $$ = "rNB"; }
+      | LABEL { $$ = $1; }
+      | callable { $$ = "rEXEC" ;}
+      ;
+
+unary: number { $$ = $1 ; }
+     | SUB number { printf("%d rNEG <- sub 0 %s\n", yylineno, $2); $$ = "rNEG"; }
+     ;
+
+multiplicative: unary { $$ = $1 ; }
+              | multiplicative MUL unary { printf("%d rMUL <- %s, %s\n", yylineno, $1, $3); $$ = "rMUL"; }
+              ;
+
+additive: multiplicative { $$ = $1 ; }
+        | additive ADD multiplicative { printf("%d rADD <- add %s %s\n", yylineno, $1, $3); $$ = "rADD"; }
+        | additive SUB multiplicative { printf("%d rSUB <- sub %s %s\n", yylineno, $1, $3); $$ = "rSUB"; }
+        ;
+
+relational: additive { $$ = $1 ; }
+          | relational LOW additive { printf("%d rLOW <- low %s %s\n", yylineno, $1, $3); $$ = "rLOW"; }
+          | relational GRT additive { printf("%d rGRT <- grt %s %s\n", yylineno, $1, $3); $$ = "rGRT"; }
+          ;
+
+equality: relational { $$ = $1 ; }
+        | equality EQ operators { printf("%d rEQ <- eq %s %s\n", yylineno, $1, $3); $$ = "rEQ"; }
+        ;
+
+operators: relational { $$ = $1 ; }
+         ;
 
 
 
-/* Gestion de l'appel de fonction / opérations */
+/* Gestion des variable */
 
-operators:
-    tID tASSIGN operators { printf("get a assign: %s\n", $1); }
-  | operands
-  | operands tADD operators { printf("get a add\n"); }
-  | operands tMUL operators { printf("get a sub\n"); }
-  | operands tEQ operators { printf("get a equal\n"); }
-  | operands tLT operators { printf("get a lower\n"); }
-  | operands tGT operators { printf("get a greater\n"); }
-  ;
+defvars: TYPE_INT defvars_list
+      ;
 
-operands:
-    callable
-  | tID { printf("get a var: %s\n", $1); }
-  | tNB { printf("get a number: %d\n", $1); }
-  ;
+defvars_list: assignment
+            | LABEL { printf("%d %s <- NoValue\n", yylineno, $1); }
+            | defvars_list COMMA assignment
+            | defvars_list COMMA LABEL { printf("%d %s <- NoValue\n", yylineno, $3); }
+            ;
 
-callable:
-    tPRINT tLPAR operators tRPAR { printf("get a call: print\n"); }
-  | tID tLPAR callargs tRPAR { printf("get a call: %s\n", $1); }
-  ;
 
-callargs:
-    %empty
-  | operators tCOMMA callargs
-  ;
+assignment: LABEL ASSIGN operators { printf("%d %s <- %s\n", yylineno, $1, $3);}
+          ;
+
+
+
+/* Gestion des appel de fonction */
+
+callable: PRINT callable_args { printf("%d rEXEC <- exec print\n", yylineno); }
+        | LABEL callable_args { printf("%d rEXEC <- exec %s\n", yylineno, $1); }
+        ;
+
+callable_args: LPAR callable_args_list RPAR { printf("%d NUMBER ARGS : %d\n", yylineno, $2); }
+             | LPAR RPAR { printf("%d NUMBER ARGS : 0\n", yylineno); }
+             ;
+
+callable_args_list: operators { printf("%d ARG 0: %s\n", yylineno, $1); $$ = 1;}
+                  | callable_args_list COMMA operators { printf("%d ARG %d: %s\n", yylineno, $1, $3); $$ = $1 + 1;}
+                  ;
 
 %%
 

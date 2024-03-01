@@ -6,7 +6,7 @@ test: default
 	cat test.c | ./dcc.out
 
 clean:
-	rm *.out *.tab.c *.tab.h *.yy.c *.output
+	rm -f *.out *.tab.c *.tab.h *.yy.c *.output
 
 %.tab.c: %.y
 	bison -t -v -d $^

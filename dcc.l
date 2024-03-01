@@ -14,19 +14,19 @@
 [ \t\n]+
 
 "if" {
-    return tIF;
+    return IF;
 }
 
 "else" {
-    return tELSE;
+    return ELSE;
 }
 
 "while" {
-    return tWHILE;
+    return WHILE;
 }
 
 "print" {
-    return tPRINT;
+    return PRINT;
 }
 
 "return" {
@@ -34,38 +34,38 @@
 }
 
 "int" {
-    return tINT;
+    return TYPE_INT;
 }
 
 "void" {
-    return tVOID;
+    return TYPE_VOID;
 }
 
 [a-z][a-z0-9]* {
     yylval.s = strdup(yytext);
-    return tID;
+    return LABEL;
 }
 
 0x[0-9a-fA-F]+ {
     yylval.i = strtoul(yytext, NULL, 16);
-    return tNB;
+    return STATIC_INT;
 }
 
 [0-9]+ {
     yylval.i = strtoul(yytext, NULL, 10);
-    return tNB;
+    return STATIC_INT;
 }
 
 "+" {
-    return tADD;
+    return ADD;
 }
 
 "-" {
-    return tSUB;
+    return SUB;
 }
 
 "*" {
-    return tMUL;
+    return MUL;
 }
 
 "/" {
@@ -73,11 +73,11 @@
 }
 
 "<" {
-    return tLT;
+    return LOW;
 }
 
 ">" {
-    return tGT;
+    return GRT;
 }
 
 "!=" {
@@ -85,7 +85,7 @@
 }
 
 "==" {
-    return tEQ;
+    return EQ;
 }
 
 ">=" {
@@ -97,7 +97,7 @@
 }
 
 "=" {
-    return tASSIGN;
+    return ASSIGN;
 }
 
 "&&" {
@@ -113,27 +113,27 @@
 }
 
 "{" {
-    return tLBRACE;
+    return LBRACE;
 }
 
 "}" {
-    return tRBRACE;
+    return RBRACE;
 }
 
 "(" {
-    return tLPAR;
+    return LPAR;
 }
 
 ")" {
-    return tRPAR;
+    return RPAR;
 }
 
 ";" {
-    return tSEMI;
+    return END;
 }
 
 "," {
-    return tCOMMA;
+    return COMMA;
 }
 
 . {
