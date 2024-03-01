@@ -22,7 +22,7 @@
 %token tERROR
 
 %type <s> number unary multiplicative additive relational equality operators
-%type <i> callable_args_list functions_args functions_args_list
+%type <i> callable_args_list callable_args functions_args functions_args_list
 
 %start global_code_list
 
@@ -36,7 +36,8 @@ global_code: functions
              | defvars END
            ;
 
-code_block: LBRACE code_line_list RBRACE { printf("%d get a code block\n", yylineno); }
+code_block: LBRACE code_line_list RBRACE
+            |LBRACE RBRACE
           ;
 
 code_line_list: code_line
@@ -48,6 +49,8 @@ code_line: operators END
          | defvars END
          | if_header code_block else_header code_block { printf(" -IFELSE\n"); }
          | while_header code_block { printf(" -WHILE\n"); }
+         | return END
+         | END
          ;
 
 if_header: IF LPAR operators RPAR { printf(" +IF %s\n", $3); }
@@ -74,7 +77,7 @@ functions_args: LPAR functions_args_list RPAR { $$ = $2;}
               ;
 
 functions_args_list: TYPE_INT LABEL { printf(" |ARG %s(num 0 type INT)\n", $2); $$ = 1;}
-                   | functions_args_list COMMA TYPE_INT LABEL { printf("|ARG %s(num %lu type INT)\n", $4, $1); $$ = $1 + 1;}
+                   | functions_args_list COMMA TYPE_INT LABEL { printf(" |ARG %s(num %lu type INT)\n", $4, $1); $$ = $1 + 1;}
                    ;
 
 
@@ -85,6 +88,7 @@ functions_args_list: TYPE_INT LABEL { printf(" |ARG %s(num 0 type INT)\n", $2); 
 number: STATIC_INT { printf("%d rNB <- %lu\n", yylineno, $1); $$ = "rNB"; }
       | LABEL { $$ = $1; }
       | callable { $$ = "rEXEC" ;}
+      | LPAR operators RPAR { $$ = $2 ;}
       ;
 
 unary: number { $$ = $1 ; }
@@ -110,6 +114,7 @@ equality: relational { $$ = $1 ; }
         ;
 
 operators: equality { $$ = $1 ; }
+          | assignment { $$ = $1 ;}
          ;
 
 
@@ -133,17 +138,19 @@ assignment: LABEL ASSIGN operators { printf("%d %s <- %s\n", yylineno, $1, $3);}
 
 /* Gestion des appel de fonction */
 
-callable: PRINT callable_args { printf("%d rEXEC <- exec print\n", yylineno); }
-        | LABEL callable_args { printf("%d rEXEC <- exec %s\n", yylineno, $1); }
+callable: PRINT callable_args { printf("%d rEXEC <- exec print (list_arg %lu)\n", yylineno, $2); }
+        | LABEL callable_args { printf("%d rEXEC <- exec %s(list_arg %lu)\n", yylineno, $1, $2); }
         ;
 
-callable_args: LPAR callable_args_list RPAR { printf("%d NUMBER ARGS : %lu\n", yylineno, $2); }
-             | LPAR RPAR { printf("%d NUMBER ARGS : 0\n", yylineno); }
+callable_args: LPAR callable_args_list RPAR { $$ = $2; }
+             | LPAR RPAR { $$ = 0; }
              ;
 
-callable_args_list: operators { printf("%d ARG 0: %s\n", yylineno, $1); $$ = 1;}
-                  | callable_args_list COMMA operators { printf("%d ARG %lu: %s\n", yylineno, $1, $3); $$ = $1 + 1;}
+callable_args_list: operators { printf(" |ARG %s(num 0)\n", $1); $$ = 1;}
+                  | callable_args_list COMMA operators { printf(" |ARG %s(num %lu)\n", $3, $1); $$ = $1 + 1;}
                   ;
+
+return: tRETURN operators { printf("%d RETURN %s\n", yylineno, $2);}
 
 %%
 

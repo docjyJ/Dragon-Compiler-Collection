@@ -3,7 +3,8 @@ default: dcc.out
 all: test default
 
 test: default
-	cat test.c | ./dcc.out
+	cat test2.c | ./dcc.out
+
 
 clean:
 	rm -f *.out *.tab.c *.tab.h *.yy.c *.output
