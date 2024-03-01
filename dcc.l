@@ -41,7 +41,7 @@
     return TYPE_VOID;
 }
 
-[a-z][a-z0-9]* {
+[a-zA-Z][_a-zA-Z0-9]* {
     yylval.s = strdup(yytext);
     return LABEL;
 }

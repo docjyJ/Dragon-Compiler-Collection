@@ -21,7 +21,7 @@
 %token ADD SUB MUL tDIV LOW GRT tNE EQ ASSIGN LBRACE RBRACE LPAR RPAR END COMMA tLE tGE tAND tOR tNOT
 %token tERROR
 
-%type <s> number unary multiplicative additive relational equality operators assignement_list
+%type <s> number unary multiplicative additive relational equality operators assignment_list
 %type <i> callable_args_list callable_args functions_args functions_args_list
 
 %start global_code_list
@@ -45,7 +45,6 @@ code_line_list: code_line
               ;
 
 code_line: operators END
-         | assignment END
          | defvars END
          | if_header code_block else_header code_block { printf(" -IFELSE\n"); }
          | while_header code_block { printf(" -WHILE\n"); }
@@ -114,8 +113,15 @@ equality: relational { $$ = $1 ; }
         ;
 
 operators: equality { $$ = $1 ; }
+         | assignment_list equality { printf("%d %s <- %s\n", yylineno, $1, $2); $$ = $2;}
          ;
 
+assignment: assignment_list equality { printf("%d %s <- %s\n", yylineno, $1, $2);}
+          ;
+
+assignment_list: LABEL ASSIGN { $$ = $1; }
+               | assignment_list LABEL ASSIGN { printf("%d %s <- %s\n", yylineno, $1, $2); $$ = $2;}
+               ;
 
 
 /* Gestion des variable */
@@ -128,14 +134,6 @@ defvars_list: assignment
             | defvars_list COMMA assignment
             | defvars_list COMMA LABEL { printf("%d %s <- NoValue\n", yylineno, $3); }
             ;
-
-
-assignement: assignment_list operator { printf("%d %s <- %s\n", yylineno, $1, $2);}
-           ;
-
-assignement_list: LABEL ASSIGN { $$ = $1 }
-                | assignment LABEL ASSIGN { printf("%d %s <- %s\n", yylineno, $1, $2); $$ = $2;}
-                ;
 
 
 
