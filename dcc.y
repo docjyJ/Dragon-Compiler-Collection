@@ -33,6 +33,7 @@ global_code_list: global_code
                 ;
 
 global_code: functions
+             | defvars END
            ;
 
 code_block: LBRACE code_line_list RBRACE { printf("%d get a code block\n", yylineno); }
@@ -52,7 +53,7 @@ code_line: operators END
 if_header: IF LPAR operators RPAR { printf(" +IF %s\n", $3); }
          ;
 
-else_header: ELSE { printf(" +ELSE\n", yylineno); }
+else_header: ELSE { printf(" +ELSE\n"); }
          ;
 
 while_header: WHILE LPAR operators RPAR { printf("+ START WHILE %s\n", $3); }
@@ -63,8 +64,8 @@ while_header: WHILE LPAR operators RPAR { printf("+ START WHILE %s\n", $3); }
 functions: functions_header code_block { printf(" -FUNCTION\n"); }
          ;
 
-functions_header: TYPE_VOID LABEL functions_args { printf(" +FUNCTION %s(len_arg %d type VOID)\n", $2, $3); }
-                | TYPE_INT LABEL functions_args { printf(" +FUNCTION %s(len_arg %d type INT)\n", $2, $3); }
+functions_header: TYPE_VOID LABEL functions_args { printf(" +FUNCTION %s(len_arg %lu type VOID)\n", $2, $3); }
+                | TYPE_INT LABEL functions_args { printf(" +FUNCTION %s(len_arg %lu type INT)\n", $2, $3); }
                 ;
 
 functions_args: LPAR functions_args_list RPAR { $$ = $2;}
@@ -72,8 +73,8 @@ functions_args: LPAR functions_args_list RPAR { $$ = $2;}
               | LPAR RPAR { $$ = 0;}
               ;
 
-functions_args_list: TYPE_INT LABEL { printf(" |ARG %s(num 0 type INT)\n", yylineno, $2); $$ = 1;}
-                   | functions_args_list COMMA TYPE_INT LABEL { printf("|ARG %s(num %d type INT)\n", yylineno, $4, $1); $$ = $1 + 1;}
+functions_args_list: TYPE_INT LABEL { printf(" |ARG %s(num 0 type INT)\n", $2); $$ = 1;}
+                   | functions_args_list COMMA TYPE_INT LABEL { printf("|ARG %s(num %lu type INT)\n", $4, $1); $$ = $1 + 1;}
                    ;
 
 
@@ -105,10 +106,10 @@ relational: additive { $$ = $1 ; }
           ;
 
 equality: relational { $$ = $1 ; }
-        | equality EQ operators { printf("%d rEQ <- eq %s %s\n", yylineno, $1, $3); $$ = "rEQ"; }
+        | equality EQ  relational { printf("%d rEQ <- eq %s %s\n", yylineno, $1, $3); $$ = "rEQ"; }
         ;
 
-operators: relational { $$ = $1 ; }
+operators: equality { $$ = $1 ; }
          ;
 
 
@@ -136,12 +137,12 @@ callable: PRINT callable_args { printf("%d rEXEC <- exec print\n", yylineno); }
         | LABEL callable_args { printf("%d rEXEC <- exec %s\n", yylineno, $1); }
         ;
 
-callable_args: LPAR callable_args_list RPAR { printf("%d NUMBER ARGS : %d\n", yylineno, $2); }
+callable_args: LPAR callable_args_list RPAR { printf("%d NUMBER ARGS : %lu\n", yylineno, $2); }
              | LPAR RPAR { printf("%d NUMBER ARGS : 0\n", yylineno); }
              ;
 
 callable_args_list: operators { printf("%d ARG 0: %s\n", yylineno, $1); $$ = 1;}
-                  | callable_args_list COMMA operators { printf("%d ARG %d: %s\n", yylineno, $1, $3); $$ = $1 + 1;}
+                  | callable_args_list COMMA operators { printf("%d ARG %lu: %s\n", yylineno, $1, $3); $$ = $1 + 1;}
                   ;
 
 %%
