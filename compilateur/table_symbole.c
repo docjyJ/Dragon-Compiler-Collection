@@ -1,6 +1,5 @@
 #include "table_symbole.h"
 #include <stdlib.h>
-#include <string.h>
 
 
 typedef struct {
@@ -28,23 +27,19 @@ int get (char* nomvar) {
 
     int out=index-1;
 
-    while(!strncmp(Tab[out]->nom,nomvar) && out !=0){
-        out --;
-    }
+    while(out >= 0 && !strncmp(Tab[out]->nom,nomvar)) out --;
 
-    if (!strncmp(Tab[out]->nom,nomvar)){
-        out = -1;
-    }
+    if (out < 0 || !strncmp(Tab[out]->nom,nomvar)) out = -1;
 
     return out;
 }
 
 
-void addpriority () {
+void add_priority () {
     priority++;
 }
 
-void minuspriority () {
+void remove_priority () {
     priority--;
 
     while(Tab[index]->priority > priority){

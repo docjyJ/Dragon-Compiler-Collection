@@ -7,7 +7,7 @@
 void set (char* nomvar);
 int get (char* nomvar);
 
-void addpriority ();
-void minuspriority ();
+void add_priority ();
+void remove_priority ();
 
 #endif
