@@ -68,6 +68,7 @@ functions: functions_header code_block { printf(" -FUNCTION\n"); }
 
 functions_header: TYPE_VOID LABEL functions_args { printf(" +FUNCTION %s(len_arg %lu type VOID)\n", $2, $3); }
                 | TYPE_INT LABEL functions_args { printf(" +FUNCTION %s(len_arg %lu type INT)\n", $2, $3); }
+                | TYPE_VOID MAIN functions_args { printf(" +FUNCTION main(len_arg %lu type VOID)\n", $2, $3); }
                 ;
 
 functions_args: LPAR functions_args_list RPAR { $$ = $2;}

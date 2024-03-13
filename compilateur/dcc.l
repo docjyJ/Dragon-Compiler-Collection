@@ -25,6 +25,10 @@
     return WHILE;
 }
 
+"main" {
+    return MAIN;
+}
+
 "print" {
     return PRINT;
 }
