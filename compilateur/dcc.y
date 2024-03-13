@@ -18,7 +18,7 @@
 %token <s> LABEL
 %token <i> STATIC_INT
 %token IF ELSE WHILE PRINT TYPE_INT TYPE_VOID tRETURN
-%token ADD SUB MUL tDIV LOW GRT tNE EQ ASSIGN LBRACE RBRACE LPAR RPAR END COMMA tLE tGE tAND tOR tNOT
+%token ADD SUB MUL tDIV LOW GRT tNE EQ ASSIGN LBRACE RBRACE LPAR RPAR END COMMA tLE tGE tAND tOR tNOT MAIN
 %token tERROR
 
 %type <s> number unary multiplicative additive relational equality operators assignment_list
@@ -68,7 +68,7 @@ functions: functions_header code_block { printf(" -FUNCTION\n"); }
 
 functions_header: TYPE_VOID LABEL functions_args { printf(" +FUNCTION %s(len_arg %lu type VOID)\n", $2, $3); }
                 | TYPE_INT LABEL functions_args { printf(" +FUNCTION %s(len_arg %lu type INT)\n", $2, $3); }
-                | TYPE_VOID MAIN functions_args { printf(" +FUNCTION main(len_arg %lu type VOID)\n", $2, $3); }
+                | TYPE_VOID MAIN functions_args { printf(" +FUNCTION main(len_arg %lu type VOID)\n", $3); }
                 ;
 
 functions_args: LPAR functions_args_list RPAR { $$ = $2;}
