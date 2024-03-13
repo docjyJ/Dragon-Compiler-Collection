@@ -1,9 +1,9 @@
-default: ../dcc.out
+default: ./dcc.out
 
 all: test default
 
 test: default
-	cat test2.c | ./dcc.out
+	cat test.c | ./dcc.out
 
 
 clean:
