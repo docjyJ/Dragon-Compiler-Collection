@@ -1,4 +1,4 @@
-default: dcc.out
+default: ../dcc.out
 
 all: test default
 
