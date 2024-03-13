@@ -11,8 +11,11 @@ typedef struct {
 
 
 symbole* Tab[1024]; 
+
 int index = 0;
 int priority =0;
+
+int index_temp = 1023;
 
 void set (char* nomvar) {
     symbole* sym = malloc(sizeof (symbole));
@@ -33,6 +36,26 @@ int get (char* nomvar) {
 
     return out;
 }
+
+
+void set_temp (char* nomvar) {
+    symbole* sym = malloc(sizeof (symbole));
+    sym->nom = nomvar;
+    sym->priority = 0;
+
+    Tab[index_temp--]= sym;
+}
+
+int get_temp (char* nomvar) {
+
+    index_temp++;
+
+    free(Tab[index_temp]);
+    Tab[index_temp] = NULL;
+
+    return index_temp;
+}
+
 
 
 void add_priority () {
