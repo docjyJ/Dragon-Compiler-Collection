@@ -1,57 +1,29 @@
-----------------------------------------------------------------------------------
--- Company:
--- Engineer:
---
--- Create Date: 03/08/2024 11:19:20 AM
--- Design Name:
--- Module Name: TestCounter - Behavioral
--- Project Name:
--- Target Devices:
--- Tool Versions:
--- Description:
---
--- Dependencies:
---
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
---
-----------------------------------------------------------------------------------
-
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
 
 entity TestCounter is
 end TestCounter;
 
 architecture Behavioral of TestCounter is
     component Counter is
-        Port ( CLK : in STD_LOGIC;
-            RST : in STD_LOGIC;
-            LOAD : in STD_LOGIC;
-            SENS : in STD_LOGIC;
-            EN : in STD_LOGIC;
-            DI : in STD_LOGIC_VECTOR (7 downto 0);
-            DO : out STD_LOGIC_VECTOR (7 downto 0));
+        Port (
+            CLK: in STD_LOGIC;
+            RST: in STD_LOGIC;
+            LOAD: in STD_LOGIC;
+            SENS: in STD_LOGIC;
+            EN: in STD_LOGIC;
+            DI: in STD_LOGIC_VECTOR (7 downto 0);
+            DO: out STD_LOGIC_VECTOR (7 downto 0)
+        );
     end component;
 
-    signal sCLK : STD_LOGIC;
-    signal sRST : STD_LOGIC;
-    signal sLOAD : STD_LOGIC;
-    signal sSENS : STD_LOGIC;
-    signal sEN : STD_LOGIC;
-    signal sDI : STD_LOGIC_VECTOR (7 downto 0);
-    signal sDO : STD_LOGIC_VECTOR (7 downto 0);
+    signal sCLK: STD_LOGIC;
+    signal sRST: STD_LOGIC;
+    signal sLOAD: STD_LOGIC;
+    signal sSENS: STD_LOGIC;
+    signal sEN: STD_LOGIC;
+    signal sDI: STD_LOGIC_VECTOR (7 downto 0);
+    signal sDO: STD_LOGIC_VECTOR (7 downto 0);
 begin
     uut: Counter port map (
         CLK => sCLK,
@@ -131,4 +103,3 @@ begin
     end process pTest;
 
 end Behavioral;
-
