@@ -15,7 +15,7 @@ void yyerror(const char *);
 %token <s> LABEL
 %token <i> STATIC_INT
 %token IF ELSE WHILE PRINT TYPE_INT TYPE_VOID tRETURN
-%token ADD SUB MUL tDIV LOW GRT tNE EQ ASSIGN LBRACE RBRACE LPAR RPAR END COMMA tLE tGE tAND tOR tNOT MAIN
+%token ADD SUB MUL DIV LOW GRT tNE EQ ASSIGN LBRACE RBRACE LPAR RPAR END COMMA tLE tGE tAND tOR tNOT MAIN
 %token tERROR
 
 %type <s> number unary multiplicative additive relational equality operators assignment_list
@@ -96,6 +96,7 @@ unary: number { $$ = $1 ; }
 
 multiplicative: unary { $$ = $1 ; }
               | multiplicative MUL unary { mul($1, $3); $$ = NULL; }
+              | multiplicative DIV unary { divide($1, $3); $$ = NULL; }
               ;
 
 additive: multiplicative { $$ = $1 ; }

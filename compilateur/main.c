@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 extern int yylineno;
+
 int yyparse();
 
 

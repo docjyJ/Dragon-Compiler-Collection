@@ -12,16 +12,16 @@ void fun(char *name) {
 
 int get_addr_tmp_if_null(char *a) {
     if (a != NULL)
-        return get(a);
+        return get_var(a);
     else
-        return get_temp();
+        return temp_var_pop();
 }
 
-int get_addr_new_if_unknow(char *a) {
-    int adda = get(a);
+int get_addr_new_if_unknown(char *a) {
+    int adda = get_var(a);
     if (adda == -1) {
-        set(a);
-        adda = get(a);
+        set_var(a);
+        adda = get_var(a);
     }
     return adda;
 }
@@ -35,34 +35,34 @@ void op_three(char *name, int a, int b, int ret) {
 }
 
 void affectation(int b) {
-    int a = set_temp();
+    int a = temp_var_push();
     printf("    AFC  @%04X  %5d\n", a, b);
 }
 
 void copie(char *a, char *b) {
-    op_two("COP", get_addr_tmp_if_null(b), get_addr_new_if_unknow(a));
+    op_two("COP", get_addr_tmp_if_null(b), get_addr_new_if_unknown(a));
 }
 
 void add(char *a, char *b) {
-    op_three("ADD", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), get_temp());
+    op_three("ADD", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
 }
 
 void sous(char *a, char *b) {
-    op_three("SUB", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), get_temp());
+    op_three("SUB", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
 }
 
 void mul(char *a, char *b) {
-    op_three("MUL", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), get_temp());
+    op_three("MUL", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
 }
 
-//void div (char* a, char* b){
-//    op_three("DIV", get_var(a), get_addr_tmp_if_null(b), get_temp());
-//}
+void divide(char *a, char *b) {
+    op_three("DIV", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+}
 
 void and(char *a, char *b) {
-    op_three("AND", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), get_temp());
+    op_three("AND", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
 }
 
 void or(char *a, char *b) {
-    op_three("OR", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), get_temp());
+    op_three("OR", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
 }

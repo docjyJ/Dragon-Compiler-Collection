@@ -72,7 +72,7 @@
 }
 
 "/" {
-    return tDIV;
+    return DIV;
 }
 
 "<" {

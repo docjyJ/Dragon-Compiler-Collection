@@ -2,13 +2,16 @@
 #define TABLE_SYBOLE
 
 
-void set (char* nomvar);
-int get (char* nomvar);
+void set_var(char *name);
 
-int set_temp ();
-int get_temp ();
+int get_var(char *name);
 
-void add_priority ();
-void remove_priority ();
+int temp_var_push();
+
+int temp_var_pop();
+
+void add_priority();
+
+void remove_priority();
 
 #endif
