@@ -5,7 +5,7 @@
 
 void affectation (int b){
     int a = set_temp();
-    fprintf(stderr, "AFC @%x %d", a, b);
+    fprintf(stderr, "AFC @%x %d \n", a, b);
 }
 
 void copie(char* a, char* b){
@@ -23,7 +23,7 @@ void copie(char* a, char* b){
         adda=get(a);
     }
 
-    fprintf(stderr, "COP @%x @%x", adda, addb);
+    fprintf(stderr, "COP @%x @%x \n", adda, addb);
 }
 
 void add (char* a, char* b){
@@ -45,6 +45,6 @@ void add (char* a, char* b){
 
 
 
-    fprintf(stderr, "ADD @%x @%x @%x", addc, adda, addb);
+    fprintf(stderr, "ADD @%x @%x @%x \n", addc, adda, addb);
 
 }

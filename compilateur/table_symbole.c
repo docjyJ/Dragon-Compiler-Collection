@@ -38,7 +38,7 @@ int get (char* nomvar) {
 }
 
 
-void set_temp () {
+int set_temp () {
     index_temp--;
     return index_temp;
 }
