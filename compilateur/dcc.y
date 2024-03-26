@@ -101,12 +101,12 @@ multiplicative: unary { $$ = $1 ; }
               ;
 
 additive: multiplicative { $$ = $1 ; }
-        | additive ADD multiplicative { printf("%d rADD <- add %s %s\n", yylineno, $1, $3); $$ = "rADD"; }
+        | additive ADD multiplicative { add($1, $3); $$ = NULL; }
         | additive SUB multiplicative { printf("%d rSUB <- sub %s %s\n", yylineno, $1, $3); $$ = "rSUB"; }
         ;
 
 relational: additive { $$ = $1 ; }
-          | relational LOW additive { add($1, $3); $$ = NULL; }
+          | relational LOW additive { printf("%d rLOW <- grt %s %s\n", yylineno, $1, $3); $$ = "rLOW"; }
           | relational GRT additive { printf("%d rGRT <- grt %s %s\n", yylineno, $1, $3); $$ = "rGRT"; }
           ;
 
@@ -118,7 +118,7 @@ operators: equality { $$ = $1 ; }
          | assignment_list equality { printf("%d %s <- %s\n", yylineno, $1, $2); $$ = $2;}
          ;
 
-assignment: assignment_list equality { printf("%d %s <- %s\n", yylineno, $1, $2);}
+assignment: assignment_list equality { copie($1, $2);}
           ;
 
 assignment_list: LABEL ASSIGN { $$ = $1; }
