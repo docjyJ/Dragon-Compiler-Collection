@@ -3,19 +3,19 @@ default: dcc.out
 all: default
 
 first_test.s: clean default
-	cat first_test.c | ./dcc.out 2> first_test.s
+	dcc -o first_test.s first_test.c
 
+dcc: grammar.tab.o lexer.yy.o traducteur_ARM.o table_symbole.o main.c
+	gcc -Wall -o $@ $^
 
-clean:
-	rm -f *.out *.tab.c *.tab.h *.yy.c *.output
+%.o : %.c
+	gcc -Wall -c $<
 
 %.tab.c: %.y
-	bison -t -v -d $^
+	bison -tvd $<
 
 %.yy.c: %.l
-	flex -o $@ $^
+	flex -o $@ $<
 
-dcc.out: dcc.yy.c dcc.tab.c traducteur_ARM.c table_symbole.c
-	gcc -o $@ $^
-
-.PRECIOUS: %.yy.c %.tab.c
+clean:
+	rm -f *.out *.output *.s *.o *.tab.c *.tab.h *.yy.c dcc

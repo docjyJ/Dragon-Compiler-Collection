@@ -2,14 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "traducteur_ARM.h"
+extern int yylineno;
+int yylex(void);
+void yyerror(const char *);
 %}
-
-%code provides {
-  extern int yylineno;
-
-  int yylex (void);
-  void yyerror (const char *);
-}
 
 %union {
   char *s;
@@ -47,29 +43,29 @@ code_line_list: code_line
 
 code_line: operators END
          | defvars END
-         | if_header code_block else_header code_block { printf(" -IFELSE\n"); }
-         | while_header code_block { printf(" -WHILE\n"); }
+         | if_header code_block else_header code_block { fprintf(stderr, " -IFELSE\n"); }
+         | while_header code_block { fprintf(stderr, " -WHILE\n"); }
          | return END
          | END
          ;
 
-if_header: IF LPAR operators RPAR { printf(" +IF %s\n", $3); }
+if_header: IF LPAR operators RPAR { fprintf(stderr, " +IF %s\n", $3); }
          ;
 
-else_header: ELSE { printf(" +ELSE\n"); }
+else_header: ELSE { fprintf(stderr, " +ELSE\n"); }
          ;
 
-while_header: WHILE LPAR operators RPAR { printf("+ START WHILE %s\n", $3); }
+while_header: WHILE LPAR operators RPAR { fprintf(stderr, "+ START WHILE %s\n", $3); }
             ;
 
 /* Gestion des fonctions */
 
-functions: functions_header code_block { printf(" -FUNCTION\n"); }
+functions: functions_header code_block { fprintf(stderr, " -FUNCTION\n"); }
          ;
 
-functions_header: TYPE_VOID LABEL functions_args { fun($2); printf(" +FUNCTION %s(len_arg %lu type VOID)\n", $2, $3); }
-                | TYPE_INT LABEL functions_args { fun($2); printf(" +FUNCTION %s(len_arg %lu type INT)\n", $2, $3); }
-                | TYPE_VOID MAIN functions_args { fun("main"); printf(" +FUNCTION main(len_arg %lu type VOID)\n", $3); }
+functions_header: TYPE_VOID LABEL functions_args { fun($2); fprintf(stderr, " +FUNCTION %s(len_arg %lu type VOID)\n", $2, $3); }
+                | TYPE_INT LABEL functions_args { fun($2); fprintf(stderr, " +FUNCTION %s(len_arg %lu type INT)\n", $2, $3); }
+                | TYPE_VOID MAIN functions_args { fun("main"); fprintf(stderr, " +FUNCTION main(len_arg %lu type VOID)\n", $3); }
                 ;
 
 functions_args: LPAR functions_args_list RPAR { $$ = $2;}
@@ -77,8 +73,8 @@ functions_args: LPAR functions_args_list RPAR { $$ = $2;}
               | LPAR RPAR { $$ = 0;}
               ;
 
-functions_args_list: TYPE_INT LABEL { printf(" |ARG %s(num 0 type INT)\n", $2); $$ = 1;}
-                   | functions_args_list COMMA TYPE_INT LABEL { printf(" |ARG %s(num %lu type INT)\n", $4, $1); $$ = $1 + 1;}
+functions_args_list: TYPE_INT LABEL { fprintf(stderr, " |ARG %s(num 0 type INT)\n", $2); $$ = 1;}
+                   | functions_args_list COMMA TYPE_INT LABEL { fprintf(stderr, " |ARG %s(num %lu type INT)\n", $4, $1); $$ = $1 + 1;}
                    ;
 
 
@@ -93,7 +89,7 @@ number: STATIC_INT { affectation((int) $1); $$ = NULL; }
       ;
 
 unary: number { $$ = $1 ; }
-     | SUB number { printf("%d rNEG <- sub 0 %s\n", yylineno, $2); $$ = "rNEG"; }
+     | SUB number { fprintf(stderr, "%d rNEG <- sub 0 %s\n", yylineno, $2); $$ = "rNEG"; }
      ;
 
 multiplicative: unary { $$ = $1 ; }
@@ -106,12 +102,12 @@ additive: multiplicative { $$ = $1 ; }
         ;
 
 relational: additive { $$ = $1 ; }
-          | relational LOW additive { printf("%d rLOW <- grt %s %s\n", yylineno, $1, $3); $$ = "rLOW"; }
-          | relational GRT additive { printf("%d rGRT <- grt %s %s\n", yylineno, $1, $3); $$ = "rGRT"; }
+          | relational LOW additive { fprintf(stderr, "%d rLOW <- grt %s %s\n", yylineno, $1, $3); $$ = "rLOW"; }
+          | relational GRT additive { fprintf(stderr, "%d rGRT <- grt %s %s\n", yylineno, $1, $3); $$ = "rGRT"; }
           ;
 
 equality: relational { $$ = $1 ; }
-        | equality EQ  relational { printf("%d rEQ <- eq %s %s\n", yylineno, $1, $3); $$ = "rEQ"; }
+        | equality EQ  relational { fprintf(stderr, "%d rEQ <- eq %s %s\n", yylineno, $1, $3); $$ = "rEQ"; }
         ;
 
 operators: equality { $$ = $1 ; }
@@ -132,36 +128,27 @@ defvars: TYPE_INT defvars_list
       ;
 
 defvars_list: assignment
-            | LABEL { printf("%d %s <- NoValue\n", yylineno, $1); }
+            | LABEL { fprintf(stderr, "%d %s <- NoValue\n", yylineno, $1); }
             | defvars_list COMMA assignment
-            | defvars_list COMMA LABEL { printf("%d %s <- NoValue\n", yylineno, $3); }
+            | defvars_list COMMA LABEL { fprintf(stderr, "%d %s <- NoValue\n", yylineno, $3); }
             ;
 
 
 
 /* Gestion des appel de fonction */
 
-callable: PRINT callable_args { printf("%d rEXEC <- exec print (list_arg %lu)\n", yylineno, $2); }
-        | LABEL callable_args { printf("%d rEXEC <- exec %s(list_arg %lu)\n", yylineno, $1, $2); }
+callable: PRINT callable_args { fprintf(stderr, "%d rEXEC <- exec print (list_arg %lu)\n", yylineno, $2); }
+        | LABEL callable_args { fprintf(stderr, "%d rEXEC <- exec %s(list_arg %lu)\n", yylineno, $1, $2); }
         ;
 
 callable_args: LPAR callable_args_list RPAR { $$ = $2; }
              | LPAR RPAR { $$ = 0; }
              ;
 
-callable_args_list: operators { printf(" |ARG %s(num 0)\n", $1); $$ = 1;}
-                  | callable_args_list COMMA operators { printf(" |ARG %s(num %lu)\n", $3, $1); $$ = $1 + 1;}
+callable_args_list: operators { fprintf(stderr, " |ARG %s(num 0)\n", $1); $$ = 1;}
+                  | callable_args_list COMMA operators { fprintf(stderr, " |ARG %s(num %lu)\n", $3, $1); $$ = $1 + 1;}
                   ;
 
-return: tRETURN operators { printf("%d RETURN %s\n", yylineno, $2);}
+return: tRETURN operators { fprintf(stderr, "%d RETURN %s\n", yylineno, $2);}
 
 %%
-
-void yyerror(const char *msg) {
-  fprintf(stderr, "error: '%s' at line %d.\n", msg, yylineno);
-  exit(1);
-}
-
-int main(void) {
-  yyparse();
-}

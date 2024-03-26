@@ -3,7 +3,7 @@
 #include "table_symbole.h"
 
 void fun(char *name) {
-    fprintf(stderr, "%s:\n", name);
+    printf("%s:\n", name);
 }
 
 int get_addr_tmp_if_null(char *a) {
@@ -23,16 +23,16 @@ int get_addr_new_if_unknow(char *a) {
 }
 
 void op_two(char *name, int a, int ret) {
-    fprintf(stderr, "    %3s  @%04X  @%04X\n", name, ret, a);
+    printf("    %3s  @%04X  @%04X\n", name, ret, a);
 }
 
 void op_three(char *name, int a, int b, int ret) {
-    fprintf(stderr, "    %3s  @%04X  @%04X  @%04X\n", name, ret, a, b);
+    printf("    %3s  @%04X  @%04X  @%04X\n", name, ret, a, b);
 }
 
 void affectation(int b) {
     int a = set_temp();
-    fprintf(stderr, "    AFC  @%04X  %5d\n", a, b);
+    printf("    AFC  @%04X  %5d\n", a, b);
 }
 
 void copie(char *a, char *b) {

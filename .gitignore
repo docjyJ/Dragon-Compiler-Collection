@@ -6,3 +6,6 @@
 *.tab.h
 *.yy.c
 *.output
+*.s
+*.o
+dcc

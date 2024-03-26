@@ -2,9 +2,8 @@
 %option noinput
 %option nounput
 %option yylineno
-
 %{
-#include "dcc.tab.h"
+#include "grammar.tab.h"
 %}
 
 %%
