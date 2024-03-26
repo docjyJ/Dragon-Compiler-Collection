@@ -13,51 +13,32 @@ entity RegisterBank is
 end RegisterBank;
 
 architecture Behavioral of RegisterBank is
-    signal R1: STD_LOGIC_VECTOR (7 downto 0);
-    signal R2: STD_LOGIC_VECTOR (7 downto 0);
-    signal R3: STD_LOGIC_VECTOR (7 downto 0);
-    signal R4: STD_LOGIC_VECTOR (7 downto 0);
-    signal R5: STD_LOGIC_VECTOR (7 downto 0);
-    signal R6: STD_LOGIC_VECTOR (7 downto 0);
-    signal R7: STD_LOGIC_VECTOR (7 downto 0);
-    signal R0: STD_LOGIC_VECTOR (7 downto 0);
-begin
-    with read1 select
-        output1 <= R0 when "000",
-                   R1 when "001",
-                   R2 when "010",
-                   R3 when "011",
-                   R4 when "100",
-                   R5 when "101",
-                   R6 when "110",
-                   R7 when others;
-                   --R7 when "111",
-                   --(others => '0') when others ;
 
-    with read2 select
-        output2 <= R0 when "000",
-                   R1 when "001",
-                   R2 when "010",
-                   R3 when "011",
-                   R4 when "100",
-                   R5 when "101",
-                   R6 when "110",
-                   R7 when others;
-                   --R7 when "111",
-                   --(others => '0') when others ;
+    type ttab is array (15 downto 0) of std_logic_vector (7 downto 0);
+
+    signal reg : ttab;
+begin
+    process (read1,write)
+    begin
+        if read1 = write_add and write ='1' then
+            output1 <= input;
+        else
+            output1 <= reg(to_integer( unsigned(read1)));
+        end if;
+    end process;
+
+     process (read2,write)
+     begin
+        if read2 = write_add and write ='1' then
+            output2 <= input;
+        else
+            output2 <= reg(to_integer( unsigned(read2)));
+        end if;
+    end process;
 
     process (write)
     begin
-        case write is
-            when "000" => R0 <= input;
-            when "001" => R1 <= input;
-            when "010" => R2 <= input;
-            when "011" => R3 <= input;
-            when "100" => R4 <= input;
-            when "101" => R5 <= input;
-            when "110" => R6 <= input;
-            when others => R7 <= input;
-        end case;
+        reg(to_integer( unsigned(write_add))) <= input;
     end process;
 
 end Behavioral;
