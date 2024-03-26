@@ -3,7 +3,7 @@ default: dcc.out
 all: test default
 
 first_test: clean default
-	cat first_test.c | ./dcc.out 2> first_test.out
+	cat first_test.c | ./dcc.out 2> first_test.s
 
 
 clean:
