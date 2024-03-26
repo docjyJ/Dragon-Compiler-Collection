@@ -30,17 +30,18 @@ int get (char* nomvar) {
 
     int out=Myindex-1;
 
-    while(out >= 0 && !strncmp(Tab[out]->nom,nomvar,40)) out --;
+    while(out >= 0 && strcmp(Tab[out]->nom,nomvar))  out --;
 
-    if (out < 0 || !strncmp(Tab[out]->nom,nomvar,40)) out = -1;
+
 
     return out;
 }
 
 
 int set_temp () {
+    int a = index_temp;
     index_temp--;
-    return index_temp;
+    return a;
 }
 
 int get_temp () {

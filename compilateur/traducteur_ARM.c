@@ -12,39 +12,52 @@ void copie(char* a, char* b){
     int adda = get(a);
     int addb;
 
-    if (b ==NULL){
-        addb = get_temp();
-    }else {
-        addb = get (b);
-    }
-
-    if (adda==-1){
+     if (adda==-1){
         set(a);
         adda=get(a);
-    }
+     }
+
+    if (b == NULL) addb = get_temp();
+    else addb = get(b);
+
 
     fprintf(stderr, "COP @%x @%x\n", adda, addb);
 }
 
-void add (char* a, char* b){
+void _operator(char * name, char* a, char* b) {
     int adda;
+    if (a == NULL) adda = get_temp();
+    else adda = get(a);
+
     int addb;
+    if (b == NULL) addb = get_temp();
+    else addb = get(b);
+
     int addc = set_temp();
 
-    if (a ==NULL){
-        adda = get_temp();
-    }else {
-        adda = get (a);
-    }
+    fprintf(stderr, "%s @%x @%x @%x\n", name, addc, adda, addb);
+}
 
-    if (b ==NULL){
-        addb = get_temp();
-    }else {
-        addb = get (b);
-    }
+void add (char* a, char* b){
+    _operator("ADD", a, b);
+}
 
+void sous (char* a, char* b){
+    _operator("SOU", a, b);
+}
 
+void mul (char* a, char* b){
+    _operator("MUL", a, b);
+}
 
-    fprintf(stderr, "ADD @%x @%x @%x\n", addc, adda, addb);
+void div (char* a, char* b){
+    _operator("DIV", a, b);
+}
 
+void and (char* a, char* b){
+    _operator("AND", a, b);
+}
+
+void or (char* a, char* b){
+    _operator("LOR", a, b);
 }
