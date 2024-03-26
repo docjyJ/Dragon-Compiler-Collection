@@ -50,9 +50,9 @@ void mul (char* a, char* b){
     _operator("MUL", a, b);
 }
 
-void div (char* a, char* b){
-    _operator("DIV", a, b);
-}
+//void div (char* a, char* b){
+//    _operator("DIV", a, b);
+//}
 
 void and (char* a, char* b){
     _operator("AND", a, b);

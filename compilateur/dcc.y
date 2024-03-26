@@ -97,12 +97,12 @@ unary: number { $$ = $1 ; }
      ;
 
 multiplicative: unary { $$ = $1 ; }
-              | multiplicative MUL unary { div($1, $3); $$ = NULL; }
+              | multiplicative MUL unary { mul($1, $3); $$ = NULL; }
               ;
 
 additive: multiplicative { $$ = $1 ; }
         | additive ADD multiplicative { add($1, $3); $$ = NULL; }
-        | additive SUB multiplicative { sub($1, $3); $$ = NULL; }
+        | additive SUB multiplicative { sous($1, $3); $$ = NULL; }
         ;
 
 relational: additive { $$ = $1 ; }
@@ -115,14 +115,14 @@ equality: relational { $$ = $1 ; }
         ;
 
 operators: equality { $$ = $1 ; }
-         | assignment_list equality { printf("%d %s <- %s\n", yylineno, $1, $2); $$ = $2;}
+         | assignment_list equality { copie($1, $2); $$ = $2;}
          ;
 
 assignment: assignment_list equality { copie($1, $2);}
           ;
 
 assignment_list: LABEL ASSIGN { $$ = $1; }
-               | assignment_list LABEL ASSIGN { printf("%d %s <- %s\n", yylineno, $1, $2); $$ = $2;}
+               | assignment_list LABEL ASSIGN { copie($1, $2); $$ = $2;}
                ;
 
 
