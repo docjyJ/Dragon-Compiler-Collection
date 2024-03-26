@@ -2,6 +2,7 @@
 #define TRAD_ARM
 
 void fun(char* name);
+void end_fun();
 
 void affectation (int b);
 

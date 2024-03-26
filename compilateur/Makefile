@@ -3,7 +3,7 @@ default: dcc.out
 all: default
 
 first_test.s: clean default
-	dcc -o first_test.s first_test.c
+	./dcc -o first_test.s first_test.c
 
 dcc: grammar.tab.o lexer.yy.o traducteur_ARM.o table_symbole.o main.c
 	gcc -Wall -o $@ $^

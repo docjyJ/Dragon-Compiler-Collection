@@ -30,7 +30,7 @@ global_code_list: global_code
                 ;
 
 global_code: functions
-             | defvars END
+           | defvars END { yyerror("global vars not implemented"); }
            ;
 
 code_block: LBRACE code_line_list RBRACE
@@ -60,23 +60,25 @@ while_header: WHILE LPAR operators RPAR { fprintf(stderr, "+ START WHILE %s\n", 
 
 /* Gestion des fonctions */
 
-functions: functions_header code_block { fprintf(stderr, " -FUNCTION\n"); }
+functions: functions_header code_block { end_fun(); }
          ;
 
-functions_header: TYPE_VOID LABEL functions_args { fun($2); fprintf(stderr, " +FUNCTION %s(len_arg %lu type VOID)\n", $2, $3); }
-                | TYPE_INT LABEL functions_args { fun($2); fprintf(stderr, " +FUNCTION %s(len_arg %lu type INT)\n", $2, $3); }
-                | TYPE_VOID MAIN functions_args { fun("main"); fprintf(stderr, " +FUNCTION main(len_arg %lu type VOID)\n", $3); }
+functions_header: TYPE_VOID LABEL functions_args { yyerror("function not implemented"); }
+                | TYPE_INT LABEL functions_args { yyerror("function not implemented"); }
+                | TYPE_VOID MAIN functions_args { fun("main"); }
                 ;
 
-functions_args: LPAR functions_args_list RPAR { $$ = $2;}
+functions_args: LPAR functions_args_list RPAR { $$ = $2; }
               | LPAR TYPE_VOID RPAR { $$ = 0;}
               | LPAR RPAR { $$ = 0;}
               ;
 
-functions_args_list: TYPE_INT LABEL { fprintf(stderr, " |ARG %s(num 0 type INT)\n", $2); $$ = 1;}
-                   | functions_args_list COMMA TYPE_INT LABEL { fprintf(stderr, " |ARG %s(num %lu type INT)\n", $4, $1); $$ = $1 + 1;}
+functions_args_list: functions_arg { $$ = 1; }
+                   | functions_args_list COMMA functions_arg { $$ = $1 + 1; }
                    ;
 
+functions_arg: TYPE_INT LABEL { yyerror("function arguments not implemented"); }
+             ;
 
 
 

@@ -2,6 +2,10 @@
 #include "traducteur_ARM.h"
 #include "table_symbole.h"
 
+void end_fun() {
+    printf("\n");
+}
+
 void fun(char *name) {
     printf("%s:\n", name);
 }
