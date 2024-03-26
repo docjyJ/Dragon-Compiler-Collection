@@ -97,12 +97,12 @@ unary: number { $$ = $1 ; }
      ;
 
 multiplicative: unary { $$ = $1 ; }
-              | multiplicative MUL unary { printf("%d rMUL <- %s, %s\n", yylineno, $1, $3); $$ = "rMUL"; }
+              | multiplicative MUL unary { div($1, $3); $$ = NULL; }
               ;
 
 additive: multiplicative { $$ = $1 ; }
         | additive ADD multiplicative { add($1, $3); $$ = NULL; }
-        | additive SUB multiplicative { printf("%d rSUB <- sub %s %s\n", yylineno, $1, $3); $$ = "rSUB"; }
+        | additive SUB multiplicative { sub($1, $3); $$ = NULL; }
         ;
 
 relational: additive { $$ = $1 ; }
