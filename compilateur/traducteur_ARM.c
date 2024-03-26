@@ -2,62 +2,63 @@
 #include "traducteur_ARM.h"
 #include "table_symbole.h"
 
-
-void affectation (int b){
-    int a = set_temp();
-    fprintf(stderr, "AFC @%x %d\n", a, b);
+void fun(char *name) {
+    fprintf(stderr, "%s:\n", name);
 }
 
-void copie(char* a, char* b){
+int get_addr_tmp_if_null(char *a) {
+    if (a != NULL)
+        return get(a);
+    else
+        return get_temp();
+}
+
+int get_addr_new_if_unknow(char *a) {
     int adda = get(a);
-    int addb;
-
-     if (adda==-1){
+    if (adda == -1) {
         set(a);
-        adda=get(a);
-     }
-
-    if (b == NULL) addb = get_temp();
-    else addb = get(b);
-
-
-    fprintf(stderr, "COP @%x @%x\n", adda, addb);
+        adda = get(a);
+    }
+    return adda;
 }
 
-void _operator(char * name, char* a, char* b) {
-    int adda;
-    if (a == NULL) adda = get_temp();
-    else adda = get(a);
-
-    int addb;
-    if (b == NULL) addb = get_temp();
-    else addb = get(b);
-
-    int addc = set_temp();
-
-    fprintf(stderr, "%s @%x @%x @%x\n", name, addc, adda, addb);
+void op_two(char *name, int a, int ret) {
+    fprintf(stderr, "    %3s  @%04X  @%04X\n", name, ret, a);
 }
 
-void add (char* a, char* b){
-    _operator("ADD", a, b);
+void op_three(char *name, int a, int b, int ret) {
+    fprintf(stderr, "    %3s  @%04X  @%04X  @%04X\n", name, ret, a, b);
 }
 
-void sous (char* a, char* b){
-    _operator("SOU", a, b);
+void affectation(int b) {
+    int a = set_temp();
+    fprintf(stderr, "    AFC  @%04X  %5d\n", a, b);
 }
 
-void mul (char* a, char* b){
-    _operator("MUL", a, b);
+void copie(char *a, char *b) {
+    op_two("COP", get_addr_tmp_if_null(b), get_addr_new_if_unknow(a));
+}
+
+void add(char *a, char *b) {
+    op_three("ADD", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), get_temp());
+}
+
+void sous(char *a, char *b) {
+    op_three("SUB", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), get_temp());
+}
+
+void mul(char *a, char *b) {
+    op_three("MUL", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), get_temp());
 }
 
 //void div (char* a, char* b){
-//    _operator("DIV", a, b);
+//    op_three("DIV", get_var(a), get_addr_tmp_if_null(b), get_temp());
 //}
 
-void and (char* a, char* b){
-    _operator("AND", a, b);
+void and(char *a, char *b) {
+    op_three("AND", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), get_temp());
 }
 
-void or (char* a, char* b){
-    _operator("LOR", a, b);
+void or(char *a, char *b) {
+    op_three("OR", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), get_temp());
 }
