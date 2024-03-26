@@ -12,7 +12,7 @@ typedef struct {
 
 symbole* Tab[1024]; 
 
-int index = 0;
+int Myindex = 0;
 int priority =0;
 
 int index_temp = 1023;
@@ -22,17 +22,17 @@ void set (char* nomvar) {
     sym->nom = nomvar;
     sym->priority = priority;
 
-    Tab[index++]= sym;
+    Tab[Myindex++]= sym;
 }
 
 
 int get (char* nomvar) {
 
-    int out=index-1;
+    int out=Myindex-1;
 
-    while(out >= 0 && !strncmp(Tab[out]->nom,nomvar)) out --;
+    while(out >= 0 && !strncmp(Tab[out]->nom,nomvar,40)) out --;
 
-    if (out < 0 || !strncmp(Tab[out]->nom,nomvar)) out = -1;
+    if (out < 0 || !strncmp(Tab[out]->nom,nomvar,40)) out = -1;
 
     return out;
 }
@@ -58,9 +58,9 @@ void add_priority () {
 void remove_priority () {
     priority--;
 
-    while(Tab[index]->priority > priority){
-        free(Tab[index]);
-        Tab[index] = NULL;
-        index--;
+    while(Tab[Myindex]->priority > priority){
+        free(Tab[Myindex]);
+        Tab[Myindex] = NULL;
+        Myindex--;
     }
 }

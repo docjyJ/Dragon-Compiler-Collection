@@ -1,6 +1,4 @@
-
-
-#ifdef TABLE_SYBOLE
+#ifndef TABLE_SYBOLE
 #define TABLE_SYBOLE
 
 

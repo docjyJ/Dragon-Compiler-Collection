@@ -1,6 +1,4 @@
-
-
-#ifdef TRAD_ARM
+#ifndef TRAD_ARM
 #define TRAD_ARM
 
 
