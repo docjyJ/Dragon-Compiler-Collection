@@ -1,6 +1,6 @@
 #include "table_symbole.h"
 #include <stdlib.h>
-
+#include <string.h>
 
 typedef struct {
     char* nom;

@@ -3,7 +3,7 @@ default: ./dcc.out
 all: test default
 
 test: default
-	cat test.c | ./dcc.out
+	cat first_test.c | ./dcc.out
 
 
 clean:
@@ -15,7 +15,7 @@ clean:
 %.yy.c: %.l
 	flex -o $@ $^
 
-%.out: %.yy.c %.tab.c
+dcc.out: dcc.yy.c dcc.tab.c traducteur_ARM.c table_symbole.c
 	gcc -o $@ $^
 
 .PRECIOUS: %.yy.c %.tab.c

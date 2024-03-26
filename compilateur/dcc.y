@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include "traducteur_ARM.h"
 %}
 
 %code provides {
@@ -85,7 +86,7 @@ functions_args_list: TYPE_INT LABEL { printf(" |ARG %s(num 0 type INT)\n", $2); 
 
 /* Gestion ses opérations */
 
-number: STATIC_INT { printf("%d rNB <- %lu\n", yylineno, $1); $$ = "rNB"; }
+number: STATIC_INT { affectation((int) $1); $$ = NULL; }
       | LABEL { $$ = $1; }
       | callable { $$ = "rEXEC" ;}
       | LPAR operators RPAR { $$ = $2 ;}
@@ -105,7 +106,7 @@ additive: multiplicative { $$ = $1 ; }
         ;
 
 relational: additive { $$ = $1 ; }
-          | relational LOW additive { printf("%d rLOW <- low %s %s\n", yylineno, $1, $3); $$ = "rLOW"; }
+          | relational LOW additive { add($1, $3); $$ = NULL; }
           | relational GRT additive { printf("%d rGRT <- grt %s %s\n", yylineno, $1, $3); $$ = "rGRT"; }
           ;
 
