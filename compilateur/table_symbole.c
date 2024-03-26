@@ -38,21 +38,14 @@ int get (char* nomvar) {
 }
 
 
-void set_temp (char* nomvar) {
-    symbole* sym = malloc(sizeof (symbole));
-    sym->nom = nomvar;
-    sym->priority = 0;
-
-    Tab[index_temp--]= sym;
+void set_temp () {
+    index_temp--;
+    return index_temp;
 }
 
-int get_temp (char* nomvar) {
+int get_temp () {
 
     index_temp++;
-
-    free(Tab[index_temp]);
-    Tab[index_temp] = NULL;
-
     return index_temp;
 }
 
