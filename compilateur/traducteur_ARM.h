@@ -25,6 +25,10 @@ void start_jump (char* a);
 
 void end_jump ();
 
+void start_jump_reverse ();
+
+void end_jump_reverse (char* b);
+
 void print_instruction ();
 
 #endif

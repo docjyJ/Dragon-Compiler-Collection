@@ -11,5 +11,9 @@ void main () {
         a = 1;
     }
 
-    c = a;
+    c = 1;
+
+    while(c ){
+        c=c+1;
+    }
 }

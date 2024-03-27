@@ -45,7 +45,7 @@ code_line: operators END
          | defvars END
          | if_header code_block else_header code_block { end_jump(); }
          | if_header code_block { end_jump(); }
-         | while_header code_block { fprintf(stderr, " -WHILE\n"); }
+         | while_header code_block {end_jump_reverse(NULL);  end_jump();  }
          | return END
          | END
          ;
@@ -56,7 +56,7 @@ if_header: IF LPAR operators RPAR { start_jump($3); }
 else_header: ELSE { end_jump(); start_jump(NULL); }
          ;
 
-while_header: WHILE LPAR operators RPAR { fprintf(stderr, "+ START WHILE %s\n", $3); }
+while_header: WHILE LPAR operators RPAR { start_jump($3); start_jump_reverse(); }
             ;
 
 /* Gestion des fonctions */

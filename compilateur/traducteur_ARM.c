@@ -13,6 +13,9 @@ char* tabInstruct[2048];
 int  startSection [10];
 int nbStartSection =-1 ;
 
+int  startReverseSection [10];
+int nbStartReverseSection =-1 ;
+
 void add_instruction(char* a){
     nbInstruct ++;
     tabInstruct[nbInstruct] =  a;
@@ -151,3 +154,27 @@ void end_jump (){
     modify_instruction(a, startSection[nbStartSection]);
     nbStartSection--;
 }
+
+
+void start_jump_reverse (){
+    nbStartReverseSection ++;
+    startReverseSection[nbStartReverseSection]= nbInstruct;
+}
+
+void end_jump_reverse (char* b){
+    char* a;
+
+    if (b==NULL){
+        a = malloc(21);
+        sprintf(a, "#%05d    JMP  %5d\n", nbInstruct+1, startReverseSection[nbStartReverseSection]);
+
+    }else{
+        a = malloc(28);
+        sprintf(a, "#%05d    JMF  @%04s  %5d\n", nbInstruct+1, b, startReverseSection[nbStartReverseSection]);
+
+    }
+
+    add_instruction(a);
+    nbStartReverseSection--;
+}
+
