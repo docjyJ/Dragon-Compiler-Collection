@@ -125,7 +125,11 @@ void or(char *a, char *b) {
 
 void start_jump (char* a){
     nbStartSection ++;
-    add_instruction(a);
+
+    char* b = malloc(4);
+    sprintf(b, "%04X", get_addr_tmp_if_null(a));
+
+    add_instruction(b);
     startSection[nbStartSection]= nbInstruct;
 }
 
