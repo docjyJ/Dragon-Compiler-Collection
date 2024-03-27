@@ -30,7 +30,7 @@ global_code_list: global_code
                 ;
 
 global_code: functions
-           | defvars END { yyerror("global vars not implemented"); }
+           | defvars END
            ;
 
 code_block: LBRACE code_line_list RBRACE
@@ -131,9 +131,9 @@ defvars: TYPE_INT defvars_list
       ;
 
 defvars_list: assignment
-            | LABEL { fprintf(stderr, "%d %s <- NoValue\n", yylineno, $1); }
+            | LABEL { affectation((int) 0); copie($1, NULL); }
             | defvars_list COMMA assignment
-            | defvars_list COMMA LABEL { fprintf(stderr, "%d %s <- NoValue\n", yylineno, $3); }
+            | defvars_list COMMA LABEL { affectation((int) 0); copie($3, NULL); }
             ;
 
 
