@@ -4,7 +4,6 @@
 #include "traducteur_ARM.h"
 #include "table_symbole.h"
 
-
 void yyerror (char *);
 
 int nbInstruct = -1;
@@ -52,28 +51,23 @@ void fun(char *name) {
     add_priority();
 }
 
-int get_addr_tmp_if_null(char *a) {
-    if (a != NULL){
-         int add = get_var(a);
-
-         if(add == -1 ){
-            yyerror("la var est pas init");
-         }
-         return add;
-    }
-    else {
-         return temp_var_pop();
-    }
-
+int get_var_address(char *a) {
+    int addr = get_var(a);
+    if(addr == -1 ) yyerror("la var est pas init");
+    return addr;
 }
 
-int get_addr_new_if_unknown(char *a) {
-    int adda = get_var(a);
-    if (adda == -1) {
-        set_var(a);
-        adda = get_var(a);
-    }
-    return adda;
+void set_new_address(char *a) {
+    int addr = get_var(a);
+    if(addr != -1 ) yyerror("la var est déjà init");
+    set_var(a);
+    printf("         ***** %s\n", a);
+}
+
+int get_addr_tmp_if_null(char *a) {
+    if (a != NULL)
+        return get_var_address(a);
+    return temp_var_pop();
 }
 
 void op_two(char *name, int a, int ret) {
@@ -90,16 +84,22 @@ void op_three(char *name, int a, int b, int ret) {
     add_instruction(instruct);
 }
 
-void affectation(int b) {
-    int a = temp_var_push();
+void affectation(char* a, int b) {
+    int addr = (a == NULL) ? temp_var_push() : get_var_address(a);
+
     char* instruct = malloc(28);
-    sprintf(instruct ,"#%05d    AFC  @%04X  %5d\n", nbInstruct+1, a, b);
+    sprintf(instruct ,"#%05d    AFC  @%04X  %5d\n", nbInstruct+1, addr, b);
 
     add_instruction(instruct);
 }
 
 void copie(char *a, char *b) {
-    op_two("COP", get_addr_tmp_if_null(b), get_addr_new_if_unknown(a));
+    op_two("COP", get_addr_tmp_if_null(b), get_var_address(a));
+}
+
+void define_copie(char *a, char *b) {
+    set_new_address(a);
+    copie(a, b);
 }
 
 void add(char *a, char *b) {

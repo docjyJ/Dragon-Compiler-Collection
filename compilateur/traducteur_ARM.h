@@ -5,7 +5,9 @@ void fun(char *name);
 
 void end_fun();
 
-void affectation(int b);
+void define_affectation(char *a, int b);
+
+void affectation(char *a, int b);
 
 void add(char *a, char *b);
 
@@ -34,5 +36,8 @@ void start_jump_reverse ();
 void end_jump_reverse (char* b);
 
 void print_instruction ();
+void define_copie(char *a, char *b);
+
+void copie(char *a, char *b);
 
 #endif
