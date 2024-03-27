@@ -21,4 +21,10 @@ void or(char *a, char *b);
 
 void copie(char *a, char *b);
 
+void start_jump (char* a);
+
+void end_jump ();
+
+void print_instruction ();
+
 #endif

@@ -43,16 +43,17 @@ code_line_list: code_line
 
 code_line: operators END
          | defvars END
-         | if_header code_block else_header code_block { fprintf(stderr, " -IFELSE\n"); }
+         | if_header code_block else_header code_block { end_jump(); }
+         | if_header code_block { end_jump(); }
          | while_header code_block { fprintf(stderr, " -WHILE\n"); }
          | return END
          | END
          ;
 
-if_header: IF LPAR operators RPAR { fprintf(stderr, " +IF %s\n", $3); }
+if_header: IF LPAR operators RPAR { start_jump($3); }
          ;
 
-else_header: ELSE { fprintf(stderr, " +ELSE\n"); }
+else_header: ELSE { end_jump(); start_jump(NULL); }
          ;
 
 while_header: WHILE LPAR operators RPAR { fprintf(stderr, "+ START WHILE %s\n", $3); }
