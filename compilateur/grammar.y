@@ -18,7 +18,7 @@ void yyerror(const char *);
 %token ADD SUB MUL DIV LOW GRT tNE EQ ASSIGN LBRACE RBRACE LPAR RPAR END COMMA tLE tGE tAND tOR tNOT MAIN
 %token tERROR
 
-%type <s> number unary multiplicative additive relational equality operators assignment_list
+%type <s> number unary multiplicative additive relational equality operators
 %type <i> callable_args_list callable_args functions_args functions_args_list
 
 %start global_code_list
@@ -84,7 +84,7 @@ functions_arg: TYPE_INT LABEL { yyerror("function arguments not implemented"); }
 
 /* Gestion ses opérations */
 
-number: STATIC_INT { affectation((int) $1); $$ = NULL; }
+number: STATIC_INT { affectation(NULL, (int) $1); $$ = NULL; }
       | LABEL { $$ = $1; }
       | callable { $$ = "rEXEC" ;}
       | LPAR operators RPAR { $$ = $2 ;}
@@ -114,15 +114,8 @@ equality: relational { $$ = $1 ; }
         ;
 
 operators: equality { $$ = $1 ; }
-         | assignment_list equality { copie($1, $2); $$ = $2;}
-         ;
-
-assignment: assignment_list equality { copie($1, $2);}
-          ;
-
-assignment_list: LABEL ASSIGN { $$ = $1; }
-               | assignment_list LABEL ASSIGN { copie($1, $2); $$ = $2;}
-               ;
+         | LABEL ASSIGN operators { copie($1, $3); $$ = $1;}
+         ; // TODO Récusirvité à droite
 
 
 /* Gestion des variable */
@@ -130,12 +123,13 @@ assignment_list: LABEL ASSIGN { $$ = $1; }
 defvars: TYPE_INT defvars_list
       ;
 
-defvars_list: assignment
-            | LABEL { affectation((int) 0); copie($1, NULL); }
-            | defvars_list COMMA assignment
-            | defvars_list COMMA LABEL { affectation((int) 0); copie($3, NULL); }
+defvars_list: defvar
+            | defvars_list COMMA defvar
             ;
 
+defvar: LABEL ASSIGN operators { define_copie($1, $3); }
+      | LABEL { define_affectation($1, 0) ; }
+      ;
 
 
 /* Gestion des appel de fonction */
