@@ -126,6 +126,18 @@ void or(char *a, char *b) {
     op_three("OR", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
 }
 
+void inf(char *a, char *b) {
+    op_three("INF", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+}
+
+void sup(char *a, char *b) {
+    op_three("SUP", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+}
+
+void equ(char *a, char *b) {
+    op_three("EQU", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+}
+
 void start_jump (char* a){
     nbStartSection ++;
 

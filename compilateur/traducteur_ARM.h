@@ -19,7 +19,11 @@ void and(char *a, char *b);
 
 void or(char *a, char *b);
 
-void copie(char *a, char *b);
+void inf(char *a, char *b);
+
+void sup(char *a, char *b);
+
+void equ(char *a, char *b);
 
 void start_jump (char* a);
 

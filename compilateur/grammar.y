@@ -106,12 +106,12 @@ additive: multiplicative { $$ = $1 ; }
         ;
 
 relational: additive { $$ = $1 ; }
-          | relational LOW additive { fprintf(stderr, "%d rLOW <- grt %s %s\n", yylineno, $1, $3); $$ = "rLOW"; }
-          | relational GRT additive { fprintf(stderr, "%d rGRT <- grt %s %s\n", yylineno, $1, $3); $$ = "rGRT"; }
+          | relational LOW additive { inf($1, $3); $$ = "rLOW"; }
+          | relational GRT additive { sup($1, $3); $$ = "rGRT"; }
           ;
 
 equality: relational { $$ = $1 ; }
-        | equality EQ  relational { fprintf(stderr, "%d rEQ <- eq %s %s\n", yylineno, $1, $3); $$ = "rEQ"; }
+        | equality EQ  relational { equ($1, $3); $$ = "rEQ"; }
         ;
 
 operators: equality { $$ = $1 ; }
