@@ -2,19 +2,31 @@
 #include "traducteur_ARM.h"
 #include "table_symbole.h"
 
+void yyerror (char *);
+
 void end_fun() {
     printf("\n");
+    remove_priority();
 }
 
 void fun(char *name) {
     printf("%s:\n", name);
+    add_priority();
 }
 
 int get_addr_tmp_if_null(char *a) {
-    if (a != NULL)
-        return get_var(a);
-    else
-        return temp_var_pop();
+    if (a != NULL){
+         int add = get_var(a);
+
+         if(add == -1 ){
+            yyerror("la var est pas init");
+         }
+         return add;
+    }
+    else {
+         return temp_var_pop();
+    }
+
 }
 
 int get_addr_new_if_unknown(char *a) {
@@ -66,3 +78,4 @@ void and(char *a, char *b) {
 void or(char *a, char *b) {
     op_three("OR", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
 }
+

@@ -10,20 +10,20 @@ typedef struct {
 
 symbole *tab[1024];
 
-int my_index = 0;
+int my_index = -1;
 int priority = 0;
 int var_temp_stack_head = 1024;
 
 void set_var(char *name) {
+    my_index++;
     tab[my_index] = malloc(sizeof(symbole));
     tab[my_index]->nom = name;
     tab[my_index]->priority = priority;
-    my_index++;
 }
 
 
 int get_var(char *name) {
-    int out = my_index - 1;
+    int out = my_index;
     while (out >= 0 && strcmp(tab[out]->nom, name) != 0) out--;
     return out;
 }
@@ -48,9 +48,8 @@ void add_priority() {
 void remove_priority() {
     priority--;
 
-    while (tab[my_index]->priority > priority) {
+    while (my_index >= 0 && tab[my_index]->priority > priority) {
         free(tab[my_index]);
-        tab[my_index] = NULL;
         my_index--;
     }
 }
