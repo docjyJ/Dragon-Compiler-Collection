@@ -128,8 +128,8 @@ defvars_list: defvar
             | defvars_list COMMA defvar
             ;
 
-defvar: LABEL ASSIGN operators { define_copie($1, $3); }
-      | LABEL { define_affectation($1, 0) ; }
+defvar: LABEL { define_affectation($1, 0) ; }
+      | LABEL ASSIGN operators { define_copie($1, $3); }
       ;
 
 

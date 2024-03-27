@@ -1,14 +1,16 @@
 #ifndef TABLE_SYBOLE
 #define TABLE_SYBOLE
 
+typedef unsigned char address;
+
 
 void set_var(char *name);
 
-int get_var(char *name);
+short get_var(char *name);
 
-int temp_var_push();
+address temp_var_push();
 
-int temp_var_pop();
+address temp_var_pop();
 
 void add_priority();
 

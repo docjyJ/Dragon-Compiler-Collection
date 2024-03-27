@@ -1,21 +1,30 @@
-default: dcc.out
+GCC=gcc -Wall -Wextra
+YACC=bison -tvd
+LEX=flex
 
-all: default
+DEPS = grammar.tab.h traducteur_ARM.h table_symbole.h
+OBJ = grammar.tab.o lexer.yy.o traducteur_ARM.o table_symbole.o main.o
 
-first_test.s: clean default
+.DEFAULT: dcc
+.PHONY: clean
+
+first_test.s: clean dcc
 	./dcc -o first_test.s first_test.c
 
-dcc: grammar.tab.o lexer.yy.o traducteur_ARM.o table_symbole.o main.c
-	gcc -Wall -o $@ $^
+demo: first_test.s
+	python3 demo.py > demo
 
-%.o : %.c
-	gcc -Wall -c $<
+dcc: $(OBJ)
+	$(GCC) -o $@ $^
 
-%.tab.c: %.y
-	bison -tvd $<
+%.o: %.c
+	$(GCC) -o $@ -c $<
+
+%.tab.c %.tab.h: %.y
+	$(YACC) -o $@ $<
 
 %.yy.c: %.l
-	flex -o $@ $<
+	$(LEX) -o $@ $<
 
 clean:
-	rm -f *.out *.output *.s *.o *.tab.c *.tab.h *.yy.c dcc
+	rm -f *.out *.output *.s *.o *.tab.c *.tab.h *.yy.c dcc demo

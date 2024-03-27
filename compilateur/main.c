@@ -14,11 +14,12 @@ void yyerror(const char *msg) {
 
 
 int main(int argc, char **argv) {
-    char c;
+    int c;
     while ((c = getopt(argc, argv, "ho:")) != -1) {
         switch (c) {
             case 'h':
                 printf("Usage: %s [-h] [-o output] [file]\n", argv[0]);
+                exit(0);
             case 'o':
                 freopen(optarg, "w", stdout);
                 break;

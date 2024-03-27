@@ -4,41 +4,34 @@
 #include "traducteur_ARM.h"
 #include "table_symbole.h"
 
-void yyerror (char *);
+void yyerror(char *);
 
-int nbInstruct = -1;
-char* tabInstruct[2048];
+short nb_inst = -1;
+char *tab_instruct[2048];
 
-int  startSection [10];
-int nbStartSection =-1 ;
+int start_section[10];
+int nb_start_section = -1;
 
-int  startReverseSection [10];
-int nbStartReverseSection =-1 ;
+int start_reverse_section[10];
+int nb_start_reverse_section = -1;
 
-void add_instruction(char* a){
-    nbInstruct ++;
-    tabInstruct[nbInstruct] =  a;
+void add_instruction(char *a) {
+    nb_inst++;
+    tab_instruct[nb_inst] = a;
 }
 
-char* get_instruction(int nb){
-    return tabInstruct[nb];
+char *get_instruction(int nb) {
+    return tab_instruct[nb];
 }
 
-void modify_instruction(char* a, int nb){
-    tabInstruct[nb]=a;
+void modify_instruction(char *a, int nb) {
+    tab_instruct[nb] = a;
 }
 
-void print_instruction (){
-    for (int index = 0; index <=nbInstruct; index ++){
-
-         printf("%s",tabInstruct[index]);
-
-
-    }
+void print_instruction() {
+    for (int index = 0; index <= nb_inst; index++)
+        printf("%s", tab_instruct[index]);
 }
-
-
-
 
 void end_fun() {
     printf("\n");
@@ -52,16 +45,15 @@ void fun(char *name) {
 }
 
 int get_var_address(char *a) {
-    int addr = get_var(a);
-    if(addr == -1 ) yyerror("la var est pas init");
+    short addr = get_var(a);
+    if (addr == -1) yyerror("la var est pas init");
     return addr;
 }
 
 void set_new_address(char *a) {
-    int addr = get_var(a);
-    if(addr != -1 ) yyerror("la var est déjà init");
+    short addr = get_var(a);
+    if (addr != -1) yyerror("la var est déjà init");
     set_var(a);
-    printf("         ***** %s\n", a);
 }
 
 int get_addr_tmp_if_null(char *a) {
@@ -71,26 +63,31 @@ int get_addr_tmp_if_null(char *a) {
 }
 
 void op_two(char *name, int a, int ret) {
-    char* instruct = malloc(28);
-    sprintf(instruct, "#%05d    %3s  @%04X  @%04X\n", nbInstruct+1, name, ret, a);
+    char *instruct = malloc(20);
+    sprintf(instruct, "%02X#  %3s  @%02X  @%02X\n", (nb_inst + 1) & 0xFF, name, ret, a);
 
     add_instruction(instruct);
 }
 
 void op_three(char *name, int a, int b, int ret) {
-    char* instruct = malloc(32);
-    sprintf(instruct, "#%05d    %3s  @%04X  @%04X  @%04X\n", nbInstruct+1, name, ret, a, b);
+    char *instruct = malloc(25);
+    sprintf(instruct, "%02X#  %3s  @%02X  @%02X  @%02X\n", (nb_inst + 1) & 0xFF, name, ret, a, b);
 
     add_instruction(instruct);
 }
 
-void affectation(char* a, int b) {
+void affectation(char *a, int b) {
     int addr = (a == NULL) ? temp_var_push() : get_var_address(a);
 
-    char* instruct = malloc(28);
-    sprintf(instruct ,"#%05d    AFC  @%04X  %5d\n", nbInstruct+1, addr, b);
+    char *instruct = malloc(20);
+    sprintf(instruct, "%02X#  AFC  @%02X  %3d\n", (nb_inst + 1) & 0xFF, addr, b);
 
     add_instruction(instruct);
+}
+
+void define_affectation(char *a, int b) {
+    set_new_address(a);
+    affectation(a, b);
 }
 
 void copie(char *a, char *b) {
@@ -138,55 +135,50 @@ void equ(char *a, char *b) {
     op_three("EQU", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
 }
 
-void start_jump (char* a){
-    nbStartSection ++;
+void start_jump(char *a) {
+    nb_start_section++;
 
-    char* b = malloc(4);
-    sprintf(b, "%04X", get_addr_tmp_if_null(a));
+    char *b = malloc(3);
+    sprintf(b, "%02X", get_addr_tmp_if_null(a));
 
     add_instruction(b);
-    startSection[nbStartSection]= nbInstruct;
+    start_section[nb_start_section] = nb_inst;
 }
 
-void end_jump (){
-    char* a;
-    char* b = get_instruction(startSection[nbStartSection]);
+void end_jump() {
+    char *a;
+    char *b = get_instruction(start_section[nb_start_section]);
 
-    if (b==NULL){
-        a = malloc(21);
-        sprintf(a, "#%05d    JMP  %5d\n", startSection[nbStartSection], nbInstruct+1);
-
-    }else{
-        a = malloc(28);
-        sprintf(a, "#%05d    JMF  @%04s  %5d\n", startSection[nbStartSection], b, nbInstruct+1);
-
+    if (b == NULL) {
+        a = malloc(15);
+        sprintf(a, "%02X#  JMP  %3d\n", start_section[nb_start_section], (nb_inst + 1) & 0xFF);
+    } else {
+        a = malloc(20);
+        sprintf(a, "%02X#  JMF  @%s  %3d\n", start_section[nb_start_section], b, (nb_inst + 1) & 0xFF);
     }
     free(b);
 
-    modify_instruction(a, startSection[nbStartSection]);
-    nbStartSection--;
+    modify_instruction(a, start_section[nb_start_section]);
+    nb_start_section--;
 }
 
 
-void start_jump_reverse (){
-    nbStartReverseSection ++;
-    startReverseSection[nbStartReverseSection]= nbInstruct;
+void start_jump_reverse() {
+    nb_start_reverse_section++;
+    start_reverse_section[nb_start_reverse_section] = nb_inst;
 }
 
-void end_jump_reverse (char* b){
-    char* a;
+void end_jump_reverse(char *b) {
+    char *a;
 
-    if (b==NULL){
-        a = malloc(21);
-        sprintf(a, "#%05d    JMP  %5d\n", nbInstruct+1, startReverseSection[nbStartReverseSection]);
-
-    }else{
-        a = malloc(28);
-        sprintf(a, "#%05d    JMF  @%04s  %5d\n", nbInstruct+1, b, startReverseSection[nbStartReverseSection]);
-
+    if (b == NULL) {
+        a = malloc(15);
+        sprintf(a, "%02X#  JMP  %3d\n", (nb_inst + 1) & 0xFF, start_reverse_section[nb_start_reverse_section]);
+    } else {
+        a = malloc(20);
+        sprintf(a, "%02X#  JMF  @%s  %3d\n", (nb_inst + 1) & 0xFF, b, start_reverse_section[nb_start_reverse_section]);
     }
 
     add_instruction(a);
-    nbStartReverseSection--;
+    nb_start_reverse_section--;
 }
-

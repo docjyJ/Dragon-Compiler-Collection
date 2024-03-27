@@ -27,15 +27,16 @@ void sup(char *a, char *b);
 
 void equ(char *a, char *b);
 
-void start_jump (char* a);
+void start_jump(char *a);
 
-void end_jump ();
+void end_jump();
 
-void start_jump_reverse ();
+void start_jump_reverse();
 
-void end_jump_reverse (char* b);
+void end_jump_reverse(char *b);
 
-void print_instruction ();
+void print_instruction();
+
 void define_copie(char *a, char *b);
 
 void copie(char *a, char *b);
