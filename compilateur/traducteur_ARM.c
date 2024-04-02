@@ -100,39 +100,66 @@ void define_copie(char *a, char *b) {
 }
 
 void add(char *a, char *b) {
-    op_three("ADD", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+    int add_a = get_addr_tmp_if_null(a);
+    int add_b = get_addr_tmp_if_null(b);
+    int add_c = temp_var_push();
+    op_three("ADD",add_a, add_b, add_c);
 }
 
 void sous(char *a, char *b) {
-    op_three("SUB", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+    int add_a = get_addr_tmp_if_null(a);
+    int add_b = get_addr_tmp_if_null(b);
+    int add_c = temp_var_push();
+    op_three("SUB",add_a, add_b, add_c);
 }
 
 void mul(char *a, char *b) {
-    op_three("MUL", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+    int add_a = get_addr_tmp_if_null(a);
+    int add_b = get_addr_tmp_if_null(b);
+    int add_c = temp_var_push();
+    op_three("MUL",add_a, add_b, add_c);
 }
 
 void divide(char *a, char *b) {
-    op_three("DIV", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+    int add_a = get_addr_tmp_if_null(a);
+    int add_b = get_addr_tmp_if_null(b);
+    int add_c = temp_var_push();
+    op_three("DIV",add_a, add_b, add_c);
 }
 
 void and(char *a, char *b) {
-    op_three("AND", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+    int add_a = get_addr_tmp_if_null(a);
+    int add_b = get_addr_tmp_if_null(b);
+    int add_c = temp_var_push();
+    op_three("AND",add_a, add_b, add_c);
 }
 
 void or(char *a, char *b) {
-    op_three("OR", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+    int add_a = get_addr_tmp_if_null(a);
+    int add_b = get_addr_tmp_if_null(b);
+    int add_c = temp_var_push();
+    op_three("OR",add_a, add_b, add_c);
 }
 
 void inf(char *a, char *b) {
-    op_three("INF", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+    int add_a = get_addr_tmp_if_null(a);
+    int add_b = get_addr_tmp_if_null(b);
+    int add_c = temp_var_push();
+    op_three("INF",add_a, add_b, add_c);
 }
 
 void sup(char *a, char *b) {
-    op_three("SUP", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+    int add_a = get_addr_tmp_if_null(a);
+    int add_b = get_addr_tmp_if_null(b);
+    int add_c = temp_var_push();
+    op_three("SUP",add_a, add_b, add_c);
 }
 
 void equ(char *a, char *b) {
-    op_three("EQU", get_addr_tmp_if_null(a), get_addr_tmp_if_null(b), temp_var_push());
+    int add_a = get_addr_tmp_if_null(a);
+    int add_b = get_addr_tmp_if_null(b);
+    int add_c = temp_var_push();
+    op_three("EQU",add_a, add_b, add_c);
 }
 
 void start_jump(char *a) {
