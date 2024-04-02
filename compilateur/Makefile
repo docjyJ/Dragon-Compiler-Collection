@@ -12,7 +12,9 @@ first_test.s: clean dcc
 	./dcc -o first_test.s first_test.c
 
 demo: first_test.s
-	python3 demo.py > demo
+	echo "Execution de first_test.s"
+	python3 demo.py
+	echo "Fin de l'execution"
 
 dcc: $(OBJ)
 	$(GCC) -o $@ $^

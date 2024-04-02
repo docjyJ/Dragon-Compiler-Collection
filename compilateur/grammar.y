@@ -46,6 +46,7 @@ code_line: operators END
          | if_header code_block else_header code_block { end_jump(); }
          | if_header code_block { end_jump(); }
          | while_header code_block {end_jump_reverse(NULL);  end_jump();  }
+         | PRINT LPAR operators RPAR END { print_int($3); }
          | return END
          | END
          ;
@@ -135,8 +136,7 @@ defvar: LABEL { define_affectation($1, 0) ; }
 
 /* Gestion des appel de fonction */
 
-callable: PRINT callable_args { fprintf(stderr, "%d rEXEC <- exec print (list_arg %lu)\n", yylineno, $2); }
-        | LABEL callable_args { fprintf(stderr, "%d rEXEC <- exec %s(list_arg %lu)\n", yylineno, $1, $2); }
+callable: LABEL callable_args { fprintf(stderr, "%d rEXEC <- exec %s(list_arg %lu)\n", yylineno, $1, $2); }
         ;
 
 callable_args: LPAR callable_args_list RPAR { $$ = $2; }

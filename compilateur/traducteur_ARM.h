@@ -7,6 +7,8 @@ void end_fun();
 
 void define_affectation(char *a, int b);
 
+void print_int(char *a);
+
 void affectation(char *a, int b);
 
 void add(char *a, char *b);

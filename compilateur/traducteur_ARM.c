@@ -94,6 +94,13 @@ void copie(char *a, char *b) {
     op_two("COP", get_addr_tmp_if_null(b), get_var_address(a));
 }
 
+void print_int(char *a) {
+    char *instruct = malloc(15);
+    sprintf(instruct, "%02X#  PRI  @%02X\n", (nb_inst + 1) & 0xFF, get_var_address(a));
+
+    add_instruction(instruct);
+}
+
 void define_copie(char *a, char *b) {
     set_new_address(a);
     copie(a, b);
