@@ -44,7 +44,7 @@
     return TYPE_VOID;
 }
 
-[a-zA-Z][_a-zA-Z0-9]* {
+[a-zA-Z][_a-zA-Z0-9]* { //TODO: Il faut free le strdup
     yylval.s = strdup(yytext);
     return LABEL;
 }
