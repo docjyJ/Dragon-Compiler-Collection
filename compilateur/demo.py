@@ -21,52 +21,70 @@ class VM:
             return False
 
     def execute(self):
-        def get_str(i):
-            return self.fetched[1][i]
+        def get_name() -> str:
+            return self.fetched[1][0]
 
-        def get_int(i):
-            return int(get_str(i))
+        def get_arg(i) -> int:
+            arg = self.fetched[1][i]
+            return self.datas[int(arg[1:], 16)] if arg[0] == "@" else int(arg)
 
-        def get_hex(i):
-            return int(get_str(i), 16)
+        def set_ram(i, value: int):
+            arg = self.fetched[1][i]
+            self.datas[int(arg[1:], 16)] = (value & 0xFF)
+
+        def debug_arg(i) -> str:
+            arg = self.fetched[1][i]
+            return f"{self.datas[int(arg[1:], 16)]}({arg})" if arg[0] == "@" else arg
 
         if self.fetched is not None:
-            match get_str(0):
+            match get_name():
                 case "AFC":
-                    self.datas[get_hex(1)] = get_int(2)
+                    print(f"Before {debug_arg(1)} <- {debug_arg(2)}")
+                    set_ram(1, get_arg(2))
+                    print(f"After {debug_arg(1)} <- {debug_arg(2)}")
                 case "COP":
-                    self.datas[get_hex(1)] = self.datas[get_hex(2)]
+                    print(f"Before {debug_arg(1)} <- {debug_arg(2)}")
+                    set_ram(1, get_arg(2))
+                    print(f"After {debug_arg(1)} <- {debug_arg(2)}")
                 case "ADD":
-                    self.datas[get_hex(1)] = (self.datas[get_hex(2)] + self.datas[get_hex(3)]) & 0xFF
+                    print(f"Before {debug_arg(1)} <- {debug_arg(2)} + {debug_arg(3)}")
+                    set_ram(1, (get_arg(2) + get_arg(3)))
+                    print(f"After {debug_arg(1)} <- {debug_arg(2)} + {debug_arg(3)}")
                 case "MUL":
-                    self.datas[get_hex(1)] = (self.datas[get_hex(2)] * self.datas[get_hex(3)]) & 0xFF
+                    print(f"Before {debug_arg(1)} <- {debug_arg(2)} * {debug_arg(3)}")
+                    set_ram(1, (get_arg(2) * get_arg(3)))
+                    print(f"After {debug_arg(1)} <- {debug_arg(2)} * {debug_arg(3)}")
                 case "SUB":
-                    self.datas[get_hex(1)] = (self.datas[get_hex(2)] - self.datas[get_hex(3)]) & 0xFF
+                    print(f"Before {debug_arg(1)} <- {debug_arg(2)} - {debug_arg(3)}")
+                    set_ram(1, (0x100 + get_arg(2) - get_arg(3)))
+                    print(f"After {debug_arg(1)} <- {debug_arg(2)} - {debug_arg(3)}")
                 case "DIV":
-                    self.datas[get_hex(1)] = (self.datas[get_hex(2)] // self.datas[get_hex(3)]) & 0xFF
+                    print(f"Before {debug_arg(1)} <- {debug_arg(2)} / {debug_arg(3)}")
+                    set_ram(1, (get_arg(2) // get_arg(3)))
+                    print(f"After {debug_arg(1)} <- {debug_arg(2)} / {debug_arg(3)}")
                 case "JMF":
-                    if self.datas[get_hex(1)] == 0:
-                        self.pc = get_int(2) - 1
+                    if get_arg(1) == 0:
+                        self.pc = get_arg(2) - 1
                 case "JMP":
-                    self.pc = get_int(1) - 1
+                    self.pc = get_arg(1) - 1
                 case _:
                     print(f"Instruction {self.fetched} not implemented", file=sys.stderr)
                     return False
             return True
 
     def __str__(self):
-        return f"{self.pc:4d} - {self.fetched[0]:25} ({self.datas[:10].hex()}...{self.datas[-10:].hex()})"
+        return f"{self.pc:4d} - {self.fetched[0]:25} ({self.datas[:10].hex().upper()}...{self.datas[-10:].hex().upper()})"
 
     def run(self, max_iter=100):
-        print(self)
+        print(self, end="\n\n")
         while max_iter > 0 and self.fetch() and self.execute():
-            print(self)
+            print(self, end="\n\n")
             max_iter -= 1
 
 
 def parse_file(file_path: str):
     with open(file_path, 'r') as f:
-        lines = [(i[:-1], j[1].replace('@', '').split()) for i, j in ((i, i.split('#')) for i in f.readlines()) if
+        lines = [(i[:-1], j[1].split()) for i, j in ((i, i.split('#')) for i in f.readlines()) if
                  len(j) == 2]
     return lines
 
