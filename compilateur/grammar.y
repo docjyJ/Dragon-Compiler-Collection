@@ -117,7 +117,7 @@ equality: relational { $$ = $1 ; }
 
 operators: equality { $$ = $1 ; }
          | LABEL ASSIGN operators { copie($1, $3); $$ = $1;}
-         ; // TODO Récusirvité à droite
+         ;
 
 
 /* Gestion des variable */
