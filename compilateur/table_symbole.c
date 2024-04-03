@@ -2,6 +2,8 @@
 #include <malloc.h>
 #include <string.h>
 
+void yyerror(char *);
+
 typedef struct {
     char *nom;
     int priority;
@@ -17,8 +19,12 @@ short var_temp_stack_head = 256;
 void set_var(char *name) {
     my_index++;
     tab[my_index] = malloc(sizeof(symbole));
-    tab[my_index]->nom = name;
+    if(tab[my_index] == NULL)
+        yyerror("Erreur d'allocation de mémoire");
+    tab[my_index]->nom = strdup(name);
     tab[my_index]->priority = priority;
+    if(tab[my_index]->nom == NULL)
+        yyerror("Erreur d'allocation de mémoire");
 }
 
 
@@ -49,6 +55,7 @@ void remove_priority() {
     priority--;
 
     while (my_index >= 0 && tab[my_index]->priority > priority) {
+        free(tab[my_index]->nom);
         free(tab[my_index]);
         my_index--;
     }

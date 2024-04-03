@@ -44,8 +44,10 @@
     return TYPE_VOID;
 }
 
-[a-zA-Z][_a-zA-Z0-9]* { //TODO: Il faut free le strdup
+[a-zA-Z][_a-zA-Z0-9]* {
     yylval.s = strdup(yytext);
+    if (yylval.s == NULL)
+        yyerror("Memory allocation failed");
     return LABEL;
 }
 

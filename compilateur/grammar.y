@@ -41,23 +41,23 @@ code_line_list: code_line
               | code_line code_line_list
               ;
 
-code_line: operators END
+code_line: operators END { free($1); }
          | defvars END
          | if_header code_block else_header code_block { end_jump(); }
          | if_header code_block { end_jump(); }
          | while_header code_block {end_jump_reverse(NULL);  end_jump();  }
-         | PRINT LPAR operators RPAR END { print_int($3); }
+         | PRINT LPAR operators RPAR END { print_int($3); free($3); }
          | return END
          | END
          ;
 
-if_header: IF LPAR operators RPAR { start_jump($3); }
+if_header: IF LPAR operators RPAR { start_jump($3); free($3); }
          ;
 
 else_header: ELSE { end_jump(); start_jump(NULL); }
          ;
 
-while_header: WHILE LPAR operators RPAR { start_jump($3); start_jump_reverse(); }
+while_header: WHILE LPAR operators RPAR { start_jump($3); start_jump_reverse(); free($3); }
             ;
 
 /* Gestion des fonctions */
@@ -65,8 +65,8 @@ while_header: WHILE LPAR operators RPAR { start_jump($3); start_jump_reverse(); 
 functions: functions_header code_block { end_fun(); }
          ;
 
-functions_header: TYPE_VOID LABEL functions_args { yyerror("function not implemented"); }
-                | TYPE_INT LABEL functions_args { yyerror("function not implemented"); }
+functions_header: TYPE_VOID LABEL functions_args { yyerror("function not implemented"); free($2); }
+                | TYPE_INT LABEL functions_args { yyerror("function not implemented"); free($2); }
                 | TYPE_VOID MAIN functions_args { fun("main"); }
                 ;
 
@@ -79,7 +79,7 @@ functions_args_list: functions_arg { $$ = 1; }
                    | functions_args_list COMMA functions_arg { $$ = $1 + 1; }
                    ;
 
-functions_arg: TYPE_INT LABEL { yyerror("function arguments not implemented"); }
+functions_arg: TYPE_INT LABEL { yyerror("function arguments not implemented"); free($2); }
              ;
 
 
@@ -88,35 +88,35 @@ functions_arg: TYPE_INT LABEL { yyerror("function arguments not implemented"); }
 
 number: STATIC_INT { affectation(NULL, (int) $1); $$ = NULL; }
       | LABEL { $$ = $1; }
-      | callable { $$ = "rEXEC" ;}
-      | LPAR operators RPAR { $$ = $2 ;}
+      | callable { $$ = NULL; }
+      | LPAR operators RPAR { $$ = $2; }
       ;
 
 unary: number { $$ = $1 ; }
-     | SUB number { fprintf(stderr, "%d rNEG <- sub 0 %s\n", yylineno, $2); $$ = "rNEG"; }
+     | SUB number { fprintf(stderr, "%d rNEG <- sub 0 %s\n", yylineno, $2); $$ = NULL; free($2); }
      ;
 
 multiplicative: unary { $$ = $1 ; }
-              | multiplicative MUL unary { mul($1, $3); $$ = NULL; }
-              | multiplicative DIV unary { divide($1, $3); $$ = NULL; }
+              | multiplicative MUL unary { mul($1, $3); $$ = NULL; free($1); free($3); }
+              | multiplicative DIV unary { divide($1, $3); $$ = NULL; free($1); free($3); }
               ;
 
 additive: multiplicative { $$ = $1 ; }
-        | additive ADD multiplicative { add($1, $3); $$ = NULL; }
-        | additive SUB multiplicative { sous($1, $3); $$ = NULL; }
+        | additive ADD multiplicative { add($1, $3); $$ = NULL; free($1); free($3); }
+        | additive SUB multiplicative { sous($1, $3); $$ = NULL; free($1); free($3); }
         ;
 
 relational: additive { $$ = $1 ; }
-          | relational LOW additive { inf($1, $3); $$ = "rLOW"; }
-          | relational GRT additive { sup($1, $3); $$ = "rGRT"; }
+          | relational LOW additive { inf($1, $3); $$ = NULL; free($1); free($3); }
+          | relational GRT additive { sup($1, $3); $$ = NULL; free($1); free($3); }
           ;
 
 equality: relational { $$ = $1 ; }
-        | equality EQ  relational { equ($1, $3); $$ = "rEQ"; }
+        | equality EQ  relational { equ($1, $3); $$ = NULL; free($1); free($3); }
         ;
 
 operators: equality { $$ = $1 ; }
-         | LABEL ASSIGN operators { copie($1, $3); $$ = $1;}
+         | LABEL ASSIGN operators { copie($1, $3); $$ = $1; free($3); }
          ;
 
 
@@ -129,24 +129,25 @@ defvars_list: defvar
             | defvars_list COMMA defvar
             ;
 
-defvar: LABEL { define_affectation($1, 0) ; }
-      | LABEL ASSIGN operators { define_copie($1, $3); }
+defvar: LABEL { define_affectation($1, 0) ; free($1); }
+      | LABEL ASSIGN operators { define_copie($1, $3); free($1); free($3); }
       ;
 
 
 /* Gestion des appel de fonction */
 
-callable: LABEL callable_args { fprintf(stderr, "%d rEXEC <- exec %s(list_arg %lu)\n", yylineno, $1, $2); }
+callable: LABEL callable_args { fprintf(stderr, "%d rEXEC <- exec %s(list_arg %lu)\n", yylineno, $1, $2); free($1); }
         ;
 
 callable_args: LPAR callable_args_list RPAR { $$ = $2; }
              | LPAR RPAR { $$ = 0; }
              ;
 
-callable_args_list: operators { fprintf(stderr, " |ARG %s(num 0)\n", $1); $$ = 1;}
-                  | callable_args_list COMMA operators { fprintf(stderr, " |ARG %s(num %lu)\n", $3, $1); $$ = $1 + 1;}
+callable_args_list: operators { fprintf(stderr, " |ARG %s(num 0)\n", $1); $$ = 1; free($1); }
+                  | callable_args_list COMMA operators { fprintf(stderr, " |ARG %s(num %lu)\n", $3, $1); $$ = $1 + 1; free($3); }
                   ;
 
-return: tRETURN operators { fprintf(stderr, "%d RETURN %s\n", yylineno, $2);}
+return: tRETURN operators { fprintf(stderr, "%d RETURN %s\n", yylineno, $2); free($2); }
+      ;
 
 %%
