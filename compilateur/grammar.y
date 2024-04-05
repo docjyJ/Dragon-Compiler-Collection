@@ -21,9 +21,11 @@ void yyerror(const char *);
 %type <s> number unary multiplicative additive relational equality operators
 %type <i> callable_args_list callable_args functions_args functions_args_list
 
-%start global_code_list
+%start global
 
 %%
+
+global : global_code_list ; //{print_instruction();} permet de tout print
 
 global_code_list: global_code
                 | global_code_list global_code
@@ -47,6 +49,7 @@ code_line: operators END
          | if_header code_block { end_jump(); }
          | while_header code_block {end_jump_reverse(NULL);  end_jump();  }
          | do_header code_block do_footer END
+         | LABEL LPAR RPAR END {go_function($1);}
          | return END
          | END
          ;
@@ -69,12 +72,12 @@ do_footer: WHILE LPAR operators RPAR { end_jump_reverse($3); }
 
 /* Gestion des fonctions */
 
-functions: functions_header code_block { end_fun(); }
+functions: functions_header code_block { end_function(); }
          ;
 
-functions_header: TYPE_VOID LABEL functions_args { yyerror("function not implemented"); }
-                | TYPE_INT LABEL functions_args { yyerror("function not implemented"); }
-                | TYPE_VOID MAIN functions_args { fun("main"); }
+functions_header: TYPE_VOID LABEL functions_args { start_function($2); }
+                | TYPE_INT LABEL functions_args { start_function($2); }
+                | TYPE_VOID MAIN functions_args { start_function("main"); }
                 ;
 
 functions_args: LPAR functions_args_list RPAR { $$ = $2; }

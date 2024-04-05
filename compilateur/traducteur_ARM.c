@@ -10,12 +10,14 @@ void yyerror(char *);
 
 short nb_inst = -1;
 char *tab_instruct[2048];
+short deja_print = 0;
 
 int start_section[10];
 int nb_start_section = -1;
 
 int start_reverse_section[10];
 int nb_start_reverse_section = -1;
+
 
 void add_instruction(char *a) {
     nb_inst++;
@@ -31,20 +33,12 @@ void modify_instruction(char *a, int nb) {
 }
 
 void print_instruction() {
-    for (int index = 0; index <= nb_inst; index++)
+    for (int index = deja_print; index <= nb_inst; index++)
         printf("%s", tab_instruct[index]);
+
+    deja_print = nb_inst+1;
 }
 
-void end_fun() {
-    printf("\n");
-    remove_priority();
-    print_instruction();
-}
-
-void fun(char *name) {
-    printf("%s:\n", name);
-    add_priority();
-}
 
 int get_var_address(char *a) {
     short addr = get_var(a);
@@ -62,6 +56,13 @@ int get_addr_tmp_if_null(char *a) {
     if (a != NULL)
         return get_var_address(a);
     return temp_var_pop();
+}
+
+void op_one(char *name, int a) {
+    char *instruct = malloc(15);
+    sprintf(instruct, "%02X#  %3s  @%02X\n", (nb_inst + 1) & 0xFF, name, a);
+
+    add_instruction(instruct);
 }
 
 void op_two(char *name, int a, int ret) {
@@ -164,6 +165,14 @@ void equ(char *a, char *b) {
     op_three("EQU",add_a, add_b, add_c);
 }
 
+void jmp (int a){
+    op_one("JMP",a);
+}
+
+void jms (int cond, int a){
+    op_two("JMS", a, cond);
+}
+
 void start_jump(char *a) {
     add_priority();
 
@@ -224,28 +233,35 @@ void end_jump_reverse(char *b) {
     nb_start_reverse_section--;
 }
 
-/*
+
 typedef struct {
     int index;
     int fun;
 } function;
+
 function* tab_fnc [20];
 int nb_fun = -1;
 
 void start_function (char *a) {
-   set_var(a);
+    print_instruction (); // a enlever pour affiche d'un seul block
 
-   add_priority();
-   nb_fun ++;
-   tab_fun(nb_fun)= malloc(sizeof(function));
-   tab_fun(nb_fun)->index=get_var(a);
-   tab_fun(nb_fun)->fun=nb_inst;
+    printf("\n %s:\n", a);
+    set_var(a);
+
+    add_priority();
+    nb_fun ++;
+    tab_fnc[nb_fun]= malloc(sizeof(function));
+    tab_fnc[nb_fun]->index=get_var(a);
+    tab_fnc[nb_fun]->fun=nb_inst;
 
 }
 
 void end_function () {
-    sprintf(a, "%02X#  JMP  %3d\n", (nb_inst + 1) & 0xFF, temp_var_pop(););
+    remove_priority();
+    jmp(get_buffer_lr());
 
+    print_instruction (); // a enlever pour affiche d'un seul block
+    printf("\n");
 }
 
 void go_function(char *a) {
@@ -253,7 +269,15 @@ void go_function(char *a) {
     int function_index = get_var(a);
     if (function_index==-1)  yyerror("la fonction a pas était declarée");
 
-    while(index >=0 &&
+    while(index >=0 && tab_fnc[index]-> index!=function_index){
+        index--;
+    }
+
+    //TO DO: si on a une fonction qui en appelle une qui en appelle une autre on fait comment
+    op_two("COP", get_buffer_lr(), function_index);
+
+    a = malloc(20);
+    jmp( tab_fnc[index]->fun);
+    add_instruction(a);
 }
 
-*/

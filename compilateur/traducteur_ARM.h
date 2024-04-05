@@ -1,9 +1,11 @@
 #ifndef TRAD_ARM
 #define TRAD_ARM
 
-void fun(char *name);
+void start_function(char *name);
 
-void end_fun();
+void end_function();
+
+void go_function(char *name);
 
 void define_affectation(char *a, int b);
 

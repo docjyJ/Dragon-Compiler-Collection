@@ -12,7 +12,9 @@ symbole *tab[256];
 
 short my_index = -1;
 int priority = 0;
-short var_temp_stack_head = 256;
+short var_temp_stack_head = 254;
+short buffer_lr = 255;
+short buffer_return = 256;
 
 void set_var(char *name) {
     my_index++;
@@ -20,7 +22,6 @@ void set_var(char *name) {
     tab[my_index]->nom = name;
     tab[my_index]->priority = priority;
 }
-
 
 short get_var(char *name) {
     short out = my_index;
@@ -40,6 +41,13 @@ address temp_var_pop() {
     return a;
 }
 
+address get_buffer_lr() {
+    return buffer_lr;
+}
+
+address get_buffer_return() {
+    return buffer_return;
+}
 
 void add_priority() {
     priority++;
