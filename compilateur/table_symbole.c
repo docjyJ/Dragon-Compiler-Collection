@@ -1,8 +1,6 @@
 #include "table_symbole.h"
-#include <malloc.h>
+#include "error_memory.h"
 #include <string.h>
-
-void yyerror(char *);
 
 typedef struct {
     char *nom;
@@ -20,13 +18,9 @@ short buffer_return = 256;
 
 void set_var(char *name) {
     my_index++;
-    tab[my_index] = malloc(sizeof(symbole));
-    if(tab[my_index] == NULL)
-        yyerror("Erreur d'allocation de mémoire");
-    tab[my_index]->nom = strdup(name);
+    tab[my_index] = empty_alloc(sizeof(symbole));
+    tab[my_index]->nom = copy_alloc(name);
     tab[my_index]->priority = priority;
-    if(tab[my_index]->nom == NULL)
-        yyerror("Erreur d'allocation de mémoire");
 }
 
 short get_var(char *name) {

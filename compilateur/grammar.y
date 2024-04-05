@@ -1,11 +1,10 @@
 %{
-#include <stdio.h>
-#include <stdlib.h>
+#include "error_memory.h"
 #include "traducteur_ARM.h"
-extern int yylineno;
 int yylex(void);
-void yyerror(const char *);
 %}
+
+%define parse.error verbose
 
 %union {
   char *s;
@@ -25,7 +24,8 @@ void yyerror(const char *);
 
 %%
 
-global : global_code_list ; //{print_instruction();} permet de tout print
+global : global_code_list {print_instruction();}
+       ; // permet de tout print
 
 global_code_list: global_code
                 | global_code_list global_code
@@ -49,7 +49,6 @@ code_line: operators END { free($1); }
          | if_header code_block { end_jump(); }
          | while_header code_block {end_jump_reverse(NULL);  end_jump();  }
          | do_header code_block do_footer END
-         | LABEL LPAR RPAR END {go_function($1);}
          | PRINT LPAR operators RPAR END { print_int($3); free($3); }
          | return END
          | END
@@ -147,7 +146,7 @@ defvar: LABEL { define_affectation($1, 0) ; free($1); }
 
 /* Gestion des appel de fonction */
 
-callable: LABEL callable_args { fprintf(stderr, "%d rEXEC <- exec %s(list_arg %lu)\n", yylineno, $1, $2); free($1); }
+callable: LABEL callable_args { go_function($1); free($1); }
         ;
 
 callable_args: LPAR callable_args_list RPAR { $$ = $2; }

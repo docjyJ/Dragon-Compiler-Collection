@@ -3,6 +3,7 @@
 %option nounput
 %option yylineno
 %{
+#include "error_memory.h"
 #include "grammar.tab.h"
 %}
 
@@ -49,19 +50,22 @@
 }
 
 [a-zA-Z][_a-zA-Z0-9]* {
-    yylval.s = strdup(yytext);
-    if (yylval.s == NULL)
-        yyerror("Memory allocation failed");
+    yylval.s = copy_alloc(yytext);
     return LABEL;
 }
 
 0x[0-9a-fA-F]+ {
-    yylval.i = strtoul(yytext, NULL, 16);
+    yylval.i = parse_number(yytext+2, 16);
     return STATIC_INT;
 }
 
 [0-9]+ {
-    yylval.i = strtoul(yytext, NULL, 10);
+    yylval.i = parse_number(yytext, 10);
+    return STATIC_INT;
+}
+
+0b[01]+ {
+    yylval.i = parse_number(yytext+2, 2);
     return STATIC_INT;
 }
 

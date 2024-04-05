@@ -1,10 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-
+#include <malloc.h>
+#include "error_memory.h"
 #include "traducteur_ARM.h"
 #include "table_symbole.h"
-
-void yyerror(char *);
 
 short nb_inst = -1;
 char *tab_instruct[2048];
@@ -26,6 +23,7 @@ char *get_instruction(int nb) {
 }
 
 void modify_instruction(char *a, int nb) {
+    free(tab_instruct[nb]);
     tab_instruct[nb] = a;
 }
 
@@ -56,37 +54,20 @@ int get_addr_tmp_if_null(char *a) {
 }
 
 void op_one(char *name, int a) {
-    char *instruct;
-    if (asprintf(&instruct, "%02X#  %3s  @%02X\n", (nb_inst + 1) & 0xFF, name, a) == -1)
-        yyerror("asprintf failed");
-
-    add_instruction(instruct);
+    add_instruction(printf_alloc("%02X#  %3s  @%02X\n", (nb_inst + 1) & 0xFF, name, a));
 }
 
 void op_two(char *name, int a, int ret) {
-    char *instruct;
-    if (asprintf(&instruct, "%02X#  %3s  @%02X  @%02X\n", (nb_inst + 1) & 0xFF, name, ret, a) == -1)
-        yyerror("asprintf failed");
-
-    add_instruction(instruct);
+    add_instruction(printf_alloc("%02X#  %3s  @%02X  @%02X\n", (nb_inst + 1) & 0xFF, name, ret, a));
 }
 
 void op_three(char *name, int a, int b, int ret) {
-    char *instruct;
-    if (asprintf(&instruct, "%02X#  %3s  @%02X  @%02X  @%02X\n", (nb_inst + 1) & 0xFF, name, ret, a, b) == -1)
-        yyerror("asprintf failed");
-
-    add_instruction(instruct);
+    add_instruction(printf_alloc("%02X#  %3s  @%02X  @%02X  @%02X\n", (nb_inst + 1) & 0xFF, name, ret, a, b));
 }
 
 void affectation(char *a, int b) {
     int addr = (a == NULL) ? temp_var_push() : get_var_address(a);
-
-    char *instruct;
-    if (asprintf(&instruct, "%02X#  AFC  @%02X  %3d\n", (nb_inst + 1) & 0xFF, addr, b) == -1)
-        yyerror("asprintf failed");
-
-    add_instruction(instruct);
+    add_instruction(printf_alloc("%02X#  AFC  @%02X  %3d\n", (nb_inst + 1) & 0xFF, addr, b));
 }
 
 void define_affectation(char *a, int b) {
@@ -99,11 +80,7 @@ void copie(char *a, char *b) {
 }
 
 void print_int(char *a) {
-    char *instruct;
-    if (asprintf(&instruct, "%02X#  PRI  @%02X\n", (nb_inst + 1) & 0xFF, get_var_address(a)) == -1)
-        yyerror("asprintf failed");
-
-    add_instruction(instruct);
+    add_instruction(printf_alloc("%02X#  PRI  @%02X\n", (nb_inst + 1) & 0xFF, get_addr_tmp_if_null(a)));
 }
 
 void define_copie(char *a, char *b) {
@@ -187,11 +164,7 @@ void start_jump(char *a) {
 
     nb_start_section++;
 
-    char *b;
-    if (asprintf(&b, "%02X", get_addr_tmp_if_null(a)) == -1)
-        yyerror("asprintf failed");
-
-    add_instruction(b);
+    add_instruction(printf_alloc("%02X", get_addr_tmp_if_null(a)));
     start_section[nb_start_section] = nb_inst;
 }
 
@@ -201,14 +174,10 @@ void end_jump() {
     char *a;
     char *b = get_instruction(start_section[nb_start_section]);
 
-    if (b == NULL) {
-        if (asprintf(&a, "%02X#  JMP  %3d\n", start_section[nb_start_section], nb_inst & 0xFF) == -1)
-            yyerror("asprintf failed");
-    } else {
-        if (asprintf(&a, "%02X#  JMF  @%s  %3d\n", start_section[nb_start_section], b, nb_inst  & 0xFF) == -1)
-            yyerror("asprintf failed");
-    }
-    free(b);
+    if (b == NULL)
+        a = printf_alloc("%02X#  JMP  %3d\n", start_section[nb_start_section], nb_inst & 0xFF);
+    else
+        a = printf_alloc("%02X#  JMF  @%s  %3d\n", start_section[nb_start_section], b, nb_inst & 0xFF);
 
     modify_instruction(a, start_section[nb_start_section]);
     nb_start_section--;
@@ -227,18 +196,10 @@ void end_jump_reverse(char *b) {
 
     char *a;
 
-    if (b == NULL) {
-        if (asprintf(&a, "%02X#  JMP  %3d\n", (nb_inst + 1) & 0xFF, start_reverse_section[nb_start_reverse_section])
-                == -1)
-            yyerror("asprintf failed");
-    } else {
-        if (asprintf(&a,
-                     "%02X#  JMF  @%02X  %3d\n",
-                     (nb_inst + 1) & 0xFF,
-                     get_addr_tmp_if_null(b),
-                     start_reverse_section[nb_start_reverse_section]) == -1)
-            yyerror("asprintf failed");
-    }
+    if (b == NULL)
+        a = printf_alloc("%02X#  JMP  %3d\n", start_reverse_section[nb_start_reverse_section], nb_inst + 1);
+    else
+        a = printf_alloc("%02X#  JMF  @%s  %3d\n", start_reverse_section[nb_start_reverse_section], b, nb_inst + 1);
 
     add_instruction(a);
     nb_start_reverse_section--;
@@ -261,7 +222,7 @@ void start_function (char *a) {
 
     add_priority();
     nb_fun ++;
-    tab_fnc[nb_fun]= malloc(sizeof(function));
+    tab_fnc[nb_fun]= empty_alloc(sizeof(function));
     tab_fnc[nb_fun]->index=get_var(a);
     tab_fnc[nb_fun]->fun=nb_inst;
 
@@ -287,8 +248,7 @@ void go_function(char *a) {
     //TO DO: si on a une fonction qui en appelle une qui en appelle une autre on fait comment
     op_two("COP", get_buffer_lr(), function_index);
 
-    a = malloc(20);
     jmp( tab_fnc[index]->fun);
-    add_instruction(a);
+    add_instruction(copy_alloc(a));
 }
 
