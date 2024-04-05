@@ -23,7 +23,11 @@ void main () {
 
     c = 10;
 
-    while(c ){
+    while(c==1){
         c=c-1;
     }
+
+    do {
+        c=c+1 ;
+    } while(c);
 }

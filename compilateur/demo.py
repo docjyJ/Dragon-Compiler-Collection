@@ -62,6 +62,10 @@ class VM:
                     print(f"Before {debug_arg(1)} <- {debug_arg(2)} / {debug_arg(3)}")
                     set_ram(1, (get_arg(2) // get_arg(3)))
                     print(f"After {debug_arg(1)} <- {debug_arg(2)} / {debug_arg(3)}")
+                case "EQU":
+                    print(f"Before {debug_arg(1)} <- {debug_arg(2)} == {debug_arg(3)}")
+                    set_ram(1, (get_arg(2) == get_arg(3)))
+                    print(f"After {debug_arg(1)} <- {debug_arg(2)} == {debug_arg(3)}")
                 case "JMF":
                     if get_arg(1) == 0:
                         self.pc = get_arg(2) - 1

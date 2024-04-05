@@ -14,7 +14,7 @@ void yyerror(const char *);
 
 %token <s> LABEL
 %token <i> STATIC_INT
-%token IF ELSE WHILE PRINT TYPE_INT TYPE_VOID tRETURN
+%token IF ELSE DO WHILE PRINT TYPE_INT TYPE_VOID tRETURN
 %token ADD SUB MUL DIV LOW GRT tNE EQ ASSIGN LBRACE RBRACE LPAR RPAR END COMMA tLE tGE tAND tOR tNOT MAIN
 %token tERROR
 
@@ -46,6 +46,7 @@ code_line: operators END
          | if_header code_block else_header code_block { end_jump(); }
          | if_header code_block { end_jump(); }
          | while_header code_block {end_jump_reverse(NULL);  end_jump();  }
+         | do_header code_block do_footer END
          | return END
          | END
          ;
@@ -58,6 +59,13 @@ else_header: ELSE { end_jump(); start_jump(NULL); }
 
 while_header: WHILE LPAR operators RPAR { start_jump($3); start_jump_reverse(); }
             ;
+
+do_header: DO { start_jump_reverse(); }
+            ;
+
+do_footer: WHILE LPAR operators RPAR { end_jump_reverse($3); }
+            ;
+
 
 /* Gestion des fonctions */
 
@@ -106,12 +114,12 @@ additive: multiplicative { $$ = $1 ; }
         ;
 
 relational: additive { $$ = $1 ; }
-          | relational LOW additive { inf($1, $3); $$ = "rLOW"; }
-          | relational GRT additive { sup($1, $3); $$ = "rGRT"; }
+          | relational LOW additive { inf($1, $3); $$ = NULL; }
+          | relational GRT additive { sup($1, $3); $$ = NULL; }
           ;
 
 equality: relational { $$ = $1 ; }
-        | equality EQ  relational { equ($1, $3); $$ = "rEQ"; }
+        | equality EQ  relational { equ($1, $3); $$ = NULL; }
         ;
 
 operators: equality { $$ = $1 ; }

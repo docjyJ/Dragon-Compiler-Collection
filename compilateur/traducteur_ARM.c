@@ -6,6 +6,8 @@
 
 void yyerror(char *);
 
+
+
 short nb_inst = -1;
 char *tab_instruct[2048];
 
@@ -163,6 +165,8 @@ void equ(char *a, char *b) {
 }
 
 void start_jump(char *a) {
+    add_priority();
+
     nb_start_section++;
 
     char *b = malloc(3);
@@ -173,15 +177,17 @@ void start_jump(char *a) {
 }
 
 void end_jump() {
+    remove_priority();
+
     char *a;
     char *b = get_instruction(start_section[nb_start_section]);
 
     if (b == NULL) {
         a = malloc(15);
-        sprintf(a, "%02X#  JMP  %3d\n", start_section[nb_start_section], (nb_inst + 1) & 0xFF);
+        sprintf(a, "%02X#  JMP  %3d\n", start_section[nb_start_section], nb_inst & 0xFF);
     } else {
         a = malloc(20);
-        sprintf(a, "%02X#  JMF  @%s  %3d\n", start_section[nb_start_section], b, (nb_inst + 1) & 0xFF);
+        sprintf(a, "%02X#  JMF  @%s  %3d\n", start_section[nb_start_section], b, nb_inst  & 0xFF);
     }
     free(b);
 
@@ -191,11 +197,15 @@ void end_jump() {
 
 
 void start_jump_reverse() {
+    add_priority();
+
     nb_start_reverse_section++;
     start_reverse_section[nb_start_reverse_section] = nb_inst;
 }
 
 void end_jump_reverse(char *b) {
+    remove_priority();
+
     char *a;
 
     if (b == NULL) {
@@ -203,9 +213,47 @@ void end_jump_reverse(char *b) {
         sprintf(a, "%02X#  JMP  %3d\n", (nb_inst + 1) & 0xFF, start_reverse_section[nb_start_reverse_section]);
     } else {
         a = malloc(20);
-        sprintf(a, "%02X#  JMF  @%s  %3d\n", (nb_inst + 1) & 0xFF, b, start_reverse_section[nb_start_reverse_section]);
+
+        char *c = malloc(3);
+        sprintf(c, "%02X", get_addr_tmp_if_null(b));
+
+        sprintf(a, "%02X#  JMF  @%s  %3d\n", (nb_inst + 1) & 0xFF, c, start_reverse_section[nb_start_reverse_section]);
     }
 
     add_instruction(a);
     nb_start_reverse_section--;
 }
+
+/*
+typedef struct {
+    int index;
+    int fun;
+} function;
+function* tab_fnc [20];
+int nb_fun = -1;
+
+void start_function (char *a) {
+   set_var(a);
+
+   add_priority();
+   nb_fun ++;
+   tab_fun(nb_fun)= malloc(sizeof(function));
+   tab_fun(nb_fun)->index=get_var(a);
+   tab_fun(nb_fun)->fun=nb_inst;
+
+}
+
+void end_function () {
+    sprintf(a, "%02X#  JMP  %3d\n", (nb_inst + 1) & 0xFF, temp_var_pop(););
+
+}
+
+void go_function(char *a) {
+    int index = nb_fun;
+    int function_index = get_var(a);
+    if (function_index==-1)  yyerror("la fonction a pas était declarée");
+
+    while(index >=0 &&
+}
+
+*/
