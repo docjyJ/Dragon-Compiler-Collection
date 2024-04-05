@@ -1,8 +1,8 @@
-GCC=gcc -Wall -Wextra
-YACC=bison -tvd
+GCC=gcc -Wall -Wextra -Iinclude/
+YACC=bison -Wall -rall -kt
 LEX=flex
 
-DEPS = grammar.tab.h traducteur_ARM.h table_symbole.h error_memory.h
+INC = include/lexer.yy.h include/grammar.tab.h
 OBJ = grammar.tab.o lexer.yy.o traducteur_ARM.o table_symbole.o error_memory.o main.o
 
 .DEFAULT: dcc
@@ -10,25 +10,28 @@ OBJ = grammar.tab.o lexer.yy.o traducteur_ARM.o table_symbole.o error_memory.o m
 
 all: demo
 
-first_test.s: clean dcc
-	./dcc -o first_test.s first_test.c
-
 demo: first_test.s
-	echo "Execution de first_test.s"
-	python3 demo.py
-	echo "Fin de l'execution"
+	@echo --------------------------------
+	@echo Execution de $<
+	@echo --------------------------------
+	python3 emulator.py $<
+	@echo --------------------------------
 
-dcc: $(OBJ)
-	$(GCC) -o $@ $^
+first_test.s: clean dcc
+	./dcc -o $@ test/$*.c
 
-%.o: %.c
+
+dcc: $(INC) $(OBJ)
+	$(GCC) -o $@  $(OBJ)
+
+%.o: src/%.c
 	$(GCC) -o $@ -c $<
 
-%.tab.c %.tab.h: %.y
-	$(YACC) -o $@ $<
+src/%.tab.c include/%.tab.h: src/%.y
+	$(YACC) -o src/$*.tab.c -Hinclude/$*.tab.h --report-file=$*.report $<
 
-%.yy.c: %.l
-	$(LEX) -o $@ $<
+src/%.yy.c include/%.yy.h: src/%.l
+	$(LEX) -o src/$*.yy.c --header-file=include/$*.yy.h $<
 
 clean:
-	rm -f *.out *.output *.s *.o *.tab.c *.tab.h *.yy.c dcc demo
+	rm -f *.report *.s *.o src/*.tab.c include/*.tab.h src/*.yy.c include/*.yy.h dcc

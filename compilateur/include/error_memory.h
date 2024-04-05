@@ -1,8 +1,6 @@
 #ifndef DCC_ERROR_MEMORY_H_
 #define DCC_ERROR_MEMORY_H_
 
-extern int yylineno;
-
 void yyerror(const char *msg);
 
 unsigned long parse_number(const char *s, const int base);

@@ -1,8 +1,7 @@
 #include<unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-int yyparse();
+#include "grammar.tab.h"
 
 int main(int argc, char **argv) {
     int c;

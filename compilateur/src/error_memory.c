@@ -1,6 +1,7 @@
 #include <malloc.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include "lexer.yy.h"
 #include "error_memory.h"
 
 void yyerror(const char *msg) {

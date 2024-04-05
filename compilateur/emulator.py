@@ -89,6 +89,9 @@ def parse_file(file_path: str):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print(f"Usage: {sys.argv[0]} <file>", file=sys.stderr)
+        sys.exit(1)
     vm = VM()
-    vm.load(parse_file("first_test.s"))
+    vm.load(parse_file(sys.argv[1]))
     vm.run()

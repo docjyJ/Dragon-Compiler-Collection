@@ -1,10 +1,8 @@
 %{
+#include "lexer.yy.h"
 #include "error_memory.h"
 #include "traducteur_ARM.h"
-int yylex(void);
 %}
-
-%define parse.error verbose
 
 %union {
   char *s;
@@ -19,8 +17,6 @@ int yylex(void);
 
 %type <s> number unary multiplicative additive relational equality operators
 %type <i> callable_args_list callable_args functions_args functions_args_list
-
-%start global
 
 %%
 

@@ -5,8 +5,8 @@
 *.tab.c
 *.tab.h
 *.yy.c
-*.output
+*.yy.h
+*.report
 *.s
 *.o
 dcc
-demo
