@@ -49,7 +49,7 @@ code_line: operators END { free($1); }
          | if_header code_block { end_jump(); }
          | while_header code_block {end_jump_reverse(NULL);  end_jump();  }
          | do_header code_block do_footer END
-         | PRINT LPAR operators RPAR END { print_int($3); free($3); }
+         | PRINT LPAR operators RPAR END { display($3); free($3); }
          | return END
          | END
          ;
@@ -96,7 +96,7 @@ functions_arg: TYPE_INT LABEL { yyerror("function arguments not implemented"); f
 
 /* Gestion ses opérations */
 
-number: STATIC_INT { affectation(NULL, (int) $1); $$ = NULL; }
+number: STATIC_INT { number_copy(NULL, (int) $1); $$ = NULL; }
       | LABEL { $$ = $1; }
       | callable { $$ = NULL; }
       | LPAR operators RPAR { $$ = $2; }
@@ -107,26 +107,26 @@ unary: number { $$ = $1 ; }
      ;
 
 multiplicative: unary { $$ = $1 ; }
-              | multiplicative MUL unary { mul($1, $3); $$ = NULL; free($1); free($3); }
+              | multiplicative MUL unary { multiply($1, $3); $$ = NULL; free($1); free($3); }
               | multiplicative DIV unary { divide($1, $3); $$ = NULL; free($1); free($3); }
               ;
 
 additive: multiplicative { $$ = $1 ; }
         | additive ADD multiplicative { add($1, $3); $$ = NULL; free($1); free($3); }
-        | additive SUB multiplicative { sous($1, $3); $$ = NULL; free($1); free($3); }
+        | additive SUB multiplicative { subtract($1, $3); $$ = NULL; free($1); free($3); }
         ;
 
 relational: additive { $$ = $1 ; }
-          | relational LOW additive { inf($1, $3); $$ = NULL; free($1); free($3); }
-          | relational GRT additive { sup($1, $3); $$ = NULL; free($1); free($3); }
+          | relational LOW additive { greater_than($1, $3); $$ = NULL; free($1); free($3); }
+          | relational GRT additive { lower_than($1, $3); $$ = NULL; free($1); free($3); }
           ;
 
 equality: relational { $$ = $1 ; }
-        | equality EQ  relational { equ($1, $3); $$ = NULL; free($1); free($3); }
+        | equality EQ  relational { equal_to($1, $3); $$ = NULL; free($1); free($3); }
         ;
 
 operators: equality { $$ = $1 ; }
-         | LABEL ASSIGN operators { copie($1, $3); $$ = $1; free($3); }
+         | LABEL ASSIGN operators { var_copy($1, $3); $$ = $1; free($3); }
          ;
 
 
@@ -139,8 +139,8 @@ defvars_list: defvar
             | defvars_list COMMA defvar
             ;
 
-defvar: LABEL { define_affectation($1, 0) ; free($1); }
-      | LABEL ASSIGN operators { define_copie($1, $3); free($1); free($3); }
+defvar: LABEL { number_define($1, 0) ; free($1); }
+      | LABEL ASSIGN operators { var_define($1, $3); free($1); free($3); }
       ;
 
 
