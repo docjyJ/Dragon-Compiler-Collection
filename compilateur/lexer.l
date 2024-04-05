@@ -24,6 +24,10 @@
     return WHILE;
 }
 
+"do" {
+    return DO;
+}
+
 "main" {
     return MAIN;
 }

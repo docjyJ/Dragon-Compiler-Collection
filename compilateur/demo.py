@@ -51,6 +51,8 @@ class VM:
                     set_ram(1, (0x100 + get_arg(2) - get_arg(3)))
                 case "DIV":
                     set_ram(1, (get_arg(2) // get_arg(3)))
+                case "EQU":
+                    set_ram(1, (get_arg(2) == get_arg(3)))
                 case "JMF":
                     if get_arg(1) == 0:
                         self.pc = get_arg(2) - 1

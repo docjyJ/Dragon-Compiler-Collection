@@ -1,5 +1,9 @@
 int a = 4;
 
+void g (){
+    int c = 1;
+}
+
 void main () {
 
     int b = 2 ;
@@ -9,7 +13,9 @@ void main () {
     c = a / (a + a * b);
     a = b = c = 3;
 
-    int e = 0xEE, g = 1, h = 2;
+    g();
+
+    int e = 0xEE, t = 1, h = 2;
 
     if (1){
         a = 1;
@@ -23,7 +29,11 @@ void main () {
 
     c = 10;
 
-    while(c ){
+    while(c==1){
         c=c-1;
     }
+
+    do {
+        c=c+1 ;
+    } while(c);
 }

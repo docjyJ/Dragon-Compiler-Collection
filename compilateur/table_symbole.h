@@ -12,6 +12,10 @@ address temp_var_push();
 
 address temp_var_pop();
 
+address get_buffer_lr();
+
+address get_buffer_return();
+
 void add_priority();
 
 void remove_priority();
