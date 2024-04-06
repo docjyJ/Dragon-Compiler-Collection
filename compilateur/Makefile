@@ -9,7 +9,7 @@ TARGET = ./dcc
 
 LEX_SRC = lexer.l
 YACC_SRC = grammar.y
-C_SRC = traducteur_ARM.c table_symbole.c error_memory.c main.c
+C_SRC = traducteur_ARM.c variable_manager.c error_memory.c main.c
 TEST_SRC = first_test.c
 
 C_GEN = $(YACC_SRC:.y=.tab.c) $(LEX_SRC:.l=.yy.c)
