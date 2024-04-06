@@ -12,6 +12,11 @@
 \/\/[^\n]*
 \/\*([^*]|[*][^/])*\*\/
 [ \t\n]+
+"#include \"dragon.h\""
+
+#.* {
+    yyerror("Directives are not supported, use #include \"dragon.h\" if you wand add dragon functions support with your C IDE.");
+}
 
 "if" {
     return IF;
