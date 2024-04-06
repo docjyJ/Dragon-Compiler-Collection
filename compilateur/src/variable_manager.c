@@ -1,6 +1,7 @@
 #include "variable_manager.h"
 #include "error_memory.h"
 #include <string.h>
+#include <malloc.h>
 
 typedef struct {
     char *nom;

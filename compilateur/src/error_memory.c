@@ -1,4 +1,3 @@
-#include <malloc.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include "lexer.yy.h"
