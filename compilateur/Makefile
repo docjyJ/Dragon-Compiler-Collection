@@ -1,37 +1,50 @@
+SRC_DIR = ./src/
+
+
 GCC=gcc -Wall -Wextra -Iinclude/
 YACC=bison -Wall -rall -kt
 LEX=flex
 
-INC = include/lexer.yy.h include/grammar.tab.h
-OBJ = grammar.tab.o lexer.yy.o traducteur_ARM.o table_symbole.o error_memory.o main.o
+TARGET = ./dcc
+
+LEX_SRC = lexer.l
+YACC_SRC = grammar.y
+C_SRC = traducteur_ARM.c table_symbole.c error_memory.c main.c
+TEST_SRC = first_test.c
+
+C_GEN = $(YACC_SRC:.y=.tab.c) $(LEX_SRC:.l=.yy.c)
+OBJS = $(C_SRC:.c=.o) $(C_GEN:.c=.o)
 
 .DEFAULT: dcc
-.PHONY: clean
+.PHONY: clean all test %-emulate
+.PRECIOUS: %.s
 
-all: demo
+all: test
 
-demo: first_test.s
+test: clean $(TEST_SRC:.c=-emulate)
+
+%-emulate: %.s
 	@echo --------------------------------
 	@echo Execution de $<
 	@echo --------------------------------
 	python3 emulator.py $<
 	@echo --------------------------------
 
-first_test.s: clean dcc
-	./dcc -o $@ test/$*.c
+%.s: test/%.c $(TARGET)
+	$(TARGET) -o $@ $<
 
 
-dcc: $(INC) $(OBJ)
-	$(GCC) -o $@  $(OBJ)
+$(TARGET): $(C_GEN:%=src/%) $(OBJS)
+	$(GCC) -o$(TARGET) $(OBJS)
 
 %.o: src/%.c
 	$(GCC) -o $@ -c $<
 
-src/%.tab.c include/%.tab.h: src/%.y
-	$(YACC) -o src/$*.tab.c -Hinclude/$*.tab.h --report-file=$*.report $<
+src/%.tab.c: src/%.y
+	$(YACC) -o $@ -Hinclude/$*.tab.h --report-file=$*.report $<
 
-src/%.yy.c include/%.yy.h: src/%.l
-	$(LEX) -o src/$*.yy.c --header-file=include/$*.yy.h $<
+src/%.yy.c: src/%.l
+	$(LEX) -o$@ --header-file=include/$*.yy.h $<
 
 clean:
 	rm -f *.report *.s *.o src/*.tab.c include/*.tab.h src/*.yy.c include/*.yy.h dcc
