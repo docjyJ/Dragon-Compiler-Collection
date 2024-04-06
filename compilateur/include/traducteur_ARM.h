@@ -3,84 +3,98 @@
 
 // Opération Assembleur
 
-/** Copie de la valeur d'une variable dans une autre.
+/**
+ * Copie de la valeur d'une variable dans une autre.
  * @param var nom de la variable ou NULL pour créer une variable temporaire
  * @param value valeur à affecter
  */
 void var_copy(char *var, char *value);
 
-/** Définie une variable et l'initialise avec la valeur d'une variable.
+/**
+ * Définie une variable et l'initialise avec la valeur d'une variable.
  * @param var nom de la variable (ne peut pas être NULL)
  * @param value valeur à affecter
  */
 void var_define(char *var, char *value);
 
-/** Affectation d'une valeur numérique à une variable.
+/**
+ * Affectation d'une valeur numérique à une variable.
  * @param var nom de la variable ou NULL pour créer une variable temporaire
  * @param value valeur à affecter
  */
 void number_copy(char *var, int value);
 
-/** Définie une variable et l'initialise avec une valeur numérique.
+/**
+ * Définie une variable et l'initialise avec une valeur numérique.
  * @param var nom de la variable (ne peut pas être NULL)
  * @param value valeur à affecter
  */
 void number_define(char *var, int value);
 
-/** Affichage la valeur d'une variable.
+/**
+ * Affichage la valeur d'une variable.
  * @param var nom de la variable ou NULL pour afficher une valeur temporaire
  */
 void display(char *var);
 
-/** Ajout de deux variables et le stock dans une variable temporaire.
+/**
+ * Ajout de deux variables et le stock dans une variable temporaire.
  * @param a nom de la première variable ou NULL pour créer une variable temporaire
  * @param b nom de la deuxième variable ou NULL pour créer une variable temporaire
  */
 void add(char *a, char *b);
 
-/** Soustraction de deux variables et le stock dans une variable temporaire.
+/**
+ * Soustraction de deux variables et le stock dans une variable temporaire.
  * @param a nom de la première variable ou NULL pour créer une variable temporaire
  * @param b nom de la deuxième variable ou NULL pour créer une variable temporaire
  */
 void subtract(char *a, char *b);
 
-/** Multiplication de deux variables et le stock dans une variable temporaire.
+/**
+ * Multiplication de deux variables et le stock dans une variable temporaire.
  * @param a nom de la première variable ou NULL pour créer une variable temporaire
  * @param b nom de la deuxième variable ou NULL pour créer une variable temporaire
  */
 void multiply(char *a, char *b);
 
-/** Division de deux variables et le stock dans une variable temporaire.
+/**
+ * Division de deux variables et le stock dans une variable temporaire.
  * @param a nom de la première variable ou NULL pour créer une variable temporaire
  * @param b nom de la deuxième variable ou NULL pour créer une variable temporaire
  */
 void divide(char *a, char *b);
 
-/** Modulo de deux variables et le stock dans une variable temporaire.
+/**
+ * Modulo de deux variables et le stock dans une variable temporaire.
  * @param a nom de la première variable ou NULL pour créer une variable temporaire
  * @param b nom de la deuxième variable ou NULL pour créer une variable temporaire
  */
 void ligical_and(char *a, char *b);
 
-/** Ou logique de deux variables et le stock dans une variable temporaire.
+/**
+ * Ou logique de deux variables et le stock dans une variable temporaire.
  * @param a nom de la première variable ou NULL pour créer une variable temporaire
  * @param b nom de la deuxième variable ou NULL pour créer une variable temporaire
  */
 void logical_or(char *a, char *b);
 
-/** Comparaison d'infériorité, le stock dans une variable temporaire.
+/**
+ * Comparaison d'infériorité, le stock dans une variable temporaire.
  * @param a nom de la première variable ou NULL pour créer une variable temporaire
  * @param b nom de la deuxième variable ou NULL pour créer une variable temporaire
  */
 void greater_than(char *a, char *b);
 
-/** Comparaison de supériorité, le stock dans une variable temporaire.
+/**
+ * Comparaison de supériorité, le stock dans une variable temporaire.
  * @param a nom de la première variable ou NULL pour créer une variable temporaire
  * @param b nom de la deuxième variable ou NULL pour créer une variable temporaire
  */
 void lower_than(char *a, char *b);
 
-/** Comparaison d'égalité, le stock dans une variable temporaire.
+/**
+ * Comparaison d'égalité, le stock dans une variable temporaire.
  * @param a nom de la première variable ou NULL pour créer une variable temporaire
  * @param b nom de la deuxième variable ou NULL pour créer une variable temporaire
  */
