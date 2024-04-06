@@ -11,15 +11,16 @@ typedef struct {
 
 symbole *tab[256];
 
-address my_index = 0;
+address var_stack = 0;
 address visibility = 0;
-address temp_stack = 0xFF;
+address temp_stack = -1;
 
 void var_create_force(char *name) {
-    tab[my_index] = empty_alloc(sizeof(symbole));
-    tab[my_index]->nom = copy_alloc(name);
-    tab[my_index]->priority = visibility;
-    my_index++;
+    if (temp_stack < var_stack) yyerror("not enough memory");
+    tab[var_stack] = empty_alloc(sizeof(symbole));
+    tab[var_stack]->nom = copy_alloc(name);
+    tab[var_stack]->priority = visibility;
+    var_stack++;
 }
 
 address var_create(char *a) {
@@ -30,7 +31,7 @@ address var_create(char *a) {
 }
 
 short var_get_force(char *name) {
-    short out = my_index;
+    short out = var_stack;
     out--;
     while (out >= 0 && strcmp(tab[out]->nom, name) != 0) out --;
     return out;
@@ -44,7 +45,7 @@ address var_get(char *a) {
 
 
 address temp_push() {
-    if (temp_stack == 1) yyerror("temp_stack is full");
+    if (temp_stack < var_stack) yyerror("not enough memory");
     return temp_stack--;
 }
 
@@ -62,9 +63,9 @@ void remove_visibility() {
     if (visibility == 0) yyerror("can't remove visibility level");
     visibility--;
 
-    while (my_index > 0 && tab[my_index-1]->priority > visibility) {
-        my_index--;
-        free(tab[my_index]->nom);
-        free(tab[my_index]);
+    while (var_stack > 0 && tab[var_stack-1]->priority > visibility) {
+        var_stack--;
+        free(tab[var_stack]->nom);
+        free(tab[var_stack]);
     }
 }
