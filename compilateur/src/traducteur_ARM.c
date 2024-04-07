@@ -200,3 +200,20 @@ void go_function(char *a) {
     add_instruction(copy_alloc(a));
 }
 
+int buffer_col = 0;
+char hint_buffer[256];
+
+void add_hint(char *hint, int length, int line) {
+    if (hint[0] == '\n') {
+        char *old = tab_instruct[inst_count - 1];
+        tab_instruct[inst_count - 1] = printf_alloc("//%3d: %s\n%s", line, hint_buffer, old);
+        free(old);
+        buffer_col = 0;
+        hint_buffer[0] = '\0';
+    } else {
+        int old = buffer_col;
+        buffer_col += length;
+        if (buffer_col < 256)
+            strncpy(hint_buffer + old, hint, length + 1);
+    }
+}

@@ -126,4 +126,7 @@ void go_function(char *name);
 
 void print_instruction();
 
+// Gestion des indication
+void add_hint(char *hint, int length, int line);
+
 #endif

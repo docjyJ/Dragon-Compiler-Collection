@@ -3,6 +3,8 @@
 %option nounput
 %option yylineno
 %{
+#define YY_USER_ACTION { add_hint(yytext, yyleng, yylineno-1); }
+#include "traducteur_ARM.h"
 #include "error_memory.h"
 #include "grammar.tab.h"
 %}
@@ -11,7 +13,8 @@
 
 \/\/[^\n]*
 \/\*([^*]|[*][^/])*\*\/
-[ \t\n]+
+[ \t]+
+[\n]
 "#include \"dragon.h\""
 
 #.* {
