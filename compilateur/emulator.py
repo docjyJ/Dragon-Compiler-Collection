@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-from sys import stderr
 
 
 class VM:
@@ -96,8 +95,10 @@ class VM:
 
 def parse_file(file_path: str) -> list[tuple[str, list[str]]]:
     with open(file_path, 'r') as f:
-        lines = [(i[:-1], j[1].split()) for i, j in ((i, i.split('#')) for i in f.readlines()) if
-                 1 < len(j) < 4]
+        lines = [
+            (i[:-1], j[1].split()) for i, j in (
+                (i, i.split('#')) for i in (
+                    (i.split('//')[0]) for i in f.readlines())) if len(j) == 2]
     return lines
 
 
