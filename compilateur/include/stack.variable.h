@@ -1,21 +1,7 @@
 #ifndef DCC_VARIABLE_MANAGER_H_
 #define DCC_VARIABLE_MANAGER_H_
 
-typedef unsigned char address;
-typedef char *label;
-
-/**
- * Créer une nouvelle variable, sans vérifier si elle existe déjà.
- * @param name le nom de la variable
- */
-void var_create_force(label name);
-
-/**
- * Permet d'obtenir l'adresse d'une variable, sans levé d'erreur si elle n'existe pas.
- * @param name le nom de la variable
- * @return l'adresse de la variable ou -1 si elle n'existe pas
- */
-short var_get_force(label name);
+#include "types.h"
 
 /**
  * Créer une nouvelle variable, si elle n'existe pas déjà.
@@ -42,6 +28,20 @@ address temp_push();
  * @return l'adresse de la variable
  */
 address temp_pop();
+
+/**
+ * Permet d'obtenir l'adresse d'une variable, ou crée un temporaire si elle est NULL.
+ * @param name le nom de la variable
+ * @return l'adresse de la variable
+ */
+address var_get_or_temp_push(label name);
+
+/**
+ * Permet d'obtenir l'adresse d'une variable, ou récupère un temporaire si elle est NULL.
+ * @param name le nom de la variable
+ * @return l'adresse de la variable
+ */
+address var_get_or_temp_pop(label name);
 
 /**
  * Ajoute un niveau de visibilité.

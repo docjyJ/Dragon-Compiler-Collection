@@ -1,9 +1,7 @@
-#ifndef TRAD_ARM
+#ifndef TRAD_ARM // TODO Nom du fichier
 #define TRAD_ARM
 
-typedef char *label;
-
-// Opération Assembleur
+#include "types.h"
 
 /**
  * Copie de la valeur d'une variable dans une autre.
@@ -101,30 +99,5 @@ void lower_than(label a, label b);
  * @param b nom de la deuxième variable ou NULL pour créer une variable temporaire
  */
 void equal_to(label a, label b);
-
-// Gestion des sauts
-
-void start_if(label a);
-
-void start_else();
-
-void start_loop();
-
-void end_branch();
-
-// Gestion des fonctions
-
-void start_function(char *name);
-
-void end_function();
-
-void go_function(char *name);
-
-// Gestion des instructions
-
-void print_instruction();
-
-// Gestion des indication
-void add_hint(char *hint, int length, int line);
 
 #endif

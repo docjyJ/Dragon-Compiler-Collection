@@ -1,7 +1,8 @@
 #ifndef DCC_ERROR_MEMORY_H_
 #define DCC_ERROR_MEMORY_H_
 
-void yyerror(const char *msg);
+// TODO: Meilleur doc
+void yyerror(const char *s);
 
 /**
  * Convertit une chaîne de caractères en nombre.

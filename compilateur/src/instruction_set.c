@@ -1,10 +1,6 @@
-#include <stddef.h>
-#include "variable_manager.h"
-#include "error_memory.h"
 #include "instruction_set.h"
-
-#define GET_VAR_OR_POP_TMP(a) (a == NULL ? temp_pop() : var_get(a))
-#define GET_VAR_OR_PUSH_TMP(a) (a == NULL ? temp_push() : var_get(a))
+#include "error_memory.h"
+#include "stack.variable.h"
 
 const char *pattern_c = "%02X#     %3s  %3d//%02X\n";
 const char *pattern_a = "%02X#     %3s  @%02X\n";
@@ -29,36 +25,36 @@ const op_code op_logical_and = {"AND", 0x20};
 const op_code op_logical_or = {"OR", 0x21};
 
 
-char *op_c(address line, op_code code, address a) {
-    return printf_alloc(pattern_c, line, code.name, a, a);
+inst op_c(address line, op_code code, address c) {
+    return printf_alloc(pattern_c, line, code.name, c, c);
 }
 
-char *op_i(address line, op_code code, label a) {
-    address a_a = GET_VAR_OR_POP_TMP(a);
+inst op_i(address line, op_code code, label i) {
+    address a_a = var_get_or_temp_pop(i);
     return printf_alloc(pattern_a, line, code.name, a_a);
 }
 
-char *op_oc(address line, op_code code, label a, address b) {
-    address a_result = GET_VAR_OR_PUSH_TMP(a);
-    return printf_alloc(pattern_ac, line, code.name, a_result, b, b);
+inst op_oc(address line, op_code code, label o, address c) {
+    address a_o = var_get_or_temp_push(o);
+    return printf_alloc(pattern_ac, line, code.name, a_o, c, c);
 }
 
-char *op_ic(address line, op_code code, label a, address b) {
-    address a_result = GET_VAR_OR_POP_TMP(a);
-    return printf_alloc(pattern_ac, line, code.name, a_result, b, b);
+inst op_ic(address line, op_code code, label i, address c) {
+    address a_i = var_get_or_temp_pop(i);
+    return printf_alloc(pattern_ac, line, code.name, a_i, c, c);
 }
 
-char *op_oi(address line, op_code code, label result, label a) {
-    address a_a = GET_VAR_OR_POP_TMP(a);
-    address a_result = GET_VAR_OR_PUSH_TMP(result);
-    return printf_alloc(pattern_aa, line, code.name, a_result, a_a);
+inst op_oi(address line, op_code code, label o, label i) {
+    address a_a = var_get_or_temp_pop(i);
+    address a_o = var_get_or_temp_push(o);
+    return printf_alloc(pattern_aa, line, code.name, a_o, a_a);
 }
 
-char *op_oii(address line, op_code code, label result, label a, label b) {
-    address a_b = GET_VAR_OR_POP_TMP(b);
-    address a_a = GET_VAR_OR_POP_TMP(a);
-    address a_result = GET_VAR_OR_PUSH_TMP(result);
-    return printf_alloc(pattern_aaa, line, code.name, a_result, a_a, a_b);
+inst op_oii(address line, op_code code, label o, label i1, label i2) {
+    address a_i2 = var_get_or_temp_pop(i2);
+    address a_i1 = var_get_or_temp_pop(i1);
+    address a_o = var_get_or_temp_push(o);
+    return printf_alloc(pattern_aaa, line, code.name, a_o, a_i1, a_i2);
 }
 
 

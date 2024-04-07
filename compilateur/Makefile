@@ -2,7 +2,7 @@ SRC_DIR = ./src/
 
 
 GCC=gcc -Wall -Wextra -Iinclude/
-YACC=bison -Wall -rall -kt
+YACC=bison -Wall -rnone -kt
 LEX=flex
 
 TARGET = ./dcc
@@ -10,17 +10,21 @@ GCC_TEST = gcc -Itest/
 
 LEX_SRC = lexer.l
 YACC_SRC = grammar.y
-C_SRC = traducteur_ARM.c instruction_set.c variable_manager.c error_memory.c main.c
+C_SRC = traducteur_ARM.c instruction_set.c stack.variable.c stack.branch.c stack.function.c stack.instruction.c error_memory.c main.c
 TEST_SRC = arithmetic.c conditional.c
 
 C_GEN = $(YACC_SRC:.y=.tab.c) $(LEX_SRC:.l=.yy.c)
 OBJS = $(C_SRC:.c=.o) $(C_GEN:.c=.o)
 
 .DEFAULT: dcc
-.PHONY: clean all emulate %-emulate test %-test
+.PHONY: clean all emulate %-emulate test %-test rapport %-rapport open-diag %-open-diag
 .PRECIOUS: %.s %.out
 
-all: test emulate
+all: test emulate rapport
+
+rapport: $(YACC_SRC:.y=-rapport)
+
+open-diag: $(YACC_SRC:.y=-open-diag)
 
 test: clean $(TEST_SRC:.c=-test)
 
@@ -55,7 +59,18 @@ $(TARGET): $(C_GEN:%=src/%) $(OBJS)
 	$(GCC) -o $@ -c $<
 
 src/%.tab.c: src/%.y
-	$(YACC) -o $@ -Hinclude/$*.tab.h --report-file=$*.report $<
+	$(YACC) -o$@ -Hinclude/$*.tab.h $<
+
+%-rapport: src/%.y
+	bison --html=$*.html -g$*.dot $<
+	dot -Tsvg -o$*.automat.svg $*.dot
+	wkhtmltoimage -f svg $*.html $*.rapport.svg
+	rm $*.html $*.dot $*.xml
+
+%-open-diag: src/%.y
+	bison --html=$*.rapport.html $<
+	rm $*.xml
+	xdg-open file://$(shell pwd)/$*.rapport.html
 
 src/%.yy.c: src/%.l
 	$(LEX) -o$@ --header-file=include/$*.yy.h $<

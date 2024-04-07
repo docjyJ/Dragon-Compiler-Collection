@@ -1,7 +1,6 @@
 #include <stdarg.h>
-#include <stdlib.h>
-#include "lexer.yy.h"
 #include "error_memory.h"
+#include "lexer.yy.h"
 
 void yyerror(const char *msg) {
     fprintf(stderr, "error: '%s' at line %d.\n", msg, yylineno);

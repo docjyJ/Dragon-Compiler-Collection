@@ -4,7 +4,7 @@
 %option yylineno
 %{
 #define YY_USER_ACTION { add_hint(yytext, yyleng, yylineno-1); }
-#include "traducteur_ARM.h"
+#include "stack.instruction.h"
 #include "error_memory.h"
 #include "grammar.tab.h"
 %}

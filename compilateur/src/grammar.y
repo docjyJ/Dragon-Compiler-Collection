@@ -2,6 +2,9 @@
 #include "lexer.yy.h"
 #include "error_memory.h"
 #include "traducteur_ARM.h"
+#include "stack.instruction.h"
+#include "stack.branch.h"
+#include "stack.function.h"
 %}
 
 %union {
@@ -38,38 +41,33 @@ code_block: LBRACE code_line_list RBRACE
 code_line_list: code_line
               | code_line code_line_list
               ;
-code_block_or_line: code_block
-                  | code_line
-                  ;
 
-code_line: operators END { free($1); }
-         | defvars END
-         | if_header code_block_or_line else_header code_block_or_line { end_branch(); }
-         | if_header code_block_or_line { end_branch(); }
-         | while_header while_cond code_block { end_branch(); end_branch(); }
-         | do_header code_block do_cond END { end_branch(); end_branch(); }
-         | PRINT LPAR operators RPAR END { display($3); free($3); }
-         | return END
-         | END
+code_one_line: operators END { free($1); }
+             | defvars END
+             | if { end_branch(); }
+             | while_do { end_branch(); end_branch(); }
+             | PRINT LPAR operators RPAR END { display($3); free($3); }
+             | return END
+             | END
+             ;
+
+code_line: code_one_line
+         | if else { end_branch(); }
          ;
 
-if_header: IF LPAR operators RPAR { start_if($3); free($3); }
-         ;
 
-else_header: ELSE { end_branch(); start_else(); }
-           ;
+init_cond: LPAR operators RPAR { start_if($2); free($2); };
+init_else: %empty { end_branch(); start_else(); };
+init_loop: %empty { start_loop(); };
 
-while_header: WHILE { start_loop(); }
-            ;
+single_boddy: code_block | code_one_line;
+chain_boddy: code_block | code_line;
 
-do_header: DO { start_loop(); }
-         ;
-
-while_cond: LPAR operators RPAR { start_if($2); free($2); }
-          ;
-
-do_cond: WHILE LPAR operators RPAR { start_if($3); free($3); }
-       ;
+if: IF init_cond single_boddy;
+else: ELSE init_else chain_boddy;
+while_do: WHILE init_loop init_cond single_boddy
+        | DO init_loop code_block WHILE init_cond END
+        ;
 
 
 /* Gestion des fonctions */
@@ -79,7 +77,8 @@ functions: functions_header code_block { end_function(); }
 
 functions_header: TYPE_VOID LABEL functions_args { start_function($2); free($2); }
                 | TYPE_INT LABEL functions_args { start_function($2); free($2); }
-                | TYPE_VOID MAIN functions_args { start_function("main"); }
+                | TYPE_VOID MAIN LPAR TYPE_VOID RPAR { start_function("main"); }
+                | TYPE_VOID MAIN LPAR RPAR { start_function("main"); }
                 ;
 
 functions_args: LPAR functions_args_list RPAR { $$ = $2; }
@@ -105,7 +104,7 @@ number: STATIC_INT { number_copy(NULL, (int) $1); $$ = NULL; }
       ;
 
 unary: number { $$ = $1 ; }
-     | SUB number { fprintf(stderr, "%d rNEG <- sub 0 %s\n", yylineno, $2); $$ = NULL; free($2); }
+     | SUB number { number_copy(NULL, 0); subtract(NULL, $2); $$ = NULL; free($2); }
      ;
 
 multiplicative: unary { $$ = $1 ; }
