@@ -6,33 +6,47 @@ YACC=bison -Wall -rall -kt
 LEX=flex
 
 TARGET = ./dcc
+GCC_TEST = gcc -Itest/
 
 LEX_SRC = lexer.l
 YACC_SRC = grammar.y
-C_SRC = traducteur_ARM.c variable_manager.c error_memory.c main.c
-TEST_SRC = first_test.c
+C_SRC = traducteur_ARM.c instruction_set.c variable_manager.c error_memory.c main.c
+TEST_SRC = arithmetic.c conditional.c
 
 C_GEN = $(YACC_SRC:.y=.tab.c) $(LEX_SRC:.l=.yy.c)
 OBJS = $(C_SRC:.c=.o) $(C_GEN:.c=.o)
 
 .DEFAULT: dcc
-.PHONY: clean all test %-emulate
-.PRECIOUS: %.s
+.PHONY: clean all emulate %-emulate test %-test
+.PRECIOUS: %.s %.out
 
-all: test
+all: test emulate
 
-test: clean $(TEST_SRC:.c=-emulate)
+test: clean $(TEST_SRC:.c=-test)
+
+emulate: clean $(TEST_SRC:.c=-emulate)
 
 %-emulate: %.s
 	@echo --------------------------------
 	@echo Execution de $<
 	@echo --------------------------------
-	python3 emulator.py $<
+	@python3 emulator.py $<
+	@echo --------------------------------
+
+%-test: %.out %.s
+	@echo --------------------------------
+	@echo Comparaison de $^
+	@echo --------------------------------
+	./$*.out > test/$*.gcc.report || true
+	python3 emulator.py $*.s > test/$*.emulate.report
+	@diff test/$*.gcc.report test/$*.emulate.report
 	@echo --------------------------------
 
 %.s: test/%.c $(TARGET)
 	$(TARGET) -o $@ $<
 
+%.out: test/%.c
+	$(GCC_TEST) -o $@ $<
 
 $(TARGET): $(C_GEN:%=src/%) $(OBJS)
 	$(GCC) -o$(TARGET) $(OBJS)
@@ -47,4 +61,4 @@ src/%.yy.c: src/%.l
 	$(LEX) -o$@ --header-file=include/$*.yy.h $<
 
 clean:
-	rm -f *.report *.s *.o src/*.tab.c include/*.tab.h src/*.yy.c include/*.yy.h dcc
+	rm -f *.report *.out *.s *.o src/*.tab.c include/*.tab.h src/*.yy.c include/*.yy.h dcc
