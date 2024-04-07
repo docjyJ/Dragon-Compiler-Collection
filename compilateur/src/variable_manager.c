@@ -31,9 +31,15 @@ address var_create(char *a) {
 }
 
 short var_get_force(char *name) {
+    if (strlen(name) == 0)
+        return -1;
+
+    if (name[0] == '$')
+        return (address) parse_number(name + 1, 16);
+
     short out = var_stack;
     out--;
-    while (out >= 0 && strcmp(tab[out]->nom, name) != 0) out --;
+    while (out >= 0 && strcmp(tab[out]->nom, name) != 0) out--;
     return out;
 }
 
@@ -63,7 +69,7 @@ void remove_visibility() {
     if (visibility == 0) yyerror("can't remove visibility level");
     visibility--;
 
-    while (var_stack > 0 && tab[var_stack-1]->priority > visibility) {
+    while (var_stack > 0 && tab[var_stack - 1]->priority > visibility) {
         var_stack--;
         free(tab[var_stack]->nom);
         free(tab[var_stack]);
