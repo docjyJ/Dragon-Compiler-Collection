@@ -1,20 +1,15 @@
 #include <malloc.h>
+#include <string.h>
 #include "error_memory.h"
 #include "traducteur_ARM.h"
 #include "variable_manager.h"
-
-#define INST_INDEX ((nb_inst + 1) & 0xFF)
-
-#define OP_ONE_ADDR(name, a) add_instruction(printf_alloc("%02X#  %3s  @%02X\n", INST_INDEX, name, a))
-#define OP_TWO_ADDR(name, a, ret) add_instruction(printf_alloc("%02X#  %3s  @%02X  @%02X\n", INST_INDEX, name, ret, a))
-#define OP_THREE_ADDR(name, a, b, ret) add_instruction(printf_alloc("%02X#  %3s  @%02X  @%02X  @%02X\n", INST_INDEX, name, ret, a, b))
-#define OP_ADDR_INT(name, a, b) add_instruction(printf_alloc("%02X#  %3s  @%02X  %3d\n", INST_INDEX, name, a, b))
+#include "instruction_set.h"
 
 #define GET_VAR_OR_POP_TMP(a) (a == NULL ? temp_pop() : var_get(a))
 #define GET_VAR_OR_PUSH_TMP(a) (a == NULL ? temp_push() : var_get(a))
 
 
-short nb_inst = -1;
+address inst_count = 0;
 char *tab_instruct[2048];
 short deja_print = 0;
 
@@ -25,8 +20,8 @@ int start_reverse_section[10];
 int nb_start_reverse_section = -1;
 
 void add_instruction(char *a) {
-    nb_inst++;
-    tab_instruct[nb_inst] = a;
+    tab_instruct[inst_count] = a;
+    inst_count++;
 }
 
 char *get_instruction(int nb) {
@@ -39,113 +34,86 @@ void modify_instruction(char *a, int nb) {
 }
 
 void print_instruction() {
-    for (int index = deja_print; index <= nb_inst; index++)
+    for (int index = deja_print; index <= inst_count; index++)
         printf("%s", tab_instruct[index]);
 
-    deja_print = nb_inst + 1;
+    deja_print = inst_count + 1;
 }
 
-void number_copy(char *var, int value) {
-    int add_a = GET_VAR_OR_PUSH_TMP(var);
-    OP_ADDR_INT("AFC", add_a, value);
+void display(label a) {
+    add_instruction(op_a(inst_count, op_display, a));
 }
 
-void number_define(char *var, int value) {
-    int add_a = var_create(var);
-    OP_ADDR_INT("AFC", add_a, value);
+void number_copy(label result, int a) {
+    add_instruction(op_ac(inst_count, op_define, result, a));
 }
 
-void var_copy(char *a, char *b) {
-    int add_a = var_get(a);
-    int add_b = GET_VAR_OR_POP_TMP(b);
-    OP_TWO_ADDR("COP", add_b, add_a);
+void number_define(label result, int a) {
+    var_create(result);
+    number_copy(result, a);
 }
 
-void display(char *a) {
-    int add_a = GET_VAR_OR_POP_TMP(a);
-    OP_ONE_ADDR("PRI", add_a);
+void var_copy(label result, label a) {
+    add_instruction(op_aa(inst_count, op_copy, result, a));
 }
 
-void var_define(char *a, char *b) {
-    int add_a = var_create(a);
-    int add_b = GET_VAR_OR_POP_TMP(b);
-    OP_TWO_ADDR("COP", add_b, add_a);
+void var_define(label result, label a) {
+    var_create(result);
+    var_copy(result, a);
 }
 
-void add(char *a, char *b) {
-    int add_a = GET_VAR_OR_POP_TMP(a);
-    int add_b = GET_VAR_OR_POP_TMP(b);
-    int add_c = temp_push();
-    OP_THREE_ADDR("ADD", add_a, add_b, add_c);
+void add(label a, label b) {
+    add_instruction(op_aaa(inst_count, op_add, NULL, a, b));
 }
 
-void subtract(char *a, char *b) {
-    int add_a = GET_VAR_OR_POP_TMP(a);
-    int add_b = GET_VAR_OR_POP_TMP(b);
-    int add_c = temp_push();
-    OP_THREE_ADDR("SUB", add_a, add_b, add_c);
+void subtract(label a, label b) {
+    add_instruction(op_aaa(inst_count, op_subtract, NULL, a, b));
 }
 
-void multiply(char *a, char *b) {
-    int add_a = GET_VAR_OR_POP_TMP(a);
-    int add_b = GET_VAR_OR_POP_TMP(b);
-    int add_c = temp_push();
-    OP_THREE_ADDR("MUL", add_a, add_b, add_c);
+void multiply(label a, label b) {
+    add_instruction(op_aaa(inst_count, op_multiply, NULL, a, b));
 }
 
-void divide(char *a, char *b) {
-    int add_a = GET_VAR_OR_POP_TMP(a);
-    int add_b = GET_VAR_OR_POP_TMP(b);
-    int add_c = temp_push();
-    OP_THREE_ADDR("DIV", add_a, add_b, add_c);
+void divide(label a, label b) {
+    add_instruction(op_aaa(inst_count, op_divide, NULL, a, b));
 }
 
-void ligical_and(char *a, char *b) {
-    int add_a = GET_VAR_OR_POP_TMP(a);
-    int add_b = GET_VAR_OR_POP_TMP(b);
-    int add_c = temp_push();
-    OP_THREE_ADDR("AND", add_a, add_b, add_c);
+void logical_and(label a, label b) {
+    add_instruction(op_aaa(inst_count, op_logical_and, NULL, a, b));
 }
 
-void logical_or(char *a, char *b) {
-    int add_a = GET_VAR_OR_POP_TMP(a);
-    int add_b = GET_VAR_OR_POP_TMP(b);
-    int add_c = temp_push();
-    OP_THREE_ADDR("OR", add_a, add_b, add_c);
+void logical_or(label a, label b) {
+    add_instruction(op_aaa(inst_count, op_logical_or, NULL, a, b));
 }
 
-void greater_than(char *a, char *b) {
-    int add_a = GET_VAR_OR_POP_TMP(a);
-    int add_b = GET_VAR_OR_POP_TMP(b);
-    int add_c = temp_push();
-    OP_THREE_ADDR("INF", add_a, add_b, add_c);
+void greater_than(label a, label b) {
+    add_instruction(op_aaa(inst_count, op_greater_than, NULL, a, b));
 }
 
-void lower_than(char *a, char *b) {
-    int add_a = GET_VAR_OR_POP_TMP(a);
-    int add_b = GET_VAR_OR_POP_TMP(b);
-    int add_c = temp_push();
-    OP_THREE_ADDR("SUP", add_a, add_b, add_c);
+void lower_than(label a, label b) {
+    add_instruction(op_aaa(inst_count, op_lower_than, NULL, a, b));
 }
 
-void equal_to(char *a, char *b) {
-    int add_a = GET_VAR_OR_POP_TMP(a);
-    int add_b = GET_VAR_OR_POP_TMP(b);
-    int add_c = temp_push();
-    OP_THREE_ADDR("EQU", add_a, add_b, add_c);
+void equal_to(label a, label b) {
+    add_instruction(op_aaa(inst_count, op_equal_to, NULL, a, b));
 }
 
-char *jmp(address index, address a) {
-    return printf_alloc("%02X#  JMP  %3d\n", index, a);
-}
-
-void start_jump(char *a) {
+void start_jump() {
     add_visibility();
 
     nb_start_section++;
 
-    add_instruction(printf_alloc("%02X", GET_VAR_OR_POP_TMP(a)));
-    start_section[nb_start_section] = nb_inst;
+    add_instruction(NULL);
+    start_section[nb_start_section] = inst_count;
+}
+
+void start_conditional_jump(label a) {
+    add_visibility();
+
+    nb_start_section++;
+
+    add_instruction(printf_alloc("$%02X", GET_VAR_OR_POP_TMP(a)));
+    start_section[nb_start_section] = inst_count;
 }
 
 void end_jump() {
@@ -155,9 +123,9 @@ void end_jump() {
     char *b = get_instruction(start_section[nb_start_section]);
 
     if (b == NULL)
-        a = jmp(start_section[nb_start_section], INST_INDEX);
+        a = op_c(start_section[nb_start_section] - 1, op_jump, inst_count - 1);
     else
-        a = printf_alloc("%02X#  JMF  @%s  %3d\n", start_section[nb_start_section], b, INST_INDEX);
+        a = op_ac(start_section[nb_start_section] - 1, op_conditional_jump, b, inst_count);
 
     modify_instruction(a, start_section[nb_start_section]);
     nb_start_section--;
@@ -168,18 +136,18 @@ void start_jump_reverse() {
     add_visibility();
 
     nb_start_reverse_section++;
-    start_reverse_section[nb_start_reverse_section] = nb_inst;
+    start_reverse_section[nb_start_reverse_section] = inst_count;
 }
 
-void end_jump_reverse(char *b) {
+void end_jump_reverse(label b) {
     remove_visibility();
 
     char *a;
 
     if (b == NULL)
-        a = jmp(start_reverse_section[nb_start_reverse_section], INST_INDEX);
+        a = op_c(start_reverse_section[nb_start_reverse_section], op_jump, inst_count);
     else
-        a = printf_alloc("%02X#  JMF  @%s  %3d\n", start_reverse_section[nb_start_reverse_section], b, INST_INDEX);
+        a = op_ac(start_reverse_section[nb_start_reverse_section], op_conditional_jump, b, inst_count);
 
     add_instruction(a);
     nb_start_reverse_section--;
@@ -204,13 +172,13 @@ void start_function(char *a) {
     nb_fun++;
     tab_fnc[nb_fun] = empty_alloc(sizeof(function));
     tab_fnc[nb_fun]->index = var_get_force(a);
-    tab_fnc[nb_fun]->fun = nb_inst;
+    tab_fnc[nb_fun]->fun = inst_count;
 
 }
 
 void end_function() {
     remove_visibility();
-    add_instruction(jmp(INST_INDEX, 255));
+    add_instruction(op_c(inst_count, op_jump, 255));
 
     print_instruction(); // a enlever pour affiche d'un seul block
     printf("\n");
@@ -226,9 +194,9 @@ void go_function(char *a) {
     }
 
     //TO DO: si on a une fonction qui en appelle une qui en appelle une autre on fait comment
-    OP_TWO_ADDR("COP", 255, function_index);
+    op_aa(inst_count, op_copy, NULL, a);
 
-    add_instruction(jmp(INST_INDEX, tab_fnc[index]->fun));
+    add_instruction(op_c(inst_count, op_jump, tab_fnc[index]->fun));
     add_instruction(copy_alloc(a));
 }
 

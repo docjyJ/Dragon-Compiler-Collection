@@ -23,14 +23,13 @@ void var_create_force(char *name) {
     var_stack++;
 }
 
-address var_create(char *a) {
+void var_create(label a) {
     short addr = var_get_force(a);
     if (addr != -1) yyerror(printf_alloc("<%s> already exist", a));
     var_create_force(a);
-    return var_get_force(a);
 }
 
-short var_get_force(char *name) {
+short var_get_force(label name) {
     if (strlen(name) == 0)
         return -1;
 
@@ -43,7 +42,7 @@ short var_get_force(char *name) {
     return out;
 }
 
-address var_get(char *a) {
+address var_get(label a) {
     short addr = var_get_force(a);
     if (addr == -1) yyerror(printf_alloc("<%s> doesn't exist", a));
     return addr;

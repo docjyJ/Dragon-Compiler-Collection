@@ -38,11 +38,14 @@ code_block: LBRACE code_line_list RBRACE
 code_line_list: code_line
               | code_line code_line_list
               ;
+code_block_or_line: code_block
+                  | code_line
+                  ;
 
 code_line: operators END { free($1); }
          | defvars END
-         | if_header code_block else_header code_block { end_jump(); }
-         | if_header code_block { end_jump(); }
+         | if_header code_block_or_line else_header code_block_or_line { end_jump(); }
+         | if_header code_block_or_line { end_jump(); }
          | while_header code_block {end_jump_reverse(NULL);  end_jump();  }
          | do_header code_block do_footer END
          | PRINT LPAR operators RPAR END { display($3); free($3); }
@@ -50,13 +53,13 @@ code_line: operators END { free($1); }
          | END
          ;
 
-if_header: IF LPAR operators RPAR { start_jump($3); free($3); }
+if_header: IF LPAR operators RPAR { start_conditional_jump($3); free($3); }
          ;
 
-else_header: ELSE { end_jump(); start_jump(NULL); }
+else_header: ELSE { end_jump(); start_jump(); }
          ;
 
-while_header: WHILE LPAR operators RPAR { start_jump($3); start_jump_reverse(); free($3); }
+while_header: WHILE LPAR operators RPAR { start_conditional_jump($3); start_jump_reverse(); free($3); }
             ;
 
 do_header: DO { start_jump_reverse(); }
