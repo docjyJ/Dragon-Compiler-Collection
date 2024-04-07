@@ -104,15 +104,13 @@ void equal_to(label a, label b);
 
 // Gestion des sauts
 
-void start_jump();
+void start_if(label a);
 
-void start_conditional_jump(label a);
+void start_else();
 
-void end_jump();
+void start_loop();
 
-void start_jump_reverse();
-
-void end_jump_reverse(label b);
+void end_branch();
 
 // Gestion des fonctions
 

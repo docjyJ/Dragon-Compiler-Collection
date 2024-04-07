@@ -24,12 +24,14 @@ extern const op_code op_logical_or;
 
 char *op_c(address line, op_code code, address a);
 
-char *op_a(address line, op_code code, label a);
+char *op_i(address line, op_code code, label a);
 
-char *op_ac(address line, op_code code, label a, address b);
+char *op_oc(address line, op_code code, label a, address b);
 
-char *op_aa(address line, op_code code, label result, label a);
+char *op_ic(address line, op_code code, label a, address b);
 
-char *op_aaa(address line, op_code code, label result, label a, label b);
+char *op_oi(address line, op_code code, label result, label a);
+
+char *op_oii(address line, op_code code, label result, label a, label b);
 
 #endif

@@ -6,9 +6,9 @@
 #define GET_VAR_OR_POP_TMP(a) (a == NULL ? temp_pop() : var_get(a))
 #define GET_VAR_OR_PUSH_TMP(a) (a == NULL ? temp_push() : var_get(a))
 
-const char *pattern_c = "%02X#     %3s  %3d               //%02X\n";
+const char *pattern_c = "%02X#     %3s  %3d//%02X\n";
 const char *pattern_a = "%02X#     %3s  @%02X\n";
-const char *pattern_ac = "%02X#     %3s  @%02X  %3d          //%02X\n";
+const char *pattern_ac = "%02X#     %3s  @%02X  %3d//%02X\n";
 const char *pattern_aa = "%02X#     %3s  @%02X  @%02X\n";
 const char *pattern_aaa = "%02X#     %3s  @%02X  @%02X  @%02X\n";
 
@@ -33,23 +33,28 @@ char *op_c(address line, op_code code, address a) {
     return printf_alloc(pattern_c, line, code.name, a, a);
 }
 
-char *op_a(address line, op_code code, label a) {
+char *op_i(address line, op_code code, label a) {
     address a_a = GET_VAR_OR_POP_TMP(a);
     return printf_alloc(pattern_a, line, code.name, a_a);
 }
 
-char *op_ac(address line, op_code code, label a, address b) {
+char *op_oc(address line, op_code code, label a, address b) {
     address a_result = GET_VAR_OR_PUSH_TMP(a);
     return printf_alloc(pattern_ac, line, code.name, a_result, b, b);
 }
 
-char *op_aa(address line, op_code code, label result, label a) {
+char *op_ic(address line, op_code code, label a, address b) {
+    address a_result = GET_VAR_OR_POP_TMP(a);
+    return printf_alloc(pattern_ac, line, code.name, a_result, b, b);
+}
+
+char *op_oi(address line, op_code code, label result, label a) {
     address a_a = GET_VAR_OR_POP_TMP(a);
     address a_result = GET_VAR_OR_PUSH_TMP(result);
     return printf_alloc(pattern_aa, line, code.name, a_result, a_a);
 }
 
-char *op_aaa(address line, op_code code, label result, label a, label b) {
+char *op_oii(address line, op_code code, label result, label a, label b) {
     address a_b = GET_VAR_OR_POP_TMP(b);
     address a_a = GET_VAR_OR_POP_TMP(a);
     address a_result = GET_VAR_OR_PUSH_TMP(result);

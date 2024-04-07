@@ -2,6 +2,9 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmain-return-type"
 
+typedef unsigned char __uint8__;
+
+#define int __uint8__
 #define char ___disable_keyword_char___
 #define short ___disable_keyword_short___
 #define long ___disable_keyword_long___

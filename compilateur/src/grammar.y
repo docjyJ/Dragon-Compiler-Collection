@@ -44,29 +44,32 @@ code_block_or_line: code_block
 
 code_line: operators END { free($1); }
          | defvars END
-         | if_header code_block_or_line else_header code_block_or_line { end_jump(); }
-         | if_header code_block_or_line { end_jump(); }
-         | while_header code_block {end_jump_reverse(NULL);  end_jump();  }
-         | do_header code_block do_footer END
+         | if_header code_block_or_line else_header code_block_or_line { end_branch(); }
+         | if_header code_block_or_line { end_branch(); }
+         | while_header while_cond code_block { end_branch(); end_branch(); }
+         | do_header code_block do_cond END { end_branch(); end_branch(); }
          | PRINT LPAR operators RPAR END { display($3); free($3); }
          | return END
          | END
          ;
 
-if_header: IF LPAR operators RPAR { start_conditional_jump($3); free($3); }
+if_header: IF LPAR operators RPAR { start_if($3); free($3); }
          ;
 
-else_header: ELSE { end_jump(); start_jump(); }
+else_header: ELSE { end_branch(); start_else(); }
+           ;
+
+while_header: WHILE { start_loop(); }
+            ;
+
+do_header: DO { start_loop(); }
          ;
 
-while_header: WHILE LPAR operators RPAR { start_conditional_jump($3); start_jump_reverse(); free($3); }
-            ;
+while_cond: LPAR operators RPAR { start_if($2); free($2); }
+          ;
 
-do_header: DO { start_jump_reverse(); }
-            ;
-
-do_footer: WHILE LPAR operators RPAR { end_jump_reverse($3); free($3); }
-            ;
+do_cond: WHILE LPAR operators RPAR { start_if($3); free($3); }
+       ;
 
 
 /* Gestion des fonctions */
@@ -116,8 +119,8 @@ additive: multiplicative { $$ = $1 ; }
         ;
 
 relational: additive { $$ = $1 ; }
-          | relational LOW additive { greater_than($1, $3); $$ = NULL; free($1); free($3); }
-          | relational GRT additive { lower_than($1, $3); $$ = NULL; free($1); free($3); }
+          | relational GRT additive { greater_than($1, $3); $$ = NULL; free($1); free($3); }
+          | relational LOW additive { lower_than($1, $3); $$ = NULL; free($1); free($3); }
           ;
 
 equality: relational { $$ = $1 ; }
