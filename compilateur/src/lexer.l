@@ -3,10 +3,10 @@
 %option nounput
 %option yylineno
 %{
-#define YY_USER_ACTION { add_hint(yytext, yyleng, yylineno-1); }
-#include "stack.instruction.h"
 #include "error_memory.h"
 #include "grammar.tab.h"
+#include "instruction_set.h"
+#define YY_USER_ACTION { append_hint_buffer(yytext, yyleng, yylineno-1); }
 %}
 
 %%
@@ -63,17 +63,17 @@
 }
 
 0x[0-9a-fA-F]+ {
-    yylval.i = parse_number(yytext+2, 16);
+    yylval.i = (number) parse_number(yytext, 16);
     return STATIC_INT;
 }
 
 [0-9]+ {
-    yylval.i = parse_number(yytext, 10);
+    yylval.i = (number) parse_number(yytext, 10);
     return STATIC_INT;
 }
 
 0b[01]+ {
-    yylval.i = parse_number(yytext+2, 2);
+    yylval.i = (number) parse_number(yytext+2, 2);
     return STATIC_INT;
 }
 

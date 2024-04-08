@@ -1,13 +1,18 @@
+#include <string.h>
 #include "instruction_set.h"
 #include "error_memory.h"
 #include "stack.variable.h"
+#include "stack.instruction.h"
 
 const char *pattern_c = "%02X#     %3s  %3d//%02X\n";
 const char *pattern_a = "%02X#     %3s  @%02X\n";
 const char *pattern_ac = "%02X#     %3s  @%02X  %3d//%02X\n";
 const char *pattern_aa = "%02X#     %3s  @%02X  @%02X\n";
 const char *pattern_aaa = "%02X#     %3s  @%02X  @%02X  @%02X\n";
+const char *hint_pattern = "//%3d: %s\n";
+const char *padding = "";
 
+// Instructions données par le sujet
 const op_code op_add = {"ADD", 0x01};
 const op_code op_multiply = {"MUL", 0x02};
 const op_code op_subtract = {"SUB", 0x03};
@@ -15,14 +20,22 @@ const op_code op_divide = {"DIV", 0x04};
 const op_code op_copy = {"COP", 0x05};
 const op_code op_define = {"AFC", 0x06};
 const op_code op_jump = {"JMP", 0x07};
-const op_code op_conditional_jump = {"JMF", 0x08};
+const op_code op_branch = {"JMF", 0x08};
 const op_code op_lower_than = {"INF", 0x09};
 const op_code op_greater_than = {"SUP", 0x0A};
 const op_code op_equal_to = {"EQU", 0x0B};
 const op_code op_display = {"PRI", 0x0C};
 
-const op_code op_logical_and = {"AND", 0x20};
-const op_code op_logical_or = {"OR", 0x21};
+// Instructions ajoutées (arithmétiques)
+const op_code op_negate = {"NEG", 0x10};
+const op_code op_modulo = {"MOD", 0x11};
+
+// Instructions ajoutées (loguiques)
+const op_code op_logical_and = {"AND", 0x40};
+const op_code op_logical_or = {"OR", 0x41};
+const op_code op_logical_not = {"NOT", 0x42};
+const op_code op_logical_xor = {"XOR", 0x43};
+
 
 
 inst op_c(address line, op_code code, address c) {
@@ -57,4 +70,118 @@ inst op_oii(address line, op_code code, label o, label i1, label i2) {
     return printf_alloc(pattern_aaa, line, code.name, a_o, a_i1, a_i2);
 }
 
+
+
+void display(label i) {
+    add_instruction(op_i(get_instruction_count(), op_display, i));
+}
+
+void number_copy(label o, address c) {
+    add_instruction(op_oc(get_instruction_count(), op_define, o, c));
+}
+
+void number_define(label o, address c) {
+    var_create(o);
+    number_copy(o, c);
+}
+
+void var_copy(label o, label i) {
+    add_instruction(op_oi(get_instruction_count(), op_copy, o, i));
+}
+
+void var_define(label o, label i) {
+    var_create(o);
+    var_copy(o, i);
+}
+
+void negate(label o, label i) {
+    add_instruction(op_oi(get_instruction_count(), op_negate, o, i));
+}
+
+void add(label o, label i1, label i2) {
+    add_instruction(op_oii(get_instruction_count(), op_add, o, i1, i2));
+}
+
+void subtract(label o, label i1, label i2) {
+    add_instruction(op_oii(get_instruction_count(), op_subtract, o, i1, i2));
+}
+
+void multiply(label o, label i1, label i2) {
+    add_instruction(op_oii(get_instruction_count(), op_multiply, o, i1, i2));
+}
+
+void divide(label o, label i1, label i2) {
+    add_instruction(op_oii(get_instruction_count(), op_divide, o, i1, i2));
+}
+
+void modulo(label o, label i1, label i2) {
+    add_instruction(op_oii(get_instruction_count(), op_modulo, o, i1, i2));
+}
+
+void logical_and(label o, label i1, label i2) {
+    add_instruction(op_oii(get_instruction_count(), op_logical_and, o, i1, i2));
+}
+
+void logical_or(label o, label i1, label i2) {
+    add_instruction(op_oii(get_instruction_count(), op_logical_or, o, i1, i2));
+}
+
+void logical_not(label o, label i) {
+    add_instruction(op_oi(get_instruction_count(), op_logical_not, o, i));
+}
+
+void logical_xor(label o, label i1, label i2) {
+    add_instruction(op_oii(get_instruction_count(), op_logical_xor, o, i1, i2));
+}
+
+void greater_than(label o, label i1, label i2) {
+    add_instruction(op_oii(get_instruction_count(), op_greater_than, o, i1, i2));
+}
+
+void lower_than(label o, label i1, label i2) {
+    add_instruction(op_oii(get_instruction_count(), op_lower_than, o, i1, i2));
+}
+
+void equal_to(label o, label i1, label i2) {
+    add_instruction(op_oii(get_instruction_count(), op_equal_to, o, i1, i2));
+}
+
+void jump(address c) {
+    add_instruction(op_c(get_instruction_count(), op_jump, c));
+}
+
+void branch(label i, address c) {
+    add_instruction(op_ic(get_instruction_count(), op_branch, i, c));
+}
+
+address padding_for_later() {
+    add_instruction(copy_alloc(padding));
+    return get_instruction_count() - 1;
+}
+
+void jump_before(address line, address c) {
+    set_instruction(op_c(line, op_jump, c), line);
+}
+
+void branch_before(address line, label i, address c) {
+    set_instruction(op_ic(line, op_branch, i, c), line);
+}
+
+
+int buffer_col = 0;
+char hint_buffer[MAX_ADDRESS];
+
+void append_hint_buffer(char *hint, int length, int line) {
+    if (hint[0] == '\n') {
+        char *a = printf_alloc(hint_pattern, line, hint_buffer);
+        add_hint(a);
+        buffer_col = 0;
+        hint_buffer[0] = '\0';
+    } else {
+        int old = buffer_col;
+        buffer_col += length;
+        if (buffer_col < MAX_ADDRESS)
+            strncpy(hint_buffer + old, hint, length + 1);
+    }
+}
 

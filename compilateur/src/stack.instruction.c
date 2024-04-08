@@ -1,19 +1,15 @@
 #include <malloc.h>
-#include <string.h>
 #include "stack.instruction.h"
 #include "error_memory.h"
 
 address inst_count = 0;
-inst tab_instruct[MAX_ADDRESS];
+inst real_tab_instruct[MAX_ADDRESS + 1];
+inst *tab_instruct = real_tab_instruct + 1;
 short deja_print = 0;
 
 void add_instruction(inst line) {
     tab_instruct[inst_count] = line;
     inst_count++;
-}
-
-inst get_instruction(int nb) {
-    return tab_instruct[nb];
 }
 
 void set_instruction(inst line, address index) {
@@ -23,7 +19,7 @@ void set_instruction(inst line, address index) {
     free(b);
 }
 
-void print_instruction() {
+void print_instruction() { // TODO Free
     for (int index = deja_print; index < inst_count; index++)
         printf("%s", tab_instruct[index]);
 
@@ -34,29 +30,8 @@ address get_instruction_count() {
     return inst_count;
 }
 
-void add_instruction_padding() {
-    add_instruction(printf_alloc("\n"));
-}
-
-
-int buffer_col = 0;
-char hint_buffer[MAX_ADDRESS];
-
-void add_hint(char *hint, int length, int line) {
-    if (hint[0] == '\n') {
-        if (inst_count == 0)
-            printf("//%3d: %s\n", line, hint_buffer); // TODO not here
-        else {
-            inst old = tab_instruct[get_instruction_count() - 1];
-            tab_instruct[get_instruction_count() - 1] = printf_alloc("%s//%3d: %s\n", old, line, hint_buffer);
-            free(old);
-        }
-        buffer_col = 0;
-        hint_buffer[0] = '\0';
-    } else {
-        int old = buffer_col;
-        buffer_col += length;
-        if (buffer_col < MAX_ADDRESS)
-            strncpy(hint_buffer + old, hint, length + 1);
-    }
+void add_hint(char *hint) {
+    inst old = tab_instruct[inst_count - 1];
+    tab_instruct[inst_count - 1] = printf_alloc("%s%s", old, hint);
+    free(old);
 }

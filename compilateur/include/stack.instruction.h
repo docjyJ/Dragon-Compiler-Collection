@@ -10,12 +10,6 @@
 void add_instruction(inst line);
 
 /**
- * Permet d'ajouter un vide qui pourra être complèter plus tard pendant l'analyse.
- *@see set_instruction
- */
-void add_instruction_padding();
-
-/**
  * Permet de récupérer le nombre d'instructions.
  * @return le nombre d'instructions
  */
@@ -36,12 +30,10 @@ void set_instruction(inst line, address index);
 void print_instruction();
 
 /**
- * Permet d'ajouter un commentaire à une instruction.
+ * Permet d'ajouter un commentaire dans le fichier assembleur.
  * C'est utilisé pour afficher le code source entre les instructions.
  * @param hint le commentaire à ajouter
- * @param length la longueur du commentaire
- * @param line le numéro de ligne de l'instruction
  */
-void add_hint(char *hint, int length, int line);
+void add_hint(char *hint);
 
 #endif

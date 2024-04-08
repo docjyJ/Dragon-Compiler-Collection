@@ -1,15 +1,15 @@
 %{
 #include "lexer.yy.h"
 #include "error_memory.h"
-#include "traducteur_ARM.h"
-#include "stack.instruction.h"
+#include "instruction_set.h"
 #include "stack.branch.h"
 #include "stack.function.h"
+#include "stack.instruction.h"
 %}
 
 %union {
   char *s;
-  unsigned long i;
+  unsigned short i;
 }
 
 %token <s> LABEL
@@ -97,33 +97,33 @@ functions_arg: TYPE_INT LABEL { yyerror("function arguments not implemented"); f
 
 /* Gestion ses opérations */
 
-number: STATIC_INT { number_copy(NULL, (int) $1); $$ = NULL; }
+number: STATIC_INT { $$ = NULL; number_copy($$, $1); }
       | LABEL { $$ = $1; }
       | callable { $$ = NULL; }
       | LPAR operators RPAR { $$ = $2; }
       ;
 
 unary: number { $$ = $1 ; }
-     | SUB number { number_copy(NULL, 0); subtract(NULL, $2); $$ = NULL; free($2); }
+     | SUB number { $$ = NULL; negate($$, $2); free($2); }
      ;
 
 multiplicative: unary { $$ = $1 ; }
-              | multiplicative MUL unary { multiply($1, $3); $$ = NULL; free($1); free($3); }
-              | multiplicative DIV unary { divide($1, $3); $$ = NULL; free($1); free($3); }
+              | multiplicative MUL unary { $$ = NULL; multiply($$, $1, $3); free($1); free($3); }
+              | multiplicative DIV unary { $$ = NULL; divide($$, $1, $3); free($1); free($3); }
               ;
 
 additive: multiplicative { $$ = $1 ; }
-        | additive ADD multiplicative { add($1, $3); $$ = NULL; free($1); free($3); }
-        | additive SUB multiplicative { subtract($1, $3); $$ = NULL; free($1); free($3); }
+        | additive ADD multiplicative { $$ = NULL; add($$, $1, $3); free($1); free($3); }
+        | additive SUB multiplicative { $$ = NULL; subtract($$, $1, $3); free($1); free($3); }
         ;
 
 relational: additive { $$ = $1 ; }
-          | relational GRT additive { greater_than($1, $3); $$ = NULL; free($1); free($3); }
-          | relational LOW additive { lower_than($1, $3); $$ = NULL; free($1); free($3); }
+          | relational GRT additive { $$ = NULL; greater_than($$, $1, $3); free($1); free($3); }
+          | relational LOW additive { $$ = NULL; lower_than($$, $1, $3); free($1); free($3); }
           ;
 
 equality: relational { $$ = $1 ; }
-        | equality EQ  relational { equal_to($1, $3); $$ = NULL; free($1); free($3); }
+        | equality EQ  relational { $$ = NULL; equal_to($$, $1, $3); free($1); free($3); }
         ;
 
 operators: equality { $$ = $1 ; }
@@ -154,11 +154,11 @@ callable_args: LPAR callable_args_list RPAR { $$ = $2; }
              | LPAR RPAR { $$ = 0; }
              ;
 
-callable_args_list: operators { fprintf(stderr, " |ARG %s(num 0)\n", $1); $$ = 1; free($1); }
-                  | callable_args_list COMMA operators { fprintf(stderr, " |ARG %s(num %lu)\n", $3, $1); $$ = $1 + 1; free($3); }
+callable_args_list: operators { $$ = 1; free($1); }
+                  | callable_args_list COMMA operators { $$ = $1 + 1; free($3); }
                   ;
 
-return: tRETURN operators { fprintf(stderr, "%d RETURN %s\n", yylineno, $2); free($2); }
+return: tRETURN operators { free($2); }
       ;
 
 %%

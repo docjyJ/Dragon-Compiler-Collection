@@ -4,6 +4,7 @@
 #define MAX_ADDRESS 0x100
 
 typedef unsigned char address;
+typedef unsigned short number;
 typedef char *label;
 typedef char *inst;
 
