@@ -15,7 +15,6 @@ const char *pattern_ac = "%02X#     %3s  @%02X  %3d//%02X\n";
 const char *pattern_aa = "%02X#     %3s  @%02X  @%02X\n";
 const char *pattern_aaa = "%02X#     %3s  @%02X  @%02X  @%02X\n";
 const char *hint_pattern = "//%3d: %s\n";
-const char *padding = "";
 
 // Instructions données par le sujet
 const op_code op_add = {"ADD", 0x01};
@@ -41,51 +40,60 @@ const op_code op_logical_or = {"OR", 0x41};
 const op_code op_logical_not = {"NOT", 0x42};
 const op_code op_logical_xor = {"XOR", 0x43};
 
+inst new_inst(address bin0, address bin1, address bin2, address bin3, label code) {
+    inst k = {{bin0, bin1, bin2, bin3}, code, NULL};
+    return k;
+}
 
 
-inst op_c(address line, op_code code, address c) {
-    return printf_alloc(pattern_c, line, code.name, c, c);
+inst op_c(address line, op_code code, number c) {
+    return new_inst(code.id, 0, (c >> 8) & 0xFF, c & 0xFF,
+                    printf_alloc(pattern_c, line, code.name, c, c));
 }
 
 inst op_i(address line, op_code code, label i) {
     address a_a = var_get_or_temp_pop(i);
-    return printf_alloc(pattern_a, line, code.name, a_a);
+    return new_inst(code.id, a_a, 0, 0,
+                    printf_alloc(pattern_a, line, code.name, a_a));
 }
 
-inst op_oc(address line, op_code code, label o, address c) {
+inst op_oc(address line, op_code code, label o, number c) {
     address a_o = var_get_or_temp_push(o);
-    return printf_alloc(pattern_ac, line, code.name, a_o, c, c);
+    return new_inst(code.id, a_o, (c >> 8) & 0xFF, c & 0xFF,
+                    printf_alloc(pattern_ac, line, code.name, a_o, c, c));
 }
 
-inst op_ic(address line, op_code code, label i, address c) {
+inst op_ic(address line, op_code code, label i, number c) {
     address a_i = var_get_or_temp_pop(i);
-    return printf_alloc(pattern_ac, line, code.name, a_i, c, c);
+    return new_inst(code.id, a_i, (c >> 8) & 0xFF, c & 0xFF,
+                    printf_alloc(pattern_ac, line, code.name, a_i, c, c));
 }
 
 inst op_oi(address line, op_code code, label o, label i) {
-    address a_a = var_get_or_temp_pop(i);
+    address a_i = var_get_or_temp_pop(i);
     address a_o = var_get_or_temp_push(o);
-    return printf_alloc(pattern_aa, line, code.name, a_o, a_a);
+    return new_inst(code.id, a_o, a_i, 0,
+                    printf_alloc(pattern_aa, line, code.name, a_o, a_i));
 }
 
 inst op_oii(address line, op_code code, label o, label i1, label i2) {
     address a_i2 = var_get_or_temp_pop(i2);
     address a_i1 = var_get_or_temp_pop(i1);
     address a_o = var_get_or_temp_push(o);
-    return printf_alloc(pattern_aaa, line, code.name, a_o, a_i1, a_i2);
+    return new_inst(code.id, a_o, a_i1, a_i2,
+                    printf_alloc(pattern_aaa, line, code.name, a_o, a_i1, a_i2));
 }
-
 
 
 void display(label i) {
     add_instruction(op_i(get_instruction_count(), op_display, i));
 }
 
-void number_copy(label o, address c) {
+void number_copy(label o, number c) {
     add_instruction(op_oc(get_instruction_count(), op_define, o, c));
 }
 
-void number_define(label o, address c) {
+void number_define(label o, number c) {
     var_create(o);
     number_copy(o, c);
 }
@@ -160,7 +168,7 @@ void branch(label i, address c) {
 }
 
 address padding_for_later() {
-    add_instruction(copy_alloc(padding));
+    add_instruction(new_inst(0, 0, 0, 0, NULL));
     return get_instruction_count() - 1;
 }
 

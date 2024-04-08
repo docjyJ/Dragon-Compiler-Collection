@@ -8,8 +8,14 @@
 typedef unsigned char address;
 typedef unsigned short number;
 typedef char *label;
-typedef char *inst;
+typedef struct {
+    address bin[4];
+    label code;
+    label hint;
+} inst;
 
 void yyerror(const char *s);
+
+void write_output(inst s);
 
 #endif

@@ -16,7 +16,7 @@ void display(label i);
  * @param o le nom de la variable d'entrée ou NULL pour créer un temporaire
  * @param c une constante numérique
  */
-void number_copy(label o, address c);
+void number_copy(label o, number c);
 
 /**
  * Affectation d'une valeur numérique à une variable, tout en ajoutant cette variable au symbole définie.
@@ -24,7 +24,7 @@ void number_copy(label o, address c);
  * @param o le nom de la variable d'entrée qui sera définie, ne peut pas être NULL
  * @param c une constante numérique
  */
-void number_define(label o, address c);
+void number_define(label o, number c);
 
 /**
  * Copie de la valeur d'une variable dans une autre.
@@ -161,17 +161,17 @@ void equal_to(label o, label i1, label i2);
 /**
  * Permet de sauter à une adresse d'exécution spécifique.
  * `jump(c)`
- * @param c l'adresse de saut
+ * @param a l'adresse de saut
  */
-void jump(address c);
+void jump(address a);
 
 /**
  * Permet de sauter à une adresse d'exécution spécifique si une condition est vérifiée.
  * `if (i) jump(c)`
  * @param i le nom de la variable de condition ou NULL pour obtenir un temporaire
- * @param c l'adresse de saut
+ * @param a l'adresse de saut
  */
-void branch(label i, address c);
+void branch(label i, address a);
 
 /**
  * Permet d'ajouter un vide qui pourra être compléter plus tard pendant l'analyse.
@@ -185,10 +185,10 @@ address padding_for_later();
  * Cette fonction permet d'écrire cette instruction dans une adresse passée.
  * `jump(c)`
  * @param line l'adresse à écrire
- * @param c l'adresse de saut
+ * @param a l'adresse de saut
  * @see padding_for_later
  */
-void jump_before(address line, address c);
+void jump_before(address line, address a);
 
 /**
  * Permet de sauter à une adresse d'exécution spécifique si une condition est vérifiée.
@@ -196,10 +196,10 @@ void jump_before(address line, address c);
  * `if (i) jump(c)`
  * @param line l'adresse à écrire
  * @param i le nom de la variable de condition ou NULL pour obtenir un temporaire
- * @param c l'adresse de saut
+ * @param a l'adresse de saut
  * @see padding_for_later
  */
-void branch_before(address line, label i, address c);
+void branch_before(address line, label i, address a);
 
 
 /**

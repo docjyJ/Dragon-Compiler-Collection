@@ -47,7 +47,7 @@ emulate: clean $(TEST_SRC:.c=-emulate)
 	@echo --------------------------------
 
 %.s: test/%.c $(TARGET)
-	$(TARGET) -o $@ $<
+	$(TARGET) -sa -o $@ $<
 
 %.out: test/%.c
 	$(GCC_TEST) -o $@ $<
