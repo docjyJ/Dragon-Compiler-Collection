@@ -1,10 +1,10 @@
 %{
-#include "lexer.yy.h"
-#include "error_memory.h"
 #include "instruction_set.h"
 #include "stack.branch.h"
 #include "stack.function.h"
 #include "stack.instruction.h"
+
+int yylex();
 %}
 
 %union {

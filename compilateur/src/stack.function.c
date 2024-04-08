@@ -1,9 +1,7 @@
+#include "instruction_set.h"
+#include "memory.h"
 #include "stack.function.h"
 #include "stack.variable.h"
-#include "error_memory.h"
-#include "instruction_set.h"
-
-#define MAX_FUNCTION 20
 
 typedef struct {
     int index;

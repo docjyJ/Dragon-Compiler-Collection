@@ -1,7 +1,7 @@
 #ifndef DCC_BRANCH_MANAGER_H_
 #define DCC_BRANCH_MANAGER_H_
 
-#include "types.h"
+#include "app.h"
 
 /**
  * Permet de démarrer une nouvelle branche avec un saut conditionnel.

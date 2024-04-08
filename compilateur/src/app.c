@@ -1,7 +1,15 @@
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "grammar.tab.h"
+#include <unistd.h>
+#include "app.h"
+
+extern int yylineno;
+extern int yyparse();
+
+void yyerror(const char *msg) {
+    fprintf(stderr, "error: '%s' at line %d.\n", msg, yylineno);
+    exit(1);
+}
 
 int main(int argc, char **argv) {
     int c;

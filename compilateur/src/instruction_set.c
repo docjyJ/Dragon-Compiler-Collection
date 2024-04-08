@@ -1,8 +1,13 @@
 #include <string.h>
 #include "instruction_set.h"
-#include "error_memory.h"
-#include "stack.variable.h"
+#include "memory.h"
 #include "stack.instruction.h"
+#include "stack.variable.h"
+
+typedef struct {
+    const char *name;
+    const address id;
+} op_code;
 
 const char *pattern_c = "%02X#     %3s  %3d//%02X\n";
 const char *pattern_a = "%02X#     %3s  @%02X\n";

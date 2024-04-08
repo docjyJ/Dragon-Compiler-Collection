@@ -1,7 +1,7 @@
 #ifndef DCC_INSTRUCTION_STACK_H_
 #define DCC_INSTRUCTION_STACK_H_
 
-#include "types.h"
+#include "app.h"
 
 /**
  * Permet d'ajouter une instruction à la pile d'instructions.

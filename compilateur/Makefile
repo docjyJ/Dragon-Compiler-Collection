@@ -10,7 +10,7 @@ GCC_TEST = gcc -Itest/
 
 LEX_SRC = lexer.l
 YACC_SRC = grammar.y
-C_SRC = instruction_set.c stack.variable.c stack.branch.c stack.function.c stack.instruction.c error_memory.c main.c
+C_SRC = app.c memory.c instruction_set.c stack.branch.c stack.function.c stack.instruction.c stack.variable.c
 TEST_SRC = arithmetic.c conditional.c
 
 C_GEN = $(YACC_SRC:.y=.tab.c) $(LEX_SRC:.l=.yy.c)

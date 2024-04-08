@@ -1,7 +1,7 @@
 #ifndef DCC_VARIABLE_MANAGER_H_
 #define DCC_VARIABLE_MANAGER_H_
 
-#include "types.h"
+#include "app.h"
 
 /**
  * Créer une nouvelle variable, si elle n'existe pas déjà.

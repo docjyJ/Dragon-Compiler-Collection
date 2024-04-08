@@ -3,8 +3,8 @@
 %option nounput
 %option yylineno
 %{
-#include "error_memory.h"
 #include "grammar.tab.h"
+#include "memory.h"
 #include "instruction_set.h"
 #define YY_USER_ACTION { append_hint_buffer(yytext, yyleng, yylineno-1); }
 %}

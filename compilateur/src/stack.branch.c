@@ -1,11 +1,9 @@
 #include <stddef.h>
-#include "stack.branch.h"
 #include "instruction_set.h"
+#include "memory.h"
+#include "stack.branch.h"
 #include "stack.instruction.h"
 #include "stack.variable.h"
-#include "error_memory.h"
-
-#define MAX_BRANCH 10
 
 struct b_stak {
     address padding: 1;

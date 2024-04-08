@@ -1,7 +1,7 @@
-#include "stack.variable.h"
-#include "error_memory.h"
-#include <string.h>
 #include <malloc.h>
+#include <string.h>
+#include "memory.h"
+#include "stack.variable.h"
 
 typedef struct {
     char *nom;

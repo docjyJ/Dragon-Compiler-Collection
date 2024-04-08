@@ -1,11 +1,8 @@
+#include <malloc.h>
 #include <stdarg.h>
-#include "error_memory.h"
-#include "lexer.yy.h"
-
-void yyerror(const char *msg) {
-    fprintf(stderr, "error: '%s' at line %d.\n", msg, yylineno);
-    exit(1);
-}
+#include <stdlib.h>
+#include "memory.h"
+#include "app.h"
 
 unsigned long parse_number(const char *s, const int base) {
     char *endptr;
