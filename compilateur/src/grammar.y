@@ -3,6 +3,7 @@
 #include "stack.branch.h"
 #include "stack.function.h"
 #include "stack.instruction.h"
+#include "stack.variable.h"
 
 int yylex();
 %}
@@ -14,11 +15,16 @@ int yylex();
 
 %token <s> LABEL
 %token <i> STATIC_INT
-%token IF ELSE DO WHILE PRINT TYPE_INT TYPE_VOID tRETURN
-%token ADD SUB MUL DIV LOW GRT tNE EQ ASSIGN LBRACE RBRACE LPAR RPAR END COMMA tLE tGE tAND tOR tNOT MAIN
-%token tERROR
+%token IF ELSE DO WHILE PRINT TYPE_INT TYPE_VOID MAIN RETURN
+%token LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET
+%token ADD SUB MUL DIV MOD
+%token LOWEQ GRTEQ LOW GRT EQ NEQ
+%token LNOT LAND LOR
+%token BNOT BAND BXOR BOR
+%token ASSIGN COMMA END
 
-%type <s> number unary multiplicative additive relational equality operators
+%type <s> number unary multiplicative additive relational equality bitwise_and bitwise_xor bitwise_or operators
+%type <s> label_table label_pointer callable
 %type <i> callable_args_list callable_args functions_args functions_args_list
 
 %%
@@ -90,7 +96,7 @@ functions_args_list: functions_arg { $$ = 1; }
                    | functions_args_list COMMA functions_arg { $$ = $1 + 1; }
                    ;
 
-functions_arg: TYPE_INT LABEL { yyerror("function arguments not implemented"); free($2); }
+functions_arg: TYPE_INT label_pointer { yyerror("function arguments not implemented"); free($2); }
              ;
 
 
@@ -100,16 +106,23 @@ functions_arg: TYPE_INT LABEL { yyerror("function arguments not implemented"); f
 number: STATIC_INT { $$ = NULL; number_copy($$, $1); }
       | LABEL { $$ = $1; }
       | callable { $$ = NULL; }
+      | MUL number { $$ = NULL; load_0($$, $2); free($2); }
+      | BAND LABEL { $$ = NULL; number_copy($$, var_get($2)); free($2); }
+      | LABEL LBRACKET operators RBRACKET { $$ = NULL; load($$, $1, $3); free($1); free($3); }
+      | LPAR operators RPAR LBRACKET operators RBRACKET { $$ = NULL; load($$, $2, $5); free($2); free($5); }
       | LPAR operators RPAR { $$ = $2; }
       ;
 
 unary: number { $$ = $1 ; }
+     | ADD number { $$ = $2; }
      | SUB number { $$ = NULL; negate($$, $2); free($2); }
+     | BNOT number { $$ = NULL; bitwise_not($$, $2); free($2); }
      ;
 
 multiplicative: unary { $$ = $1 ; }
               | multiplicative MUL unary { $$ = NULL; multiply($$, $1, $3); free($1); free($3); }
               | multiplicative DIV unary { $$ = NULL; divide($$, $1, $3); free($1); free($3); }
+              | multiplicative MOD unary { $$ = NULL; modulo($$, $1, $3); free($1); free($3); }
               ;
 
 additive: multiplicative { $$ = $1 ; }
@@ -126,7 +139,18 @@ equality: relational { $$ = $1 ; }
         | equality EQ  relational { $$ = NULL; equal_to($$, $1, $3); free($1); free($3); }
         ;
 
-operators: equality { $$ = $1 ; }
+bitwise_and: equality { $$ = $1 ; }
+        | bitwise_and BAND equality { $$ = NULL; bitwise_and($$, $1, $3); free($1); free($3); }
+        ;
+bitwise_xor: bitwise_and { $$ = $1 ; }
+        | bitwise_xor BXOR bitwise_and { $$ = NULL; bitwise_xor($$, $1, $3); free($1); free($3); }
+        ;
+
+bitwise_or: bitwise_xor { $$ = $1 ; }
+        | bitwise_or BOR bitwise_xor { $$ = NULL; bitwise_or($$, $1, $3); free($1); free($3); }
+        ;
+
+operators: bitwise_or { $$ = $1 ; }
          | LABEL ASSIGN operators { var_copy($1, $3); $$ = $1; free($3); }
          ;
 
@@ -140,9 +164,18 @@ defvars_list: defvar
             | defvars_list COMMA defvar
             ;
 
-defvar: LABEL { number_define($1, 0) ; free($1); }
-      | LABEL ASSIGN operators { var_define($1, $3); free($1); free($3); }
+defvar: label_pointer { number_define($1, 0) ; free($1); }
+      | label_pointer ASSIGN operators { var_define($1, $3); free($1); free($3); } // TODO
       ;
+
+label_table: LABEL
+           | label_table LBRACKET operators RBRACKET { $$ = $1; free($3) ; } // TODO
+           | label_table LBRACKET RBRACKET { $$ = $1; } // TODO
+           ;
+
+label_pointer: label_table { $$ = $1; }
+             | MUL label_pointer { $$ = $2; } // TODO
+             ;
 
 
 /* Gestion des appel de fonction */
@@ -158,7 +191,7 @@ callable_args_list: operators { $$ = 1; free($1); }
                   | callable_args_list COMMA operators { $$ = $1 + 1; free($3); }
                   ;
 
-return: tRETURN operators { free($2); }
+return: RETURN operators { free($2); }
       ;
 
 %%

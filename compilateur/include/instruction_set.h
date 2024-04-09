@@ -97,39 +97,39 @@ void divide(label o, label i1, label i2);
 void modulo(label o, label i1, label i2);
 
 /**
- * Opération logique ET de deux variables et le stock dans une autre.
+ * Opération bit à bit ET de deux variables et le stock dans une autre.
  * `o = i1 & i2`
  * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
  * @param i1 le nom de la première variable d'entrée ou NULL pour obtenir un temporaire
  * @param i2 le nom de la deuxième variable d'entrée ou NULL pour obtenir un temporaire
  */
-void logical_and(label o, label i1, label i2);
+void bitwise_and(label o, label i1, label i2);
 
 /**
- * Opération logique OU de deux variables et le stock dans une autre.
+ * Opération bit à bit OU de deux variables et le stock dans une autre.
  * `o = i1 | i2`
  * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
  * @param i1 le nom de la première variable d'entrée ou NULL pour obtenir un temporaire
  * @param i2 le nom de la deuxième variable d'entrée ou NULL pour obtenir un temporaire
  */
-void logical_or(label o, label i1, label i2);
+void bitwise_or(label o, label i1, label i2);
 
 /**
- * Opération logique XOR de deux variables et le stock dans une autre.
+ * Opération bit à bit XOR de deux variables et le stock dans une autre.
  * `o = i1 ^ i2`
  * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
  * @param i1 le nom de la première variable d'entrée ou NULL pour obtenir un temporaire
  * @param i2 le nom de la deuxième variable d'entrée ou NULL pour obtenir un temporaire
  */
-void logical_xor(label o, label i1, label i2);
+void bitwise_xor(label o, label i1, label i2);
 
 /**
- * Opération logique NON d'une variables et le stock dans une autre.
- * `o = !i`
+ * Opération bit à bit NON d'une variable et le stock dans une autre.
+ * `o = ~i`
  * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  */
-void logical_not(label o, label i);
+void bitwise_not(label o, label i);
 
 /**
  * Comparaison de supériorité stricte de deux variables et le stock dans une autre.
@@ -202,22 +202,38 @@ void jump_before(address line, address a);
 void branch_before(address line, label i, address a);
 
 /**
- * Permet de charger la valeur d'une adresse dans une variable.
+ * Permet de charger la valeur d'une adresse dans une variable avec un décalage.
  * `o = *(i + c)`
  * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
- * @param c une valeur de décalage
+ * @param c le nom de la variable de décalage ou NULL pour obtenir un temporaire
  */
-void load(label o, label i, address c);
+void load(label o, label i, label c);
 
 /**
- * Permet de stocker une variable dans une adresse.
- * `*(o + c) = i`
+ * Permet de charger la valeur d'une adresse dans une variable sans décalage.
+ * `o = *i`
  * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
- * @param c une valeur de décalage
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  */
-void store(label o, address c, label i);
+void load_0(label o, label i);
+
+/**
+ * Permet de stocker une variable dans une adresse avec un décalage.
+ * `*(o + c) = i`
+ * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
+ * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
+ * @param c le nom de la variable de décalage ou NULL pour obtenir un temporaire
+ */
+void store(label o, label i, label c);
+
+/**
+ * Permet de stocker une variable dans une adresse sans décalage.
+ * `*(o + c) = i`
+ * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
+ * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
+ */
+void store_0(label o, label i);
 
 /**
  * Permet d'ajouté cheque token dans un buffer pour pour afficher le code source en commentaire.

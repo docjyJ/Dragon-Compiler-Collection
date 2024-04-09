@@ -18,145 +18,69 @@
 "#include \"dragon.h\""
 
 #.* {
-    yyerror("Directives are not supported, use #include \"dragon.h\" if you wand add dragon functions support with your C IDE.");
+    yyerror(printf_alloc("'%s': Directives are not supported, use #include \"dragon.h\" if you wand add dragon functions support with your C IDE.", yytext));
 }
 
-"if" {
-    return IF;
-}
-
-"else" {
-    return ELSE;
-}
-
-"while" {
-    return WHILE;
-}
-
-"do" {
-    return DO;
-}
-
-"main" {
-    return MAIN;
-}
-
-"print" {
-    return PRINT;
-}
-
-"return" {
-    return tRETURN;
-}
-
-"int" {
-    return TYPE_INT;
-}
-
-"void" {
-    return TYPE_VOID;
-}
+"if" { return IF; }
+"else" { return ELSE; }
+"do" { return DO; }
+"while" { return WHILE; }
+"print" { return PRINT; }
+"int" { return TYPE_INT; }
+"void" { return TYPE_VOID; }
+"main" { return MAIN; }
+"return" { return RETURN; }
 
 [a-zA-Z][_a-zA-Z0-9]* {
     yylval.s = copy_alloc(yytext);
     return LABEL;
 }
-
 0x[0-9a-fA-F]+ {
     yylval.i = (number) parse_number(yytext, 16);
     return STATIC_INT;
 }
-
 [0-9]+ {
     yylval.i = (number) parse_number(yytext, 10);
     return STATIC_INT;
 }
-
 0b[01]+ {
     yylval.i = (number) parse_number(yytext+2, 2);
     return STATIC_INT;
 }
 
-"+" {
-    return ADD;
-}
+"(" { return LPAR; }
+")" { return RPAR; }
+"{" { return LBRACE; }
+"}" { return RBRACE; }
+"[" { return LBRACKET; }
+"]" { return RBRACKET; }
 
-"-" {
-    return SUB;
-}
+"+" { return ADD; }
+"-" { return SUB; }
+"*" { return MUL; }
+"/" { return DIV; }
+"%" { return MOD; }
 
-"*" {
-    return MUL;
-}
+"<=" { return LOWEQ; }
+">=" { return GRTEQ; }
+"<" { return LOW; }
+">" { return GRT; }
+"==" { return EQ; }
+"!=" { return NEQ; }
 
-"/" {
-    return DIV;
-}
+"&&" { return LAND; }
+"||" { return LOR; }
+"!" { return LNOT; }
 
-"<" {
-    return LOW;
-}
+"&" { return BAND; }
+"|" { return BOR; }
+"^" { return BXOR; }
+"~" { return BNOT; }
 
-">" {
-    return GRT;
-}
-
-"!=" {
-    return tNE;
-}
-
-"==" {
-    return EQ;
-}
-
-">=" {
-    return tGE;
-}
-
-"<=" {
-    return tLE;
-}
-
-"=" {
-    return ASSIGN;
-}
-
-"&&" {
-    return tAND;
-}
-
-"||" {
-    return tOR;
-}
-
-"!" {
-    return tNOT;
-}
-
-"{" {
-    return LBRACE;
-}
-
-"}" {
-    return RBRACE;
-}
-
-"(" {
-    return LPAR;
-}
-
-")" {
-    return RPAR;
-}
-
-";" {
-    return END;
-}
-
-"," {
-    return COMMA;
-}
+"=" { return ASSIGN; }
+"," { return COMMA; }
+";" { return END; }
 
 . {
-    return tERROR;
+    yyerror(printf_alloc("Unknown token: %s", yytext));
 }

@@ -34,33 +34,56 @@ class VM:
             arg = self.fetched[1][i]
             self.datas[int(arg[1:], 16)] = (value & 0xFF)
 
+        def neg(value: int) -> int:
+            return 0x100 - value
+
         if self.fetched[1]:
             match get_name():
-                case "AFC":
-                    set_ram(1, get_arg(2))
-                case "COP":
-                    set_ram(1, get_arg(2))
+                # Instructions données par le sujet
                 case "ADD":
                     set_ram(1, (get_arg(2) + get_arg(3)))
                 case "MUL":
                     set_ram(1, (get_arg(2) * get_arg(3)))
                 case "SUB":
-                    set_ram(1, (0x100 + get_arg(2) - get_arg(3)))
+                    set_ram(1, (get_arg(2) + neg(get_arg(3))))
                 case "DIV":
                     set_ram(1, (get_arg(2) // get_arg(3)))
+                case "COP":
+                    set_ram(1, get_arg(2))
+                case "AFC":
+                    set_ram(1, get_arg(2))
+                case "JMP":
+                    self.pc = get_arg(1)
+                case "JMF":
+                    if get_arg(1) == 0:
+                        self.pc = get_arg(2)
                 case "INF":
                     set_ram(1, (get_arg(2) < get_arg(3)))
                 case "SUP":
                     set_ram(1, (get_arg(2) > get_arg(3)))
                 case "EQU":
                     set_ram(1, (get_arg(2) == get_arg(3)))
-                case "JMF":
-                    if get_arg(1) == 0:
-                        self.pc = get_arg(2)
-                case "JMP":
-                    self.pc = get_arg(1)
                 case "PRI":
                     print(get_arg(1))
+                # Instruction technique
+                case "LOD":
+                    set_ram(1, self.datas[get_arg(2) + get_arg(3)])
+                case "STR":
+                    self.datas[get_arg(1) + get_arg(2)] = get_arg(3)
+                # Instructions ajoutées (arithmétiques)
+                case "NEG":
+                    set_ram(1, neg(get_arg(2)))
+                case "MOD":
+                    set_ram(1, (get_arg(2) % get_arg(3)))
+                # Instructions ajoutées (bit à bit)
+                case "AND":
+                    set_ram(1, (get_arg(2) & get_arg(3)))
+                case "OR":
+                    set_ram(1, (get_arg(2) | get_arg(3)))
+                case "XOR":
+                    set_ram(1, (get_arg(2) ^ get_arg(3)))
+                case "NOT":
+                    set_ram(1, ~get_arg(2))
                 case _:
                     raise NotImplementedError(f"Instruction {self.fetched} not implemented")
         self.pc += 1
