@@ -102,6 +102,12 @@ void number_define(label o, number c) {
     number_copy(o, c);
 }
 
+void tab_define(label o, address length) {
+    var_create(o);
+    address c = tab_alloc(length);
+    number_copy(o, c);
+}
+
 void var_copy(label o, label i) {
     add_instruction(op_oi(get_instruction_count(), op_copy, o, i));
 }

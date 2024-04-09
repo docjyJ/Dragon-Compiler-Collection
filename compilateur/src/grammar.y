@@ -24,7 +24,7 @@ int yylex();
 %token ASSIGN COMMA END
 
 %type <s> number unary multiplicative additive relational equality bitwise_and bitwise_xor bitwise_or operators
-%type <s> label_table label_pointer callable
+%type <s> label_pointer pointer table callable
 %type <i> callable_args_list callable_args functions_args functions_args_list
 
 %%
@@ -102,21 +102,27 @@ functions_arg: TYPE_INT label_pointer { yyerror("function arguments not implemen
 
 
 /* Gestion ses opérations */
+table: LABEL { $$ = $1; }
+     | callable { $$ = NULL; }
+     | table LBRACKET operators RBRACKET { $$ = NULL; load($$, $1, $3); free($1); free($3); }
+     | LPAR operators RPAR { $$ = $2; }
+     ;
+
+pointer: table { $$ = $1; }
+       | MUL pointer { $$ = NULL; load_0($$, $2); free($2); }
+       ;
 
 number: STATIC_INT { $$ = NULL; number_copy($$, $1); }
-      | LABEL { $$ = $1; }
-      | callable { $$ = NULL; }
-      | MUL number { $$ = NULL; load_0($$, $2); free($2); }
-      | BAND LABEL { $$ = NULL; number_copy($$, var_get($2)); free($2); }
-      | LABEL LBRACKET operators RBRACKET { $$ = NULL; load($$, $1, $3); free($1); free($3); }
-      | LPAR operators RPAR LBRACKET operators RBRACKET { $$ = NULL; load($$, $2, $5); free($2); free($5); }
-      | LPAR operators RPAR { $$ = $2; }
+      | pointer { $$ = $1; }
       ;
 
 unary: number { $$ = $1 ; }
-     | ADD number { $$ = $2; }
-     | SUB number { $$ = NULL; negate($$, $2); free($2); }
-     | BNOT number { $$ = NULL; bitwise_not($$, $2); free($2); }
+     | ADD unary { $$ = $2; }
+     | SUB unary { $$ = NULL; negate($$, $2); free($2); }
+     | BNOT unary { $$ = NULL; bitwise_not($$, $2); free($2); }
+     | LNOT unary { $$ = NULL; yyerror("logical not not implemented"); free($2); }
+     | MUL BAND number { $$ = $3; }
+     | BAND LABEL { $$ = NULL; number_copy($$, var_get($2)); free($2); }
      ;
 
 multiplicative: unary { $$ = $1 ; }
@@ -152,6 +158,8 @@ bitwise_or: bitwise_xor { $$ = $1 ; }
 
 operators: bitwise_or { $$ = $1 ; }
          | LABEL ASSIGN operators { var_copy($1, $3); $$ = $1; free($3); }
+         | table LBRACKET operators RBRACKET ASSIGN operators { store($1, $3, $6); $$ = $1; free($3); free($6); }
+         | MUL pointer ASSIGN operators { store_0($2, $4); $$ = $2; free($4); }
          ;
 
 
@@ -165,16 +173,12 @@ defvars_list: defvar
             ;
 
 defvar: label_pointer { number_define($1, 0) ; free($1); }
-      | label_pointer ASSIGN operators { var_define($1, $3); free($1); free($3); } // TODO
+      | label_pointer ASSIGN operators { var_define($1, $3); free($1); free($3); }
+      | LABEL LBRACKET STATIC_INT RBRACKET { tab_define($1, $3); free($1); }
       ;
 
-label_table: LABEL
-           | label_table LBRACKET operators RBRACKET { $$ = $1; free($3) ; } // TODO
-           | label_table LBRACKET RBRACKET { $$ = $1; } // TODO
-           ;
-
-label_pointer: label_table { $$ = $1; }
-             | MUL label_pointer { $$ = $2; } // TODO
+label_pointer: LABEL { $$ = $1; }
+             | MUL label_pointer { $$ = $2; }
              ;
 
 

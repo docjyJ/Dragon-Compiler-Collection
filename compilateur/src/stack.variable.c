@@ -21,7 +21,7 @@ int find_var(label name, address *out) {
     else if (name[0] == '$')
         i = (int) parse_number(name + 1, 16);
     else
-        for (i = var_head - 1; i >= 0 && strcmp(var_stak[i]->nom, name) != 0; i--);
+        for (i = var_head - 1; i >= 0 && (var_stak[i]->nom == NULL || strcmp(var_stak[i]->nom, name) != 0); i--);
 
     if (i != -1) {
         if (out != NULL) *out = (address) i;
@@ -37,10 +37,17 @@ void var_create(label name) {
     if (find_var(name, NULL))
         yyerror(printf_alloc("<%s> already exist", name));
 
-    var_stak[var_head] = empty_alloc(sizeof(symbole));
-    var_stak[var_head]->nom = copy_alloc(name);
-    var_stak[var_head]->visibility = visibility;
-    var_head++;
+    var_stak[tab_alloc(1)]->nom = copy_alloc(name);
+}
+
+address tab_alloc(address length) {
+    address add = var_head;
+    for (; var_head < (add + length); var_head++) {
+        var_stak[var_head] = empty_alloc(sizeof(symbole));
+        var_stak[var_head]->nom = NULL;
+        var_stak[var_head]->visibility = visibility;
+    }
+    return add;
 }
 
 address var_get(label name) {

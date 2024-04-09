@@ -27,6 +27,14 @@ void number_copy(label o, number c);
 void number_define(label o, number c);
 
 /**
+ * Affectation d'une valeur numérique à une variable, tout en ajoutant cette variable au symbole définie.
+ * `int o[c]`
+ * @param o le nom de la variable d'entrée qui sera définie, ne peut pas être NULL
+ * @param c une constante numérique
+ */
+void tab_define(label o, address length);
+
+/**
  * Copie de la valeur d'une variable dans une autre.
  * `o = i`
  * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
@@ -229,7 +237,7 @@ void store(label o, label i, label c);
 
 /**
  * Permet de stocker une variable dans une adresse sans décalage.
- * `*(o + c) = i`
+ * `*o = i`
  * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  */

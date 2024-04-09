@@ -2,7 +2,7 @@ SRC_DIR = ./src/
 
 
 GCC=gcc -Wall -Wextra -Iinclude/
-YACC=bison -Wall -rnone -kt
+YACC=bison -Wall -Wcounterexamples -rnone -kt
 LEX=flex
 
 TARGET = ./dcc

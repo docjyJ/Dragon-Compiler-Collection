@@ -55,6 +55,13 @@
 "[" { return LBRACKET; }
 "]" { return RBRACKET; }
 
+"++" {
+    yyerror(printf_alloc("Unknown token: %s", yytext));
+}
+"--" {
+    yyerror(printf_alloc("Unknown token: %s", yytext));
+}
+
 "+" { return ADD; }
 "-" { return SUB; }
 "*" { return MUL; }

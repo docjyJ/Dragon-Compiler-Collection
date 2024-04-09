@@ -1,6 +1,8 @@
 #include <stdio.h>
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmain-return-type"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wint-conversion"
 
 typedef unsigned char __uint8__;
 
@@ -29,5 +31,5 @@ typedef unsigned char __uint8__;
 void main();
 
 void print(int a) {
-    printf("%d\n", a);
+    printf("%u\n", a);
 }
