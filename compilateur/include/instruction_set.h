@@ -201,6 +201,23 @@ void jump_before(address line, address a);
  */
 void branch_before(address line, label i, address a);
 
+/**
+ * Permet de charger la valeur d'une adresse dans une variable.
+ * `o = *(i + c)`
+ * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
+ * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
+ * @param c une valeur de décalage
+ */
+void load(label o, label i, address c);
+
+/**
+ * Permet de stocker une variable dans une adresse.
+ * `*(o + c) = i`
+ * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
+ * @param c une valeur de décalage
+ * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
+ */
+void store(label o, address c, label i);
 
 /**
  * Permet d'ajouté cheque token dans un buffer pour pour afficher le code source en commentaire.

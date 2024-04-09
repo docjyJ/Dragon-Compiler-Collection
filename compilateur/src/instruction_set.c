@@ -13,6 +13,7 @@ const char *pattern_c = "%02X#     %3s  %3d//%02X\n";
 const char *pattern_a = "%02X#     %3s  @%02X\n";
 const char *pattern_ac = "%02X#     %3s  @%02X  %3d//%02X\n";
 const char *pattern_aa = "%02X#     %3s  @%02X  @%02X\n";
+const char *pattern_aac = "%02X#     %3s  @%02X  @%02X %3d//%02X\n";
 const char *pattern_aaa = "%02X#     %3s  @%02X  @%02X  @%02X\n";
 const char *hint_pattern = "//%3d: %s\n";
 
@@ -30,15 +31,19 @@ const op_code op_greater_than = {"SUP", 0x0A};
 const op_code op_equal_to = {"EQU", 0x0B};
 const op_code op_display = {"PRI", 0x0C};
 
+// Instruction technique
+const op_code op_load = {"LOD", 0x10};
+const op_code op_store = {"STR", 0x11};
+
 // Instructions ajoutées (arithmétiques)
-const op_code op_negate = {"NEG", 0x10};
-const op_code op_modulo = {"MOD", 0x11};
+const op_code op_negate = {"NEG", 0x30};
+const op_code op_modulo = {"MOD", 0x31};
 
 // Instructions ajoutées (loguiques)
-const op_code op_logical_and = {"AND", 0x40};
-const op_code op_logical_or = {"OR", 0x41};
-const op_code op_logical_not = {"NOT", 0x42};
-const op_code op_logical_xor = {"XOR", 0x43};
+const op_code op_logical_and = {"AND", 0x50};
+const op_code op_logical_or = {"OR", 0x51};
+const op_code op_logical_not = {"NOT", 0x52};
+const op_code op_logical_xor = {"XOR", 0x53};
 
 inst new_inst(address bin0, address bin1, address bin2, address bin3, label code) {
     inst k = {{bin0, bin1, bin2, bin3}, code, NULL};
@@ -74,6 +79,13 @@ inst op_oi(address line, op_code code, label o, label i) {
     address a_o = var_get_or_temp_push(o);
     return new_inst(code.id, a_o, a_i, 0,
                     printf_alloc(pattern_aa, line, code.name, a_o, a_i));
+}
+
+inst op_oic(address line, op_code code, label o, label i, address c) {
+    address a_i = var_get_or_temp_pop(i);
+    address a_o = var_get_or_temp_push(o);
+    return new_inst(code.id, a_o, a_i, c & 0xFF,
+                    printf_alloc(pattern_aac, line, code.name, a_o, a_i, c, c));
 }
 
 inst op_oii(address line, op_code code, label o, label i1, label i2) {
@@ -180,6 +192,13 @@ void branch_before(address line, label i, address c) {
     set_instruction(op_ic(line, op_branch, i, c), line);
 }
 
+void load(label o, label i, address c) {
+    add_instruction(op_oic(get_instruction_count(), op_load, o, i, c));
+}
+
+void store(label o, address c , label i) {
+    add_instruction(op_oic(get_instruction_count(), op_store, o, i, c));
+}
 
 int buffer_col = 0;
 char hint_buffer[MAX_ADDRESS];
