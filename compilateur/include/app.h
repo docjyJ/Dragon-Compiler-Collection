@@ -8,11 +8,18 @@
 typedef unsigned char address;
 typedef unsigned short number;
 typedef char *label;
+
 typedef struct {
     address bin[4];
     label code;
     label hint;
 } inst;
+
+//todo : rename
+typedef struct {
+    address value;
+    bool offset;
+} address_or_offset;
 
 void yyerror(const char *s);
 
