@@ -122,7 +122,7 @@ unary: number { $$ = $1 ; }
      | BNOT unary { $$ = NULL; bitwise_not($$, $2); free($2); }
      | LNOT unary { $$ = NULL; yyerror("logical not not implemented"); free($2); }
      | MUL BAND number { $$ = $3; }
-     | BAND LABEL { $$ = NULL; number_copy($$, var_get($2)); free($2); }
+     | BAND LABEL { $$ = NULL; var_to_address($$, $2); free($2); }
      ;
 
 multiplicative: unary { $$ = $1 ; }

@@ -10,12 +10,12 @@ typedef struct {
 
 symbole *var_stak[MAX_ADDRESS];
 
-address var_head = 1;
+address var_head = 0;
 address visibility = 0;
 address var_tmp_head = -1;
 address offset_function = 0;
 
-address nb_declaration(){
+address nb_declaration() {
     return var_head;
 }
 
@@ -44,39 +44,38 @@ void var_create(label name) {
     if (find_var(name, NULL))
         yyerror(printf_alloc("<%s> already exist", name));
 
-    var_stak[tab_alloc(1)]->nom = copy_alloc(name);
+    var_stak[var_head] = empty_alloc(sizeof(symbole));
+    var_stak[var_head]->nom = copy_alloc(name);
+    var_stak[var_head]->visibility = visibility;
+    var_head++;
 }
 
-address_or_offset tab_alloc(address length) {
+void tab_alloc(address length) { //TODO: implement
+    yyerror(printf_alloc("PAS IMPLEMENTER %d", length));
+
     address add = var_head;
-   address_or_offset out =  empty_alloc(sizeof(address_or_offset));
 
     for (; var_head < (add + length); var_head++) {
         var_stak[var_head] = empty_alloc(sizeof(symbole));
         var_stak[var_head]->nom = NULL;
         var_stak[var_head]->visibility = visibility;
     }
-
-    if (var_stak[add]->visibility!=0){
-        add-=offset_function;
-        out -> offset = true;
-    }
-    out -> value = out_add;
-    return out;
 }
 
-address_or_offset var_get(label name) {
-    address out_add;
-    address_or_offset out =  empty_alloc(sizeof(address_or_offset));
+memory_address var_get(label name) {
+    address add;
+    memory_address out;
 
-    if (!find_var(name, &out_add))
-        yyerror(printf_alloc("<%s> already exist", name));
+    if (!find_var(name, &add))
+        yyerror(printf_alloc("<%s> does not exist", name));
 
-    if (var_stak[out]->visibility!=0){
-        out_add-=offset_function;
-        out -> offset = true;
+    out.value = add;
+    if (name[0] != '$' && var_stak[add]->visibility != 0) {
+        out.value -= offset_function;
+        out.isLocal = 1;
+    } else {
+        out.isLocal = 0;
     }
-    out -> value = out_add;
 
     return out;
 }
@@ -92,25 +91,19 @@ address temp_pop() {
     return ++var_tmp_head;
 }
 
-address_or_offset var_get_or_temp_push(label name) {
+memory_address var_get_or_temp_push(label name) {
     if (name != NULL)
         return var_get(name);
 
-    address_or_offset out =  empty_alloc(sizeof(address_or_offset));
-    out -> value = temp_push();
-    out -> offset = false;
-
+    memory_address out = {temp_push(), 0};
     return out;
 }
 
-address_or_offset var_get_or_temp_pop(label name) {
+memory_address var_get_or_temp_pop(label name) {
     if (name != NULL)
         return var_get(name);
 
-    address_or_offset out =  empty_alloc(sizeof(address_or_offset));
-    out -> value = temp_pop();
-    out -> offset = false;
-
+    memory_address out = {temp_pop(), 0};
     return out;
 
 }

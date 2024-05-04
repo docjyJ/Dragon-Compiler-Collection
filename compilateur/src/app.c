@@ -88,11 +88,15 @@ int main(int argc, char **argv) {
 
 void write_output(inst s) {
     if (arguments.asm_mode) {
+        if (s.code == NULL) {
+            fputs("Stop ! // No code here ???\n", output_file);
+            return;
+        }
         if (fputs(s.code, output_file) == EOF) {
             fprintf(stderr, "error: failed to write to output file.\n");
             exit(1);
         }
-        if (arguments.hint_srcs_mode &&  s.hint != NULL) {
+        if (arguments.hint_srcs_mode && s.hint != NULL) {
             if (fputs(s.hint, output_file) == EOF) {
                 fprintf(stderr, "error: failed to write to output file.\n");
                 exit(1);

@@ -34,7 +34,7 @@ emulate: clean $(TEST_SRC:.c=-emulate)
 	@echo --------------------------------
 	@echo Execution de $<
 	@echo --------------------------------
-	@python3 emulator.py $<
+	@python3 emulator $<
 	@echo --------------------------------
 
 %-test: %.out %.s
@@ -42,7 +42,7 @@ emulate: clean $(TEST_SRC:.c=-emulate)
 	@echo Comparaison de $^
 	@echo --------------------------------
 	./$*.out > test/$*.gcc.report || true
-	python3 emulator.py $*.s > test/$*.emulate.report
+	python3 emulator $*.s > test/$*.emulate.report
 	@diff test/$*.gcc.report test/$*.emulate.report
 	@echo --------------------------------
 
@@ -54,6 +54,9 @@ emulate: clean $(TEST_SRC:.c=-emulate)
 
 $(TARGET): $(C_GEN:%=src/%) $(OBJS)
 	$(GCC) -o$(TARGET) $(OBJS)
+
+$(TARGET).debug: $(C_GEN:%=src/%)
+	$(GCC) -g -o$(TARGET).debug $(C_SRC:%=src/%) $(C_GEN:%=src/%)
 
 %.o: src/%.c
 	$(GCC) -o $@ -c $<

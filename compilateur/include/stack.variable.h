@@ -18,14 +18,14 @@ void var_create(label name);
  * @param length la taille de l'espace mémoire
  * @return l'adresse de la variable
  */
-address_or_offset tab_alloc(address length);
+void tab_alloc(address length);
 
 /**
  * Permet d'obtenir l'adresse d'une variable, en levant une erreur si elle n'existe pas.
  * @param name le nom de la variable
  * @return l'adresse de la variable
  */
-address_or_offset var_get(label name);
+memory_address var_get(label name);
 
 /**
  * Ajoute une nouvelle variable sur la pile temporaire.
@@ -44,14 +44,14 @@ address temp_pop();
  * @param name le nom de la variable
  * @return l'adresse de la variable
  */
-address_or_offset var_get_or_temp_push(label name);
+memory_address var_get_or_temp_push(label name);
 
 /**
  * Permet d'obtenir l'adresse d'une variable, ou récupère un temporaire si elle est NULL.
  * @param name le nom de la variable
  * @return l'adresse de la variable
  */
-address_or_offset var_get_or_temp_pop(label name);
+memory_address var_get_or_temp_pop(label name);
 
 /**
  * Ajoute un niveau de visibilité.

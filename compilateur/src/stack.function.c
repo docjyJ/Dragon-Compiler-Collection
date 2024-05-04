@@ -1,7 +1,10 @@
+#include <stddef.h>
+#include <stdio.h>
 #include "instruction_set.h"
 #include "memory.h"
 #include "stack.function.h"
 #include "stack.variable.h"
+#include "stack.instruction.h"
 
 typedef struct {
     address debut_pile_function;
@@ -19,7 +22,7 @@ void start_function(char *a) {
 
     nb_fun++;
     tab_fnc[nb_fun] = empty_alloc(sizeof(function));
-    tab_fnc[nb_fun]->index = var_get(a);
+    tab_fnc[nb_fun]->index = var_get(a).value;
     tab_fnc[nb_fun]->fun = get_instruction_count();
     tab_fnc[nb_fun]->debut_pile_function = nb_declaration();
 
@@ -27,13 +30,13 @@ void start_function(char *a) {
 
 void end_function() {
     remove_visibility();
-    jump(temp_pop());
+    //jump(temp_pop());
 
 }
 
 void go_function(char *a) {
     int index = nb_fun;
-    int function_index = var_get(a);
+    int function_index = var_get(a).value;
 
     while (index >= 0 && tab_fnc[index]->index != function_index) {
         index--;
@@ -42,12 +45,12 @@ void go_function(char *a) {
     int offset = nb_declaration() - tab_fnc[nb_fun]->debut_pile_function;
 
     number_copy(NULL, offset);
-    add("%","%",NULL);
+    add("%", "%", NULL);
 
-    number_copy(NULL, get_instruction_count()+1);
+    number_copy(NULL, get_instruction_count() + 1);
     jump(tab_fnc[index]->fun);
 
     number_copy(NULL, offset);
-    sub("%","%",NULL);
+    subtract("%", "%", NULL);
 
 }

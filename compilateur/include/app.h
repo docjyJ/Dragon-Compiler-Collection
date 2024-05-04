@@ -15,11 +15,10 @@ typedef struct {
     label hint;
 } inst;
 
-//todo : rename
 typedef struct {
     address value;
-    bool offset;
-} address_or_offset;
+    char isLocal;
+} memory_address;
 
 void yyerror(const char *s);
 

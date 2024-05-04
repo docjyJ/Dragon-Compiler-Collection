@@ -251,4 +251,12 @@ void store_0(label o, label i);
  */
 void append_hint_buffer(char *token, int length, int line);
 
+
+/**
+ * Permet d'obtenir l'adresse d'une variable.
+ * @param r le registre de destination
+ * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
+ */
+void var_to_address(label o, label i);
+
 #endif

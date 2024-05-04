@@ -19,7 +19,7 @@ void set_instruction(inst line, address index) {
 }
 
 void print_instruction() {
-    for (int index = 0; index < inst_count; index++){
+    for (int index = 0; index < inst_count; index++) {
         write_output(tab_instruct[index]);
     }
 }
@@ -29,6 +29,7 @@ address get_instruction_count() {
 }
 
 void add_hint(char hint[]) {
+    printf("%s", hint);
     char *old = tab_instruct[inst_count].hint;
     tab_instruct[inst_count].hint = printf_alloc("%s%s", old == NULL ? "" : old, hint);
     free(old);
