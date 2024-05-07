@@ -32,10 +32,10 @@ USE ieee.numeric_std.ALL;
 --use UNISIM.VComponents.all;
 
 entity Memoire is
-    Port ( add : in STD_LOGIC_VECTOR (7 downto 0);
+    Port ( rst : in STD_LOGIC;
            write : in STD_LOGIC;
            read : in STD_LOGIC;
-           inst : in STD_LOGIC;
+           add : in STD_LOGIC_VECTOR (7 downto 0);
            input : in STD_LOGIC_VECTOR (7 downto 0);
            output : out STD_LOGIC_VECTOR (7 downto 0));
 end Memoire;
@@ -43,15 +43,12 @@ end Memoire;
 architecture Behavioral of Memoire is
     type ttab is array (255 downto 0) of std_logic_vector (7 downto 0);
     signal mem_var : ttab;
-    signal mem_inst : ttab;
 begin
 
     process (write,read,add)
     begin
-        if (inst='1') then 
-            if (read='1') then
-                output<= mem_inst(to_integer(unsigned(add)));
-            end if;
+        if(rst='1')then 
+            mem_var <= (others => (others => '0'));
         else
             if (read='1') then
                 output<= mem_var(to_integer(unsigned(add)));

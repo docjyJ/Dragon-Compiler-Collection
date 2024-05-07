@@ -7,11 +7,11 @@ use IEEE.std_logic_unsigned.all;
 -- 172 net
 
 entity Registre is
-    Port ( read1 : in STD_LOGIC_VECTOR (3 downto 0);
+    Port ( rst : in STD_LOGIC;
+           write : in STD_LOGIC;
+           read1 : in STD_LOGIC_VECTOR (3 downto 0);
            read2 : in STD_LOGIC_VECTOR (3 downto 0);
            write_add : in STD_LOGIC_VECTOR (3 downto 0);
-           write : in STD_LOGIC;
-           rst : in STD_LOGIC;
            input : in STD_LOGIC_VECTOR (7 downto 0);
            output1 : out STD_LOGIC_VECTOR (7 downto 0);
            output2 : out STD_LOGIC_VECTOR (7 downto 0));

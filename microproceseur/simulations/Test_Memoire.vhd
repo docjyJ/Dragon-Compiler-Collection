@@ -38,34 +38,32 @@ end Test_Memoire;
 architecture Behavioral of Test_Memoire is
 
     component Memoire is
-    Port ( add : in STD_LOGIC_VECTOR (7 downto 0);
+    Port ( rst : in STD_LOGIC;
            write : in STD_LOGIC;
            read : in STD_LOGIC;
-           inst : in STD_LOGIC;
+           add : in STD_LOGIC_VECTOR (7 downto 0);
            input : in STD_LOGIC_VECTOR (7 downto 0);
            output : out STD_LOGIC_VECTOR (7 downto 0));
     end component;
 
 
-
-    signal  sadd     :    STD_LOGIC_VECTOR (7 downto 0);
+    signal  srst   :    std_logic;
     signal  swrite   :    std_logic;
     signal  sread    :    std_logic;
-    signal  sinst    :    std_logic;
+    signal  sadd     :    STD_LOGIC_VECTOR (7 downto 0);
     signal  sinput   :    STD_LOGIC_VECTOR (7 downto 0);
     signal  soutput  :    STD_LOGIC_VECTOR (7 downto 0);
     
 begin
-     uut : Memoire port map(sadd, swrite, sread, sinst, sinput, soutput);
+     uut : Memoire port map(srst, swrite, sread, sadd, sinput, soutput);
      
-    
-   pinst : process 
+   prst : process 
    begin
-   sinst <= '0';
-   wait for 200 ns ;
-   sinst <= '1';
+   srst<='0';
    wait for 100 ns; 
-   end process pinst;
+   sread<='1';
+   wait for 5 ns; 
+   end process prst;
    
    pread : process 
    begin

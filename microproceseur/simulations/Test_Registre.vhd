@@ -38,11 +38,11 @@ end Test_Registre;
 architecture Behavioral of Test_Registre is
 
     component Registre is
-    Port ( read1 : in STD_LOGIC_VECTOR (3 downto 0);
+    Port ( rst : in STD_LOGIC;
+           write : in STD_LOGIC;
+           read1 : in STD_LOGIC_VECTOR (3 downto 0);
            read2 : in STD_LOGIC_VECTOR (3 downto 0);
            write_add : in STD_LOGIC_VECTOR (3 downto 0);
-           write : in STD_LOGIC;
-           rst : in STD_LOGIC;
            input : in STD_LOGIC_VECTOR (7 downto 0);
            output1 : out STD_LOGIC_VECTOR (7 downto 0);
            output2 : out STD_LOGIC_VECTOR (7 downto 0));
@@ -52,15 +52,14 @@ architecture Behavioral of Test_Registre is
     signal  sread1  :    STD_LOGIC_VECTOR (3 downto 0);
     signal  sread2  :    STD_LOGIC_VECTOR (3 downto 0);
     signal  swrite_add  :    STD_LOGIC_VECTOR (3 downto 0);
-        signal  swrite   :    std_logic;
-        signal  srst   :    std_logic;
-
+    signal  swrite   :    std_logic;
+    signal  srst   :    std_logic;
     signal  sinput   :    STD_LOGIC_VECTOR (7 downto 0);
     signal  soutput1 :    STD_LOGIC_VECTOR (7 downto 0);
     signal  soutput2 :    STD_LOGIC_VECTOR (7 downto 0);
     
 begin
-     uut : Registre port map(sread1, sread2, swrite_add, swrite,srst, sinput, soutput1, soutput2);
+     uut : Registre port map(srst, swrite,sread1, sread2, swrite_add, sinput, soutput1, soutput2);
      
     pwrite : process
     begin
