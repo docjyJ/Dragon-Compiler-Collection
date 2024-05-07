@@ -171,6 +171,8 @@ architecture Behavioral of assemblage is
     signal sWriteBackPipe3 :  STD_LOGIC;
     signal sWriteAddressPipe3 :  STD_LOGIC_VECTOR (3 downto 0);
     
+    signal flush :  STD_LOGIC_VECTOR (1 downto 0);
+    
 begin
     Compteur : conteur8bit port Map  (
         clk =>clk,
@@ -241,6 +243,8 @@ begin
     sJmpINMux <= sLoadPCPipe1;
     sCondMux <= sOutput1Registre;
     
+   
+    flush <= "00" when rst ='1';
     
     process (clk)
     begin
@@ -258,19 +262,32 @@ begin
             sWriteBackPipe1<= sWriteBackMI;
             sWriteAddressPipe1 <= sWriteAddressMI;
             
-            --TODO : vider le pip de 1
-            sCMDALU <= sALUPipe1;
-            sAALU <= sOutput1Registre;
-            sBALU <= sOutput2Registre;        
+           
             
-            sLoadCompteur <= sJmpOutMux;
-            sDinCompteur <= sConstantePipe1;
+            if(flush = "00") then 
+                sCMDALU <= sALUPipe1;
+                sAALU <= sOutput1Registre;
+                sBALU <= sOutput2Registre;        
+                
+                sLoadCompteur <= sJmpOutMux;
+                sDinCompteur <= sConstantePipe1;
+                
+                if (sJmpOutMux='1') then 
+                    flush <= "10";
+                end if;
             
-            sMemoryWritePipe2 <= sMemoryWritePipe1;
-            sMemoryReadPipe2 <= sMemoryReadPipe1;
-            sMemoryAddressPipe2 <= sMemoryAddressPipe1;
-            sWriteBackPipe2<= sWriteBackPipe1;
-            sWriteAddressPipe2 <= sWriteAddressPipe1;
+            
+                sMemoryWritePipe2 <= sMemoryWritePipe1;
+                sMemoryReadPipe2 <= sMemoryReadPipe1;
+                sMemoryAddressPipe2 <= sMemoryAddressPipe1;
+                sWriteBackPipe2<= sWriteBackPipe1;
+                sWriteAddressPipe2 <= sWriteAddressPipe1;
+                
+            elsif (flush = "10") then
+                flush <= "01";
+            else
+                flush <= "00";
+            end if;
             
             sReadMemoire <= sMemoryReadPipe2 ;
             sAddMemoire <= sMemoryAddressPipe2;
@@ -283,6 +300,7 @@ begin
             sWrite_addRegistre <= sWriteAddressPipe3;
             sWriteRegistre <= sWriteBackPipe3;
             sInputRegistre <= sOutputMemoire;
+            
         end if;
     end process;
 end Behavioral;
