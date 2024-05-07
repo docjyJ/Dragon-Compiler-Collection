@@ -104,12 +104,12 @@ functions_arg: TYPE_INT label_pointer { yyerror("function arguments not implemen
 /* Gestion ses opérations */
 table: LABEL { $$ = $1; }
      | callable { $$ = NULL; }
-     | table LBRACKET operators RBRACKET { $$ = NULL; load($$, $1, $3); free($1); free($3); }
+     | table LBRACKET operators RBRACKET { $$ = NULL; load_offset($$, $1, $3); free($1); free($3); }
      | LPAR operators RPAR { $$ = $2; }
      ;
 
 pointer: table { $$ = $1; }
-       | MUL pointer { $$ = NULL; load_0($$, $2); free($2); }
+       | MUL pointer { $$ = NULL; load($$, $2); free($2); }
        ;
 
 number: STATIC_INT { $$ = NULL; number_copy($$, $1); }
@@ -158,8 +158,8 @@ bitwise_or: bitwise_xor { $$ = $1 ; }
 
 operators: bitwise_or { $$ = $1 ; }
          | LABEL ASSIGN operators { var_copy($1, $3); $$ = $1; free($3); }
-         | table LBRACKET operators RBRACKET ASSIGN operators { store($1, $3, $6); $$ = $1; free($3); free($6); }
-         | MUL pointer ASSIGN operators { store_0($2, $4); $$ = $2; free($4); }
+         | table LBRACKET operators RBRACKET ASSIGN operators { store_offset($1, $3, $6); $$ = $1; free($3); free($6); }
+         | MUL pointer ASSIGN operators { store($2, $4); $$ = $2; free($4); }
          ;
 
 

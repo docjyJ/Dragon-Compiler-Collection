@@ -148,7 +148,7 @@ if __name__ == "__main__":
     parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
     parser.add_argument("file", type=str, help="The file to run")
     parser.add_argument("-i", "--max-iter", type=int, default=1024,
-                        help="Maximum number of instruction can be executed, prevent infinite loop. (default: 255)")
+                        help="Maximum number of instruction can be executed, prevent infinite loop. (default: 1024)")
     parser.add_argument("-d", "--debug", action="store_true",
                         help="Enable debug mode, it will print the state of the VM between each execution.")
     parser.add_argument("-r", "--csv-ram", default="",

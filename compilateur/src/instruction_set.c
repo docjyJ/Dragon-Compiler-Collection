@@ -92,19 +92,19 @@ void load_const(register_t r, number c) {
     op_rc(op_define, r, c);
 }
 
-void load_var(register_t r, label l) {
-    memory_address a = var_get_or_temp_pop(l);
+void var_adr(register_t r, memory_address a) {
     load_const(r, a.value);
     if (a.isLocal)
         op_rrr(op_add, r, r, RS);
+}
+
+void load_var(register_t r, label l) {
+    var_adr(r, var_get_or_temp_pop(l));
     op_rr(op_load, r, r);
 }
 
 void store_var(register_t r, register_t tmp, label l) {
-    memory_address a = var_get_or_temp_push(l);
-    load_const(tmp, a.value);
-    if (a.isLocal)
-        op_rrr(op_add, tmp, tmp, RS);
+    var_adr(tmp, var_get_or_temp_push(l));
     op_rr(op_store, r, tmp);
 }
 
@@ -137,10 +137,12 @@ void number_define(label o, number c) {
     number_copy(o, c);
 }
 
-void tab_define(label o, address length) { //TODO
-    yyerror(printf_alloc("PAS IMPLEMENTER"));
-    number_define(o, length);
-    tab_alloc(length);
+void tab_define(label o, address length) {
+    var_create(o);
+    memory_address adr = tab_alloc(length);
+    load_const(R1, adr.value);
+    if (adr.isLocal) op_rrr(op_add, R1, R1, RS);
+    store_var(R1, R2, o);
 }
 
 void var_copy(label o, label i) {
@@ -233,37 +235,37 @@ void branch_before(address line, address addr, address offset) {
     set_instruction(op_jump_ca(line, addr - offset, R1), line);
 }
 
-void load(label o, label i, label c) {
-    load_var(R1, i);
-    load_var(R2, c);
-    op_rrr(op_add, R1, R1, R2);
-    op_rr(op_load, R1, R1);
-    store_var(R1, R2, o);
+void load_offset(label o, label i, label c) {
+    add(NULL, c, i);
+    load(o, NULL);
 }
 
-void load_0(label o, label i) {
+void load(label o, label i) {
     load_var(R1, i);
     op_rr(op_load, R1, R1);
     store_var(R1, R2, o);
 }
 
-void store(label o, label i, label c) {
-    load_var(R1, i);
-    load_var(R2, c);
-    op_rrr(op_add, R1, R1, R2);
-    load_var(R2, o);
-    op_rr(op_store, R2, R1);
+void store_offset(label o, label i, label c) {
+    load_var(R3, i);
+    add(NULL, c, o);
+    add_hint("//store_var\n");
+    load_var(R1, NULL);
+    op_rr(op_store, R3, R1);
+
 }
 
-void store_0(label o, label i) {
-    number_copy(o, 0);
-    store(o, i, o);
+void store(label o, label i) {
+    load_var(R2, i);
+    load_var(R1, o);
+    op_rr(op_store, R3, R1);
 }
 
 void var_to_address(label o, label i) {
     if (i == NULL)
         yyerror("NULL pointer");
-    load_var(R1, i);
+
+    var_adr(R1, var_get(i));
     store_var(R1, R2, o);
 }
 

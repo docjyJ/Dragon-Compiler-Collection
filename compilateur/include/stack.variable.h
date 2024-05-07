@@ -18,7 +18,7 @@ void var_create(label name);
  * @param length la taille de l'espace mémoire
  * @return l'adresse de la variable
  */
-void tab_alloc(address length);
+memory_address tab_alloc(address length);
 
 /**
  * Permet d'obtenir l'adresse d'une variable, en levant une erreur si elle n'existe pas.

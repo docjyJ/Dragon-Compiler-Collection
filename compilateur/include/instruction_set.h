@@ -223,7 +223,7 @@ void branch_before(address l, address a, address o);
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  * @param c le nom de la variable de décalage ou NULL pour obtenir un temporaire
  */
-void load(label o, label i, label c);
+void load_offset(label o, label i, label c);
 
 /**
  * Permet de charger la valeur d'une adresse dans une variable sans décalage.
@@ -231,7 +231,7 @@ void load(label o, label i, label c);
  * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  */
-void load_0(label o, label i);
+void load(label o, label i);
 
 /**
  * Permet de stocker une variable dans une adresse avec un décalage.
@@ -240,7 +240,7 @@ void load_0(label o, label i);
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  * @param c le nom de la variable de décalage ou NULL pour obtenir un temporaire
  */
-void store(label o, label i, label c);
+void store_offset(label o, label i, label c);
 
 /**
  * Permet de stocker une variable dans une adresse sans décalage.
@@ -248,7 +248,7 @@ void store(label o, label i, label c);
  * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  */
-void store_0(label o, label i);
+void store(label o, label i);
 
 /**
  * Permet d'ajouté cheque token dans un buffer pour pour afficher le code source en commentaire.
