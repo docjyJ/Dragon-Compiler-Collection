@@ -50,20 +50,20 @@ code_line_list: code_line
 
 code_one_line: operators END { free($1); }
              | defvars END
-             | if { end_branch(); }
-             | while_do { end_branch(); end_branch(); }
+             | if { end_branch(1); }
+             | while_do { end_branch(0); end_branch(0); }
              | PRINT LPAR operators RPAR END { display($3); free($3); }
              | return END
              | END
              ;
 
 code_line: code_one_line
-         | if else { end_branch(); }
+         | if else { end_branch(0); }
          ;
 
 
 init_cond: LPAR operators RPAR { start_if($2); free($2); };
-init_else: %empty { end_branch(); start_else(); };
+init_else: %empty { end_branch(0); start_else(); };
 init_loop: %empty { start_loop(); };
 
 single_boddy: code_block | code_one_line;

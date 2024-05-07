@@ -10,3 +10,4 @@
 *.s
 *.o
 dcc
+.debug

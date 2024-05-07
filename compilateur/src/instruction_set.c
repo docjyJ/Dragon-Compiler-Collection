@@ -3,6 +3,10 @@
 #include "memory.h"
 #include "stack.instruction.h"
 #include "stack.variable.h"
+//#define DEBUG
+#ifdef DEBUG
+#include <stdio.h>
+#endif
 
 typedef struct {
     const char *name;
@@ -12,11 +16,12 @@ typedef struct {
 typedef enum { RS, R1, R2, R3 } register_t;
 const char *r_name[] = {"RS", "R1", "R2", "R3"};
 
-const char *pattern_c    = "%02X#%8s x%02X //%d\n";
-const char *pattern_a    = "%02X#%8s %2s\n";
-const char *pattern_ac   = "%02X#%8s %2s x%02X //%d\n";
-const char *pattern_aa   = "%02X#%8s %2s %2s\n";
-const char *pattern_aaa  = "%02X#%8s %2s %2s %2s\n";
+const char *pattern_c = "%02X#%8s x%02X //%d\n";
+const char *pattern_ca = "%02X#%8s x%02X  %2s //%d\n";
+const char *pattern_a = "%02X#%8s %2s\n";
+const char *pattern_ac = "%02X#%8s %2s x%02X //%d\n";
+const char *pattern_aa = "%02X#%8s %2s %2s\n";
+const char *pattern_aaa = "%02X#%8s %2s %2s %2s\n";
 const char *hint_pattern = "//%3d: %s\n";
 
 // Instructions données par le sujet
@@ -47,26 +52,14 @@ const op_code op_bitwise_or = {"OR", 0x51};
 const op_code op_bitwise_not = {"NOT", 0x52};
 const op_code op_bitwise_xor = {"XOR", 0x53};
 
-void op_c(address line, op_code code, number c) {
-    inst k = {{code.id, 0, c & 0xFF,0},
-              printf_alloc(pattern_c, line, code.name, c, c), NULL};
-    add_instruction(k);
-}
-
 void op_r(op_code code, register_t r) {
     inst k = {{code.id, r, 0, 0},
               printf_alloc(pattern_a, get_instruction_count(), code.name, r_name[r]), NULL};
     add_instruction(k);
 }
 
-void op_set_r(address line, op_code code, register_t r) {
-    inst k = {{code.id, r, 0, 0},
-              printf_alloc(pattern_a, line, code.name, r_name[r]), NULL};
-    set_instruction(k, line);
-}
-
 void op_rc(op_code code, register_t r, address c) {
-    inst k = {{code.id, r, c , 0},
+    inst k = {{code.id, r, c, 0},
               printf_alloc(pattern_ac, get_instruction_count(), code.name, r_name[r], c, c), NULL};
     add_instruction(k);
 }
@@ -77,16 +70,22 @@ void op_rr(op_code code, register_t r1, register_t r2) {
     add_instruction(k);
 }
 
-void op_set_rr(address line, op_code code, register_t r1, register_t r2) {
-    inst k = {{code.id, r1, r2, 0},
-              printf_alloc(pattern_aa, line, code.name, r_name[r1], r_name[r2]), NULL};
-    set_instruction(k, line);
-}
-
 void op_rrr(op_code code, register_t r1, register_t r2, register_t r3) {
     inst k = {{code.id, r1, r2, r3},
               printf_alloc(pattern_aaa, get_instruction_count(), code.name, r_name[r1], r_name[r2], r_name[r3]), NULL};
     add_instruction(k);
+}
+
+inst op_jump_c(address line, address target) {
+    inst k = {{op_jump.id, target, 0, 0},
+              printf_alloc(pattern_c, line, op_jump.name, target, target), NULL};
+    return k;
+}
+
+inst op_jump_ca(address line, address target, register_t r) {
+    inst k = {{op_branch.id, target, r, 0},
+              printf_alloc(pattern_ca, line, op_branch.name, target, r_name[r], target), NULL};
+    return k;
 }
 
 void load_const(register_t r, number c) {
@@ -207,32 +206,31 @@ void equal_to(label o, label i1, label i2) {
 }
 
 void jump(address c) {
-    load_const(R1, c);
-    op_r(op_jump, R1);
+    add_instruction(op_jump_c(get_instruction_count(), c));
 }
 
-void branch(label i, address c){
+void branch(label i, address c) {
     load_var(R2, i);
-    load_const(R1, c);
-    op_rr(op_branch, R1, R2);
+    add_instruction(op_jump_ca(get_instruction_count(), c, R1));
 }
 
-address padding_for_later() {
+address padding_for_later_jump() {
     inst k = {{0, 0, 0, 0}, NULL, NULL};
     add_instruction(k);
     return get_instruction_count() - 1;
 }
 
-void jump_before(address line, address c) {
-    load_const(R1, c);
-    op_set_r(line, op_jump, R1);
-
+address padding_for_later_branch(label cond) {
+    load_var(R1, cond);
+    return padding_for_later_jump();
 }
 
-void branch_before(address line, label i, address c) {
-    load_var(R1, i);
-    load_const(R2, c);
-    op_set_rr(line, op_branch, R1, R2);
+void jump_before(address line, address address) {
+    set_instruction(op_jump_c(line, address), line);
+}
+
+void branch_before(address line, address addr, address offset) {
+    set_instruction(op_jump_ca(line, addr - offset, R1), line);
 }
 
 void load(label o, label i, label c) {
@@ -279,6 +277,9 @@ void append_hint_buffer(char *hint, int length, int line) {
         buffer_col = 0;
         hint_buffer[0] = '\0';
     } else {
+#ifdef DEBUG
+        fprintf(stderr, "[%s]", hint);
+#endif
         int old = buffer_col;
         buffer_col += length;
         if (buffer_col < MAX_ADDRESS)

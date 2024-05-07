@@ -25,8 +25,6 @@ int find_var(label name, address *out) {
         i = -1;
     else if (name[0] == '%')
         i = 0;
-    else if (name[0] == '$')
-        i = (int) parse_number(name + 1, 16);
     else
         for (i = var_head - 1; i >= 0 && (var_stak[i]->nom == NULL || strcmp(var_stak[i]->nom, name) != 0); i--);
 

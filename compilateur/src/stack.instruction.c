@@ -4,10 +4,16 @@
 
 address inst_count = 0;
 inst tab_instruct[MAX_ADDRESS] = {0};
+int full = 0;
 
 void add_instruction(inst line) {
+    if (full)
+        yyerror("Maximum number of instructions exceeded.");
     set_instruction(line, inst_count);
-    inst_count++;
+    if (inst_count == MAX_ADDRESS - 1)
+        full = 1;
+    else
+        inst_count++;
 }
 
 void set_instruction(inst line, address index) {

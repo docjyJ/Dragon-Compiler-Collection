@@ -184,30 +184,37 @@ void branch(label i, address a);
 /**
  * Permet d'ajouter un vide qui pourra être compléter plus tard pendant l'analyse.
  * @see jump_before
+ */
+address padding_for_later_jump();
+
+/**
+ * Permet d'ajouter un vide qui pourra être compléter plus tard pendant l'analyse.
+ * Et prépare le registre pour la condition.
+ * @param i
  * @see branch_before
  */
-address padding_for_later();
+address padding_for_later_branch(label i);
 
 /**
  * Permet de sauter à une adresse d'exécution spécifique.
  * Cette fonction permet d'écrire cette instruction dans une adresse passée.
- * `jump(c)`
- * @param line l'adresse à écrire
+ * `jump(a)`
+ * @param l l'adresse à écrire
  * @param a l'adresse de saut
- * @see padding_for_later
+ * @see padding_for_later_jump
  */
-void jump_before(address line, address a);
+void jump_before(address l, address a);
 
 /**
  * Permet de sauter à une adresse d'exécution spécifique si une condition est vérifiée.
  * Cette fonction permet d'écrire cette instruction dans une adresse passée.
- * `if (i) jump(c)`
- * @param line l'adresse à écrire
- * @param i le nom de la variable de condition ou NULL pour obtenir un temporaire
+ * `if (i) jump(a-o)`
+ * @param l l'adresse à écrire
  * @param a l'adresse de saut
- * @see padding_for_later
+ * @param o un décalage
+ * @see padding_for_later_branch
  */
-void branch_before(address line, label i, address a);
+void branch_before(address l, address a, address o);
 
 /**
  * Permet de charger la valeur d'une adresse dans une variable avec un décalage.

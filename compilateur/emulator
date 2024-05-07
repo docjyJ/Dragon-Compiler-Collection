@@ -68,10 +68,10 @@ class VM:
                 case "AFC":
                     r_write(1, get_int(2))
                 case "JMP":
-                    self.pc = r_read(1)
+                    self.pc = get_int(1)
                 case "JMF":
-                    if r_read(1) == 0:
-                        self.pc = r_read(2)
+                    if r_read(2) == 0:
+                        self.pc = get_int(1)
                 case "INF":
                     r_write(1, (r_read(2) < r_read(3)))
                 case "SUP":
@@ -117,7 +117,7 @@ class VM:
             with open(self.csv_file, 'a') as f:
                 print(f"{self.fetched[0]};{';'.join(map(str, self.register))};{';'.join(map(str, self.datas))}", file=f)
 
-    def run(self, max_iter=255):
+    def run(self, max_iter):
         self.pc = 0
         self.datas = bytearray(1 << self.arch)
         self.register = bytearray(len(self._registers))
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(add_help=False, description="A simple virtual machine to run Dragon programs.")
     parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
     parser.add_argument("file", type=str, help="The file to run")
-    parser.add_argument("-i", "--max-iter", type=int, default=255,
+    parser.add_argument("-i", "--max-iter", type=int, default=1024,
                         help="Maximum number of instruction can be executed, prevent infinite loop. (default: 255)")
     parser.add_argument("-d", "--debug", action="store_true",
                         help="Enable debug mode, it will print the state of the VM between each execution.")
