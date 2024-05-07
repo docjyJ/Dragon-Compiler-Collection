@@ -68,7 +68,7 @@ architecture Behavioral of assemblage is
            WriteAddress : out STD_LOGIC_VECTOR (7 downto 0));
     end component ;
     
-    signal sCntMI :  STD_LOGIC_VECTOR (31 downto 0);
+    signal sCntMI :  STD_LOGIC_VECTOR (7 downto 0);
     signal sRegistre1MI : STD_LOGIC_VECTOR (7 downto 0);
     signal sRegistre2MI : STD_LOGIC_VECTOR (7 downto 0); 
     signal sALUMI :  STD_LOGIC_VECTOR (3 downto 0);
@@ -100,6 +100,20 @@ architecture Behavioral of assemblage is
     signal  sInputRegistre   :    STD_LOGIC_VECTOR (7 downto 0);
     signal  sOutput1Registre :    STD_LOGIC_VECTOR (7 downto 0);
     signal  sOutput2Registre :    STD_LOGIC_VECTOR (7 downto 0);
+    
+    
+    component MuxCompteur is
+    Port ( jmpCondIN : in STD_LOGIC;
+           jmpIn : in STD_LOGIC;
+           cond : in STD_LOGIC_VECTOR (7 downto 0);
+           jmpOut : out STD_LOGIC);
+    end component;
+    
+    signal  sJmpCondINMux   :    std_logic;
+    signal  sJmpInMux    :    std_logic;
+    signal  sCondMux    :    STD_LOGIC_VECTOR (7 downto 0);
+    signal  sjmpOutMux    :    std_logic;
+    
     
     component ALU is
     Port ( CMD : in STD_LOGIC_VECTOR (3 downto 0);
@@ -137,6 +151,26 @@ architecture Behavioral of assemblage is
     signal  sinputMemoire   :    STD_LOGIC_VECTOR (7 downto 0);
     signal  soutputMemoire  :    STD_LOGIC_VECTOR (7 downto 0);
     
+
+    signal sALUPipe1 :  STD_LOGIC_VECTOR (3 downto 0);
+    signal sMemoryWritePipe1 :  STD_LOGIC;
+    signal sMemoryReadPipe1 :  STD_LOGIC;
+    signal sMemoryAddressPipe1 :  STD_LOGIC_VECTOR (7 downto 0);                      
+    signal sLoadPCPipe1 :  STD_LOGIC;
+    signal sLoadComparePCPipe1 :  STD_LOGIC;
+    signal sConstantePipe1 :  STD_LOGIC_VECTOR (7 downto 0); 
+    signal sWriteBackPipe1 :  STD_LOGIC;
+    signal sWriteAddressPipe1 :  STD_LOGIC_VECTOR (7 downto 0);
+    
+    signal sMemoryWritePipe2 :  STD_LOGIC;
+    signal sMemoryReadPipe2 :  STD_LOGIC;
+    signal sMemoryAddressPipe2 :  STD_LOGIC_VECTOR (7 downto 0);                      
+    signal sWriteBackPipe2 :  STD_LOGIC;
+    signal sWriteAddressPipe2 :  STD_LOGIC_VECTOR (7 downto 0);
+    
+    signal sWriteBackPipe3 :  STD_LOGIC;
+    signal sWriteAddressPipe3 :  STD_LOGIC_VECTOR (7 downto 0);
+    
 begin
     Compteur : conteur8bit port Map  (
         clk =>clk,
@@ -173,6 +207,13 @@ begin
         output1 => sOutput1Registre,
         output2 => sOutput2Registre
     );
+    
+    Mux : MuxCompteur port map(
+        jmpCondIN => sJmpCondINMux,
+        jmpIn => sJmpINMux,
+        cond => sCondMux,
+        jmpOut => sJmpOutMux
+    );
      
      ALUProcesseur: ALU port map (
         CMD => sCMDALU,
@@ -191,7 +232,56 @@ begin
         add => sAddMemoire,
         write => sWriteMemoire, 
         input => sInputMemoire, 
-        output => sOutputMemoire);
+        output => sOutputMemoire
+     );
 
+    sCntMI <= sDoutCompteur; 
+    --pour etre sur que le calcule du jump se fera avant la clock du compteur
+    sJmpCondINMux <= sLoadComparePCPipe1;
+    sJmpINMux <= sLoadPCPipe1;
+    sCondMux <= sOutput1Registre;
     
+    
+    process (clk)
+    begin
+        sRead1Registre <= sRegistre1MI;
+        sRead2Registre <= sRegistre2MI;
+        
+        sALUPipe1 <= sALUMI;
+        sMemoryWritePipe1 <= sMemoryWriteMI;
+        sMemoryReadPipe1 <= sMemoryReadMI;
+        sMemoryAddressPipe1 <= sMemoryAddressMI;
+        sLoadPCPipe1 <= sLoadPCMI;
+        sLoadComparePCPipe1 <= sLoadComparePCMI;
+        sConstantePipe1 <= sConstanteMI;
+        sWriteBackPipe1<= sWriteBackMI;
+        sWriteAddressPipe1 <= sWriteAddressMI;
+        
+        --TODO : vider le pip de 1
+        sCMDALU <= sALUPipe1;
+        sAALU <= sOutput1Registre;
+        sBALU <= sOutput2Registre;        
+        
+        sLoadCompteur <= sJmpOutMux;
+        sDinCompteur <= sConstantePipe1;
+        
+        sMemoryWritePipe2 <= sMemoryWritePipe1;
+        sMemoryReadPipe2 <= sMemoryReadPipe1;
+        sMemoryAddressPipe2 <= sMemoryAddressPipe1;
+        sWriteBackPipe2<= sWriteBackPipe1;
+        sWriteAddressPipe2 <= sWriteAddressPipe1;
+        
+        sReadMemoire <= sMemoryReadPipe2 ;
+        sAddMemoire <= sMemoryAddressPipe2;
+        sWriteMemoire <= sMemoryWritePipe2;
+        sInputMemoire <= sSALU;
+        
+        sWriteBackPipe3 <= sWriteBackPipe2;
+        sWriteAddressPipe3 <= sWriteAddressPipe2;
+        
+        sWrite_addRegistre <= sWriteAddressPipe3;
+        sWriteRegistre <= sWriteBackPipe3;
+        sInputRegistre <= sOutputMemoire;
+        
+    end process;
 end Behavioral;

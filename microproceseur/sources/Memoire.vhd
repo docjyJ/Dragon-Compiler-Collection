@@ -54,6 +54,9 @@ begin
                 output<= mem_var(to_integer(unsigned(add)));
             elsif (write='1') then
                 mem_var(to_integer(unsigned(add))) <= input;
+                output <= input;
+            else 
+                output <= input;
             end if;
         end if;
     end process;
