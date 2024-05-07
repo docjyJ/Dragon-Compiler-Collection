@@ -66,7 +66,7 @@ architecture Behavioral of ALU is
     signal sS: std_logic_vector (17 downto 0);
 
 begin
-    sB <= ONES & A when A(7) = '1' and (CMD = S_ADD or CMD = S_SUB or CMD = S_MUL) else
+    sA <= ONES & A when A(7) = '1' and (CMD = S_ADD or CMD = S_SUB or CMD = S_MUL) else
           ZERROS & not(A) when CMD = LOG_NAND or CMD = LOG_NOR or CMD = LOG_EQ else
           ZERROS & A;
     
@@ -83,7 +83,7 @@ begin
               sA - sB when U_SUB | S_SUB,
               sA(8 downto 0) * sB(8 downto 0) when U_MUL | S_MUL,
               
-              A when others;
+              sA when others;
     
     Z <= '1' when sS = 0 else '0';
     

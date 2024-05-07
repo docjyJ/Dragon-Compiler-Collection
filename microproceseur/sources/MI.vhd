@@ -36,8 +36,8 @@ use IEEE.std_logic_unsigned.all;
 entity MI is
     Port ( cnt : in STD_LOGIC_VECTOR (7 to 0);
            --cnt : in STD_LOGIC_VECTOR (31 downto 0);
-           Registre1 : out STD_LOGIC_VECTOR (7 downto 0);
-           Registre2 :out STD_LOGIC_VECTOR (7 downto 0); 
+           Registre1 : out STD_LOGIC_VECTOR (3 downto 0);
+           Registre2 :out STD_LOGIC_VECTOR (3 downto 0); 
            ALU : out STD_LOGIC_VECTOR (3 downto 0);
            MemoryWrite : out STD_LOGIC;
            MemoryRead : out STD_LOGIC;
@@ -46,7 +46,7 @@ entity MI is
            LoadComparePC : out STD_LOGIC;
            Constante : out STD_LOGIC_VECTOR (7 downto 0); 
            WriteBack : out STD_LOGIC;
-           WriteAddress : out STD_LOGIC_VECTOR (7 downto 0));
+           WriteAddress : out STD_LOGIC_VECTOR (3 downto 0));
 
 end MI;
 
@@ -108,9 +108,9 @@ begin
                             op_bitwise_or | op_bitwise_not | op_bitwise_xor,
                      '0' when others;
     
-    Registre1 <= inst(23 downto 16) when op_code = op_display else inst(15 downto 8);
-    Registre2 <= inst(7 downto 0);
-    WriteAddress <= inst(23 downto 16);
+    Registre1 <= inst(19 downto 16) when op_code = op_display else inst(11 downto 8);
+    Registre2 <= inst(3 downto 0);
+    WriteAddress <= inst(19 downto 16);
     
     with op_code select                       
         Constante <= inst(23 downto 16) when  op_jump | op_branch, 
