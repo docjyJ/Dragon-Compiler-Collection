@@ -21,16 +21,8 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
 use IEEE.std_logic_arith.ALL;
 use IEEE.std_logic_unsigned.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
 
 entity conteur8bit is
     Port ( clk : in STD_LOGIC;
@@ -59,14 +51,12 @@ begin
             else 
                Mem <=   Mem +1;
             end if;
-            end if;
+        end if;
             
         end if;
     end process; 
     
-    --process(clk)
-    --begin
+
     Dout <= Mem;
-    --end process ;
-    
+
 end Behavioral;

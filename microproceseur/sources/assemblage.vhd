@@ -238,6 +238,9 @@ begin
      );
 
     sCntMI <= sDoutCompteur; 
+    sSensCompteur <='1';
+    sENCompteur <='1';
+    
     --pour etre sur que le calcule du jump se fera avant la clock du compteur
     sJmpCondINMux <= sLoadComparePCPipe1;
     sJmpINMux <= sLoadPCPipe1;

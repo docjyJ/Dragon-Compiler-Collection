@@ -81,6 +81,10 @@ begin
     inst <= mem_inst(conv_integer(cnt));
     --inst <= cnt;
     
+    mem_inst(1) <= x"01020304";
+    mem_inst(2) <= x"07060304";
+    mem_inst(3) <= x"090A0309";
+    mem_inst(4) <= x"50010105";
     
     op_code <= inst(31 downto 24);
     
