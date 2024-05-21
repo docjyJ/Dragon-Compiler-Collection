@@ -28,14 +28,20 @@ architecture Behavioral of MasterIO is
     signal RST: STD_LOGIC;
     signal DIR: STD_LOGIC;
     signal EN: STD_LOGIC;
-    signal Din: STD_LOGIC_VECTOR(7 downto 0);
+    signal CLK2: STD_LOGIC;
+    signal D0: STD_LOGIC_VECTOR(7 downto 0);
+    signal D1: STD_LOGIC_VECTOR(7 downto 0);
+    signal D2: STD_LOGIC_VECTOR(7 downto 0);
 begin
     RST <= BTNU;
     EN <= SW(0);
     DIR <= SW(1);
-    Din <= (others => '0');
+    D0 <= (others => '0');
+    CLK2 <= D1(7);
+    LD(7 downto 0) <= D1;
+    LD(15 downto 8) <= D2; 
 
-    counter0: Counter port map(CLK, RST, DIR, BTNL, Din, LD(7 downto 0), EN);
-    counter1: Counter port map(LD(7), RST, DIR, BTNR, Din, LD(15 downto 8), EN);
+    counter0: Counter port map(CLK, RST, DIR, BTNL, D0, D1, EN);
+    counter1: Counter port map(CLK2, RST, DIR, BTNR, D0, D2, EN);
 
 end Behavioral;

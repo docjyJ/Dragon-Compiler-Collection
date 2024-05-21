@@ -37,7 +37,7 @@ entity assemblage is
 end assemblage;
 
 architecture Behavioral of assemblage is
-    component conteur8bit is Port ( clk : in STD_LOGIC;
+    component Compteur is Port ( clk : in STD_LOGIC;
            rst : in STD_LOGIC;
            sens : in STD_LOGIC;
            load : in STD_LOGIC;
@@ -174,7 +174,7 @@ architecture Behavioral of assemblage is
     signal flush :  STD_LOGIC_VECTOR (1 downto 0);
     
 begin
-    Compteur : conteur8bit port Map  (
+    Compteur : Compteur port Map  (
         clk =>clk,
         rst => rst,
         sens => sSensCompteur,

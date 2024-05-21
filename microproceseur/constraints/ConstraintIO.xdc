@@ -1,6 +1,6 @@
 # Clock
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clk]
-set_property -dict {PACKAGE_PIN W19 IOSTANDARD LVCMOS33} [get_ports clk]
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets CLK]
+set_property -dict {PACKAGE_PIN W19 IOSTANDARD LVCMOS33} [get_ports CLK]
 
 # Bouton
 set_property -dict {PACKAGE_PIN W19 IOSTANDARD LVCMOS33} [get_ports BTNL]
