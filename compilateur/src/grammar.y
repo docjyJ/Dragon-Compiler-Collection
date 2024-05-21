@@ -53,9 +53,18 @@ code_one_line: operators END { free($1); }
              | if { end_branch(1); }
              | while_do { end_branch(0); end_branch(0); }
              | PRINT LPAR operators RPAR END { display($3); free($3); }
-             | return END
+             | go_fun LPAR go_args RPAR END {end_go_function(); }
+             | return LABEL END { return_var($2); free($2); }
              | END
              ;
+
+go_fun : LABEL { go_function($1); free($1); }
+       ;
+
+go_args: LABEL { give_param($1); free($1); }
+         | LABEL COMMA go_args { give_param($1); free($1); }
+         ;
+
 
 code_line: code_one_line
          | if else { end_branch(0); }
@@ -81,11 +90,15 @@ while_do: WHILE init_loop init_cond single_boddy
 functions: functions_header code_block { end_function(); }
          ;
 
-functions_header: TYPE_VOID LABEL functions_args { start_function($2); free($2); }
-                | TYPE_INT LABEL functions_args { start_function($2); free($2); }
-                | TYPE_VOID MAIN LPAR TYPE_VOID RPAR { start_function("main"); }
-                | TYPE_VOID MAIN LPAR RPAR { start_function("main"); }
+functions_header: TYPE_VOID function_name functions_args {}
+                | TYPE_INT function_name functions_args {}
+                | TYPE_VOID function_name LPAR TYPE_VOID RPAR {}
+                | TYPE_VOID function_name LPAR RPAR {}
                 ;
+function_name : LABEL { start_function($1); free($1); }
+              | MAIN { start_function("main"); }
+              ;
+
 
 functions_args: LPAR functions_args_list RPAR { $$ = $2; }
               | LPAR TYPE_VOID RPAR { $$ = 0;}
@@ -96,7 +109,7 @@ functions_args_list: functions_arg { $$ = 1; }
                    | functions_args_list COMMA functions_arg { $$ = $1 + 1; }
                    ;
 
-functions_arg: TYPE_INT label_pointer { yyerror("function arguments not implemented"); free($2); }
+functions_arg: TYPE_INT label_pointer { add_param($2); free($2); }
              ;
 
 
