@@ -1,47 +1,64 @@
 LIBRARY ieee;
-use IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.STD_LOGIC_1164.ALL;
 
-entity MasterIO is
-    Port (CLK: in STD_LOGIC;
-          BTNL: in STD_LOGIC;
-          BTNR: in STD_LOGIC;
-          BTNU: in STD_LOGIC;
-          BTND: in STD_LOGIC;
-          SW: in STD_LOGIC_VECTOR(15 downto 0);
-          LD: out STD_LOGIC_VECTOR(15 downto 0);
-          AN: out STD_LOGIC_VECTOR(7 downto 0);
-          C: out STD_LOGIC_VECTOR(6 downto 0);
-          DP: out STD_LOGIC);
-end MasterIO;
+ENTITY MasterIO IS
+    PORT (
+        CLK : IN STD_LOGIC;
+        BTNL : IN STD_LOGIC;
+        BTNR : IN STD_LOGIC;
+        BTNU : IN STD_LOGIC;
+        BTND : IN STD_LOGIC;
+        SW : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+        LD : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+        AN : OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
+        C : OUT STD_LOGIC_VECTOR(6 DOWNTO 0);
+        DP : OUT STD_LOGIC);
+END MasterIO;
 
-architecture Behavioral of MasterIO is
-    component Counter is
-        Port (CLK: in STD_LOGIC;
-              RST: in STD_LOGIC;
-              DIR: in STD_LOGIC;
-              LOD: in STD_LOGIC;
-              Din: in STD_LOGIC_VECTOR (7 downto 0);
-              Dout: out STD_LOGIC_VECTOR (7 downto 0);
-              EN: in STD_LOGIC);
-    end component;
+ARCHITECTURE Behavioral OF MasterIO IS
+    COMPONENT Counter IS
+        PORT (
+            clk : IN STD_LOGIC;
+            en : IN STD_LOGIC;
+            rst : IN STD_LOGIC;
+            dir : IN STD_LOGIC;
+            lod : IN STD_LOGIC;
+            a : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+            s : OUT STD_LOGIC_VECTOR (7 DOWNTO 0));
+    END COMPONENT;
 
-    signal RST: STD_LOGIC;
-    signal DIR: STD_LOGIC;
-    signal EN: STD_LOGIC;
-    signal CLK2: STD_LOGIC;
-    signal D0: STD_LOGIC_VECTOR(7 downto 0);
-    signal D1: STD_LOGIC_VECTOR(7 downto 0);
-    signal D2: STD_LOGIC_VECTOR(7 downto 0);
-begin
-    RST <= BTNU;
-    EN <= SW(0);
-    DIR <= SW(1);
-    D0 <= (others => '0');
-    CLK2 <= D1(7);
-    LD(7 downto 0) <= D1;
-    LD(15 downto 8) <= D2; 
+    SIGNAL clk1 : STD_LOGIC;
+    SIGNAL clk2 : STD_LOGIC;
+    SIGNAL en : STD_LOGIC;
+    SIGNAL rst : STD_LOGIC;
+    SIGNAL dir : STD_LOGIC;
+    SIGNAL d1 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL d2 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+BEGIN
+    rst <= BTNU;
+    en <= SW(0);
+    dir <= SW(1);
+    clk1 <= CLK;
+    clk2 <= d1(7);
+    LD(7 DOWNTO 0) <= d1;
+    LD(15 DOWNTO 8) <= d2;
 
-    counter0: Counter port map(CLK, RST, DIR, BTNL, D0, D1, EN);
-    counter1: Counter port map(CLK2, RST, DIR, BTNR, D0, D2, EN);
+    counter0 : Counter PORT MAP(
+        clk => clk1,
+        en => en,
+        rst => rst,
+        dir => dir,
+        lod => '0',
+        a => "00000000",
+        s => d1);
 
-end Behavioral;
+    counter1 : Counter PORT MAP(
+        clk => clk2,
+        en => en,
+        rst => rst,
+        dir => dir,
+        lod => '0',
+        a => "00000000",
+        s => d2);
+
+END Behavioral;
