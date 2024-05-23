@@ -1,104 +1,67 @@
--- 
--- Create Date: 03/04/2024 08:38:17 PM
--- Design Name: 
--- Module Name: ALU - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
-----------------------------------------------------------------------------------
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.std_logic_arith.ALL;
+USE IEEE.std_logic_signed.ALL;
+USE work.Constants.ALL;
 
+ENTITY ALU IS
+    PORT (
+        CMD : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
+        A   : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+        B   : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+        S   : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+        Z   : OUT STD_LOGIC;
+        C   : OUT STD_LOGIC;
+        O   : OUT STD_LOGIC;
+        N   : OUT STD_LOGIC);
+END ALU;
 
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.std_logic_arith.all;
-use IEEE.std_logic_signed.all;
+ARCHITECTURE Behavioral OF ALU IS
+    CONSTANT MAX_UINT : INTEGER := 255;
+    CONSTANT MAX_INT : INTEGER := 127;
+    CONSTANT MIN_INT : INTEGER := - 128;
+    CONSTANT ZERROS : STD_LOGIC_VECTOR (9 DOWNTO 0) := (OTHERS => '0');
+    CONSTANT ONES : STD_LOGIC_VECTOR (9 DOWNTO 0) := (OTHERS => '1');
 
+    SIGNAL sA : STD_LOGIC_VECTOR (17 DOWNTO 0);
+    SIGNAL sB : STD_LOGIC_VECTOR (17 DOWNTO 0);
+    SIGNAL sS : STD_LOGIC_VECTOR (17 DOWNTO 0);
 
-entity ALU is
-    Port ( CMD : in std_logic_vector (3 downto 0);
-           A : in std_logic_vector (7 downto 0);
-           B : in std_logic_vector (7 downto 0);
-           S : out std_logic_vector (7 downto 0);
-           Z : out STD_LOGIC;
-           C : out STD_LOGIC;
-           O : out STD_LOGIC;
-           N : out STD_LOGIC);
-end ALU;
+BEGIN
+    sA <= ONES & A WHEN A(7) = '1' AND (CMD = S_ADD OR CMD = S_SUB OR CMD = S_MUL) ELSE
+        ZERROS & NOT(A) WHEN CMD = LOG_NOR OR CMD = LOG_EQ ELSE
+        ZERROS & A;
 
+    sB <= ONES & B WHEN B(7) = '1' AND (CMD = S_ADD OR CMD = S_SUB OR CMD = S_MUL) ELSE
+        ZERROS & NOT(B) WHEN CMD = LOG_NOR ELSE
+        ZERROS & B;
 
--- 284 cells
--- 440 Nets
+    WITH CMD SELECT sS <=
+        sA OR sB WHEN LOG_OR,
+        sA AND sB WHEN LOG_AND | LOG_NOR,
+        sA XOR sB WHEN LOG_XOR | LOG_EQ,
 
-architecture Behavioral of ALU is
-    constant LOG_OR: std_logic_vector (3 downto 0) := "0000";
-    constant LOG_NOR: std_logic_vector (3 downto 0) := "0001";
-    constant LOG_AND: std_logic_vector (3 downto 0) := "0010";
-    constant LOG_NAND: std_logic_vector (3 downto 0) := "0011";
-    constant LOG_XOR: std_logic_vector (3 downto 0) := "0100";
-    constant LOG_EQ: std_logic_vector (3 downto 0) := "0101";
-    -- constant UNUSED: std_logic_vector (3 downto 0) := "0110";
-    -- constant UNUSED: std_logic_vector (3 downto 0) := "0111";
-    constant U_ADD: std_logic_vector (3 downto 0) := "1000";
-    constant U_SUB: std_logic_vector (3 downto 0) := "1001";
-    constant U_MUL: std_logic_vector (3 downto 0) := "1010";
-    -- constant UNUSED: std_logic_vector (3 downto 0) := "1011";
-    constant S_ADD: std_logic_vector (3 downto 0) := "1100";
-    constant S_SUB: std_logic_vector (3 downto 0) := "1101";
-    constant S_MUL: std_logic_vector (3 downto 0) := "1110";
-    -- constant UNUSED: std_logic_vector (3 downto 0) := "1111";
+        sA + sB WHEN U_ADD | S_ADD,
+        sA - sB WHEN U_SUB | S_SUB,
+        sA(8 DOWNTO 0) * sB(8 DOWNTO 0) WHEN U_MUL | S_MUL,
 
-    constant MAX_UINT: integer := 255;
-    constant MAX_INT: integer := 127;
-    constant MIN_INT: integer := -128;
-    constant ZERROS: std_logic_vector (9 downto 0) := (others => '0');
-    constant ONES: std_logic_vector (9 downto 0) := (others => '1');
+        sA WHEN OTHERS;
 
-    signal sA: std_logic_vector (17 downto 0);
-    signal sB: std_logic_vector (17 downto 0);
-    signal sS: std_logic_vector (17 downto 0);
+    Z <= '1' WHEN sS = 0 ELSE
+        '0';
 
-begin
-    sA <= ONES & A when A(7) = '1' and (CMD = S_ADD or CMD = S_SUB or CMD = S_MUL) else
-          ZERROS & not(A) when CMD = LOG_NAND or CMD = LOG_NOR or CMD = LOG_EQ else
-          ZERROS & A;
-    
-    sB <= ONES & B when B(7) = '1' and (CMD = S_ADD or CMD = S_SUB or CMD = S_MUL) else
-          ZERROS & not(B) when CMD = LOG_NAND or CMD = LOG_NOR else
-          ZERROS & B;
-    
-    with CMD select
-        sS <= sA or sB when LOG_OR | LOG_NAND,
-              sA and sB when LOG_AND | LOG_NOR,
-              sA xor sB when LOG_XOR | LOG_EQ,
+    N <= '1' WHEN sS < 0 ELSE
+        '0';
 
-              sA + sB when U_ADD | S_ADD,
-              sA - sB when U_SUB | S_SUB,
-              sA(8 downto 0) * sB(8 downto 0) when U_MUL | S_MUL,
-              
-              sA when others;
-    
-    Z <= '1' when sS = 0 else '0';
-    
-    N <= '1' when sS < 0 else '0';
-    
-    C <= '1' when CMD = U_ADD and sS > MAX_UINT else
-         '1' when CMD = U_SUB and sS < 0 else
-         '1' when (CMD = S_ADD or CMD = S_SUB) and (sS < MIN_INT or sS > MAX_INT) else
-         '0';
-    
-    O <= '1' when CMD = U_MUL and sS > MAX_UINT else
-         '1' when CMD = S_MUL and (sS < MIN_INT or sS > MAX_INT) else
-         '0';
-     
-    S <= Ss(7 downto 0);
+    C <= '1' WHEN CMD = U_ADD AND sS > MAX_UINT ELSE
+        '1' WHEN CMD = U_SUB AND sS < 0 ELSE
+        '1' WHEN (CMD = S_ADD OR CMD = S_SUB) AND (sS < MIN_INT OR sS > MAX_INT) ELSE
+        '0';
 
-end Behavioral;
+    O <= '1' WHEN CMD = U_MUL AND sS > MAX_UINT ELSE
+        '1' WHEN CMD = S_MUL AND (sS < MIN_INT OR sS > MAX_INT) ELSE
+        '0';
 
+    S <= Ss(7 DOWNTO 0);
+
+END Behavioral;

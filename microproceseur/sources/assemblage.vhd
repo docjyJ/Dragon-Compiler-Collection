@@ -1,260 +1,222 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date: 05/07/2024 09:35:01 AM
--- Design Name: 
--- Module Name: assemblage - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
-----------------------------------------------------------------------------------
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
 
+ENTITY assemblage IS
+    PORT (
+        clk : IN STD_LOGIC;
+        rst : IN STD_LOGIC);
+END assemblage;
 
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+ARCHITECTURE Behavioral OF assemblage IS
+    COMPONENT Counter IS PORT (clk : IN STD_LOGIC;
+        rst : IN STD_LOGIC;
+        dir : IN STD_LOGIC;
+        load : IN STD_LOGIC;
+        Din : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+        Dout : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+        EN : IN STD_LOGIC);
+    END COMPONENT;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+    SIGNAL sSensCompteur : STD_LOGIC;
+    SIGNAL sLoadCompteur : STD_LOGIC;
+    SIGNAL sDinCompteur : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sDoutCompteur : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sENCompteur : STD_LOGIC;
+    COMPONENT InstructionMemory IS
+        PORT (
+            cnt        : IN STD_LOGIC_VECTOR (7 TO 0);
+            reg_a      : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
+            reg_b      : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
+            alu_code   : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
+            data_wr    : OUT STD_LOGIC;
+            data_rd    : OUT STD_LOGIC;
+            data_addr  : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+            jump       : OUT STD_LOGIC;
+            branch     : OUT STD_LOGIC;
+            number     : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+            write_back : OUT STD_LOGIC;
+            reg_s      : OUT STD_LOGIC_VECTOR (3 DOWNTO 0));
+    END COMPONENT;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+    SIGNAL sCntMI : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sRegistre1MI : STD_LOGIC_VECTOR (3 DOWNTO 0);
+    SIGNAL sRegistre2MI : STD_LOGIC_VECTOR (3 DOWNTO 0);
+    SIGNAL sALUMI : STD_LOGIC_VECTOR (3 DOWNTO 0);
+    SIGNAL sMemoryWriteMI : STD_LOGIC;
+    SIGNAL sMemoryReadMI : STD_LOGIC;
+    SIGNAL sMemoryAddressMI : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sLoadPCMI : STD_LOGIC;
+    SIGNAL sLoadComparePCMI : STD_LOGIC;
+    SIGNAL sConstanteMI : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sWriteBackMI : STD_LOGIC;
+    SIGNAL sWriteAddressMI : STD_LOGIC_VECTOR (3 DOWNTO 0);
+    COMPONENT Registre IS
+        PORT (
+            read1     : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
+            read2     : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
+            write_add : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
+            write     : IN STD_LOGIC;
+            rst       : IN STD_LOGIC;
+            input     : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+            output1   : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+            output2   : OUT STD_LOGIC_VECTOR (7 DOWNTO 0));
+    END COMPONENT;
 
-entity assemblage is
-    Port ( clk : in STD_LOGIC;
-           rst : in STD_LOGIC);
-end assemblage;
+    SIGNAL sWriteRegistre : STD_LOGIC;
+    SIGNAL sRead1Registre : STD_LOGIC_VECTOR (3 DOWNTO 0);
+    SIGNAL sRead2Registre : STD_LOGIC_VECTOR (3 DOWNTO 0);
+    SIGNAL sWrite_addRegistre : STD_LOGIC_VECTOR (3 DOWNTO 0);
+    SIGNAL sInputRegistre : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sOutput1Registre : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sOutput2Registre : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    COMPONENT MuxCompteur IS
+        PORT (
+            jmpCondIN : IN STD_LOGIC;
+            jmpIn     : IN STD_LOGIC;
+            cond      : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+            jmpOut    : OUT STD_LOGIC);
+    END COMPONENT;
 
-architecture Behavioral of assemblage is
-    component Compteur is Port ( clk : in STD_LOGIC;
-           rst : in STD_LOGIC;
-           sens : in STD_LOGIC;
-           load : in STD_LOGIC;
-           Din : in STD_LOGIC_VECTOR (7 downto 0);
-           Dout : out STD_LOGIC_VECTOR (7 downto 0);
-           EN : in STD_LOGIC);
-    end component;
+    SIGNAL sJmpCondINMux : STD_LOGIC;
+    SIGNAL sJmpInMux : STD_LOGIC;
+    SIGNAL sCondMux : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sjmpOutMux : STD_LOGIC;
+    COMPONENT ALU IS
+        PORT (
+            CMD : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
+            A   : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+            B   : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+            S   : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+            Z   : OUT STD_LOGIC;
+            C   : OUT STD_LOGIC;
+            O   : OUT STD_LOGIC;
+            N   : OUT STD_LOGIC);
+    END COMPONENT;
 
-    signal      sSensCompteur :  STD_LOGIC;
-    signal      sLoadCompteur :  STD_LOGIC;
-    signal      sDinCompteur :  STD_LOGIC_VECTOR (7 downto 0);
-    signal      sDoutCompteur :  STD_LOGIC_VECTOR (7 downto 0);
-    signal      sENCompteur :  STD_LOGIC;
+    SIGNAL sCMDALU : STD_LOGIC_VECTOR (3 DOWNTO 0);
+    SIGNAL sAALU : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sBALU : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sSALU : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sZALU : STD_LOGIC;
+    SIGNAL sCALU : STD_LOGIC;
+    SIGNAL sOALU : STD_LOGIC;
+    SIGNAL sNALU : STD_LOGIC;
+    COMPONENT Memoire IS
+        PORT (
+            rst    : IN STD_LOGIC;
+            write  : IN STD_LOGIC;
+            read   : IN STD_LOGIC;
+            add    : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+            input  : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+            output : OUT STD_LOGIC_VECTOR (7 DOWNTO 0));
+    END COMPONENT;
 
+    SIGNAL sWriteMemoire : STD_LOGIC;
+    SIGNAL sReadMemoire : STD_LOGIC;
+    SIGNAL sAddMemoire : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sinputMemoire : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL soutputMemoire : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sALUPipe1 : STD_LOGIC_VECTOR (3 DOWNTO 0);
+    SIGNAL sMemoryWritePipe1 : STD_LOGIC;
+    SIGNAL sMemoryReadPipe1 : STD_LOGIC;
+    SIGNAL sMemoryAddressPipe1 : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sLoadPCPipe1 : STD_LOGIC;
+    SIGNAL sLoadComparePCPipe1 : STD_LOGIC;
+    SIGNAL sConstantePipe1 : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sWriteBackPipe1 : STD_LOGIC;
+    SIGNAL sWriteAddressPipe1 : STD_LOGIC_VECTOR (3 DOWNTO 0);
 
-    component  MI is
-    Port ( cnt : in STD_LOGIC_VECTOR (7 downto 0);
-           Registre1 : out STD_LOGIC_VECTOR (3 downto 0);
-           Registre2 :out STD_LOGIC_VECTOR (3 downto 0); 
-           ALU : out STD_LOGIC_VECTOR (3 downto 0);
-           MemoryWrite : out STD_LOGIC;
-           MemoryRead : out STD_LOGIC;
-           MemoryAddress : out STD_LOGIC_VECTOR (7 downto 0);                      
-           LoadPC : out STD_LOGIC;
-           LoadComparePC : out STD_LOGIC;
-           Constante : out STD_LOGIC_VECTOR (7 downto 0); 
-           WriteBack : out STD_LOGIC;
-           WriteAddress : out STD_LOGIC_VECTOR (3 downto 0));
-    end component ;
-    
-    signal sCntMI :  STD_LOGIC_VECTOR (7 downto 0);
-    signal sRegistre1MI : STD_LOGIC_VECTOR (3 downto 0);
-    signal sRegistre2MI : STD_LOGIC_VECTOR (3 downto 0); 
-    signal sALUMI :  STD_LOGIC_VECTOR (3 downto 0);
-    signal sMemoryWriteMI :  STD_LOGIC;
-    signal sMemoryReadMI :  STD_LOGIC;
-    signal sMemoryAddressMI :  STD_LOGIC_VECTOR (7 downto 0);                      
-    signal sLoadPCMI :  STD_LOGIC;
-    signal sLoadComparePCMI :  STD_LOGIC;
-    signal sConstanteMI :  STD_LOGIC_VECTOR (7 downto 0); 
-    signal sWriteBackMI :  STD_LOGIC;
-    signal sWriteAddressMI :  STD_LOGIC_VECTOR (3 downto 0);
+    SIGNAL sMemoryWritePipe2 : STD_LOGIC;
+    SIGNAL sMemoryReadPipe2 : STD_LOGIC;
+    SIGNAL sMemoryAddressPipe2 : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sWriteBackPipe2 : STD_LOGIC;
+    SIGNAL sWriteAddressPipe2 : STD_LOGIC_VECTOR (3 DOWNTO 0);
 
+    SIGNAL sWriteBackPipe3 : STD_LOGIC;
+    SIGNAL sWriteAddressPipe3 : STD_LOGIC_VECTOR (3 DOWNTO 0);
 
-    component Registre is
-    Port ( read1 : in STD_LOGIC_VECTOR (3 downto 0);
-           read2 : in STD_LOGIC_VECTOR (3 downto 0);
-           write_add : in STD_LOGIC_VECTOR (3 downto 0);
-           write : in STD_LOGIC;
-           rst : in STD_LOGIC;
-           input : in STD_LOGIC_VECTOR (7 downto 0);
-           output1 : out STD_LOGIC_VECTOR (7 downto 0);
-           output2 : out STD_LOGIC_VECTOR (7 downto 0));
-    end component;
-    
-    signal  sWriteRegistre   :    std_logic;
-    signal  sRead1Registre  :    STD_LOGIC_VECTOR (3 downto 0);
-    signal  sRead2Registre  :    STD_LOGIC_VECTOR (3 downto 0);
-    signal  sWrite_addRegistre  :    STD_LOGIC_VECTOR (3 downto 0);
-    signal  sInputRegistre   :    STD_LOGIC_VECTOR (7 downto 0);
-    signal  sOutput1Registre :    STD_LOGIC_VECTOR (7 downto 0);
-    signal  sOutput2Registre :    STD_LOGIC_VECTOR (7 downto 0);
-    
-    
-    component MuxCompteur is
-    Port ( jmpCondIN : in STD_LOGIC;
-           jmpIn : in STD_LOGIC;
-           cond : in STD_LOGIC_VECTOR (7 downto 0);
-           jmpOut : out STD_LOGIC);
-    end component;
-    
-    signal  sJmpCondINMux   :    std_logic;
-    signal  sJmpInMux    :    std_logic;
-    signal  sCondMux    :    STD_LOGIC_VECTOR (7 downto 0);
-    signal  sjmpOutMux    :    std_logic;
-    
-    
-    component ALU is
-    Port ( CMD : in STD_LOGIC_VECTOR (3 downto 0);
-           A : in STD_LOGIC_VECTOR (7 downto 0);
-           B : in STD_LOGIC_VECTOR (7 downto 0);
-           S : out STD_LOGIC_VECTOR (7 downto 0);
-           Z : out STD_LOGIC;
-           C : out STD_LOGIC;
-           O : out STD_LOGIC;
-           N : out STD_LOGIC);
-    end component;
-    
-    signal sCMDALU : STD_LOGIC_VECTOR (3 downto 0);
-    signal sAALU : STD_LOGIC_VECTOR (7 downto 0);
-    signal sBALU : STD_LOGIC_VECTOR (7 downto 0);
-    signal sSALU : STD_LOGIC_VECTOR (7 downto 0);
-    signal sZALU : STD_LOGIC;
-    signal sCALU : STD_LOGIC;
-    signal sOALU : STD_LOGIC;
-    signal sNALU : STD_LOGIC;
-    
-    
-    component Memoire is
-    Port ( rst : in STD_LOGIC;
-           write : in STD_LOGIC;
-           read : in STD_LOGIC;
-           add : in STD_LOGIC_VECTOR (7 downto 0);
-           input : in STD_LOGIC_VECTOR (7 downto 0);
-           output : out STD_LOGIC_VECTOR (7 downto 0));
-    end component;
-    
-    signal  sWriteMemoire   :    std_logic;
-    signal  sReadMemoire    :    std_logic;
-    signal  sAddMemoire     :    STD_LOGIC_VECTOR (7 downto 0);
-    signal  sinputMemoire   :    STD_LOGIC_VECTOR (7 downto 0);
-    signal  soutputMemoire  :    STD_LOGIC_VECTOR (7 downto 0);
-    
+    SIGNAL flush : STD_LOGIC_VECTOR (1 DOWNTO 0);
 
-    signal sALUPipe1 :  STD_LOGIC_VECTOR (3 downto 0);
-    signal sMemoryWritePipe1 :  STD_LOGIC;
-    signal sMemoryReadPipe1 :  STD_LOGIC;
-    signal sMemoryAddressPipe1 :  STD_LOGIC_VECTOR (7 downto 0);                      
-    signal sLoadPCPipe1 :  STD_LOGIC;
-    signal sLoadComparePCPipe1 :  STD_LOGIC;
-    signal sConstantePipe1 :  STD_LOGIC_VECTOR (7 downto 0); 
-    signal sWriteBackPipe1 :  STD_LOGIC;
-    signal sWriteAddressPipe1 :  STD_LOGIC_VECTOR (3 downto 0);
-    
-    signal sMemoryWritePipe2 :  STD_LOGIC;
-    signal sMemoryReadPipe2 :  STD_LOGIC;
-    signal sMemoryAddressPipe2 :  STD_LOGIC_VECTOR (7 downto 0);                      
-    signal sWriteBackPipe2 :  STD_LOGIC;
-    signal sWriteAddressPipe2 :  STD_LOGIC_VECTOR (3 downto 0);
-    
-    signal sWriteBackPipe3 :  STD_LOGIC;
-    signal sWriteAddressPipe3 :  STD_LOGIC_VECTOR (3 downto 0);
-    
-    signal flush :  STD_LOGIC_VECTOR (1 downto 0);
-    
-begin
-    Compteur : Compteur port Map  (
-        clk =>clk,
-        rst => rst,
-        sens => sSensCompteur,
+BEGIN
+    Compteur : Counter PORT MAP(
+        clk  => clk,
+        rst  => rst,
+        dir => sSensCompteur,
         load => sLoadCompteur,
-        Din => sDinCompteur,
+        Din  => sDinCompteur,
         Dout => sDoutCompteur,
-        EN => sENCompteur
+        EN   => sENCompteur
     );
 
-    Translateur: Mi port map (
-        cnt => sCntMI,
-        Registre1 => sRegistre1MI,
-        Registre2 => sRegistre2MI,
-        ALU => sALUMI,
-        MemoryWrite => sMemoryWriteMI,
-        MemoryRead => sMemoryReadMI,
-        MemoryAddress => sMemoryAddressMI,
-        LoadPC => sLoadPCMI,
-        LoadComparePC => sLoadComparePCMI,
-        Constante => sConstanteMI,
-        WriteBack => sWriteBackMI,
-        WriteAddress => sWriteAddressMI
+    Translateur : InstructionMemory PORT MAP(
+        cnt        => sCntMI,
+        reg_a      => sRegistre1MI,
+        reg_b      => sRegistre2MI,
+        alu_code   => sALUMI,
+        data_wr    => sMemoryWriteMI,
+        data_rd    => sMemoryReadMI,
+        data_addr  => sMemoryAddressMI,
+        jump       => sLoadPCMI,
+        branch     => sLoadComparePCMI,
+        number     => sConstanteMI,
+        write_back => sWriteBackMI,
+        reg_s      => sWriteAddressMI
     );
-    
-    RegistreProcesseur : Registre port map(
-        rst => rst,
-        write => sWriteRegistre,
-        read1 => sRead1Registre, 
-        read2 => sRead2Registre, 
-        write_add => sWrite_addRegistre, 
-        input => sInputRegistre,
-        output1 => sOutput1Registre,
-        output2 => sOutput2Registre
+
+    RegistreProcesseur : Registre PORT MAP(
+        rst       => rst,
+        write     => sWriteRegistre,
+        read1     => sRead1Registre,
+        read2     => sRead2Registre,
+        write_add => sWrite_addRegistre,
+        input     => sInputRegistre,
+        output1   => sOutput1Registre,
+        output2   => sOutput2Registre
     );
-    
-    Mux : MuxCompteur port map(
+
+    Mux : MuxCompteur PORT MAP(
         jmpCondIN => sJmpCondINMux,
-        jmpIn => sJmpINMux,
-        cond => sCondMux,
-        jmpOut => sJmpOutMux
+        jmpIn     => sJmpINMux,
+        cond      => sCondMux,
+        jmpOut    => sJmpOutMux
     );
-     
-     ALUProcesseur: ALU port map (
-        CMD => sCMDALU,
-        A => sAALU,
-        B => sBALU,
-        S => sSALU,
-        Z => sZALU,
-        C => sCALU,
-        O => sOALU,
-        N => sNALU
-     );
-     
-     MemoireDonne : Memoire port map(
-        rst => rst,
-        read => sReadMemoire,
-        add => sAddMemoire,
-        write => sWriteMemoire, 
-        input => sInputMemoire, 
-        output => sOutputMemoire
-     );
 
-    sCntMI <= sDoutCompteur; 
-    sSensCompteur <='1';
-    sENCompteur <='1';
-    
+    ALUProcesseur : ALU PORT MAP(
+        CMD => sCMDALU,
+        A   => sAALU,
+        B   => sBALU,
+        S   => sSALU,
+        Z   => sZALU,
+        C   => sCALU,
+        O   => sOALU,
+        N   => sNALU
+    );
+
+    MemoireDonne : Memoire PORT MAP(
+        rst    => rst,
+        read   => sReadMemoire,
+        add    => sAddMemoire,
+        write  => sWriteMemoire,
+        input  => sInputMemoire,
+        output => sOutputMemoire
+    );
+
+    sCntMI <= sDoutCompteur;
+    sSensCompteur <= '1';
+    sENCompteur <= '1';
+
     --pour etre sur que le calcule du jump se fera avant la clock du compteur
     sJmpCondINMux <= sLoadComparePCPipe1;
     sJmpINMux <= sLoadPCPipe1;
     sCondMux <= sOutput1Registre;
-    
-   
-    flush <= "00" when rst ='1';
-    
-    process (clk)
-    begin
-        if (rising_edge (clk)) then 
+    flush <= "00" WHEN rst = '1';
+
+    PROCESS (clk)
+    BEGIN
+        IF (rising_edge (clk)) THEN
             sRead1Registre <= sRegistre1MI;
             sRead2Registre <= sRegistre2MI;
-            
+
             sALUPipe1 <= sALUMI;
             sMemoryWritePipe1 <= sMemoryWriteMI;
             sMemoryReadPipe1 <= sMemoryReadMI;
@@ -262,48 +224,44 @@ begin
             sLoadPCPipe1 <= sLoadPCMI;
             sLoadComparePCPipe1 <= sLoadComparePCMI;
             sConstantePipe1 <= sConstanteMI;
-            sWriteBackPipe1<= sWriteBackMI;
+            sWriteBackPipe1 <= sWriteBackMI;
             sWriteAddressPipe1 <= sWriteAddressMI;
-            
-           
-            
-            if(flush = "00") then 
+
+            IF (flush = "00") THEN
                 sCMDALU <= sALUPipe1;
                 sAALU <= sOutput1Registre;
-                sBALU <= sOutput2Registre;        
-                
+                sBALU <= sOutput2Registre;
+
                 sLoadCompteur <= sJmpOutMux;
                 sDinCompteur <= sConstantePipe1;
-                
-                if (sJmpOutMux='1') then 
+
+                IF (sJmpOutMux = '1') THEN
                     flush <= "10";
-                end if;
-            
-            
+                END IF;
                 sMemoryWritePipe2 <= sMemoryWritePipe1;
                 sMemoryReadPipe2 <= sMemoryReadPipe1;
                 sMemoryAddressPipe2 <= sMemoryAddressPipe1;
-                sWriteBackPipe2<= sWriteBackPipe1;
+                sWriteBackPipe2 <= sWriteBackPipe1;
                 sWriteAddressPipe2 <= sWriteAddressPipe1;
-                
-            elsif (flush = "10") then
+
+            ELSIF (flush = "10") THEN
                 flush <= "01";
-            else
+            ELSE
                 flush <= "00";
-            end if;
-            
-            sReadMemoire <= sMemoryReadPipe2 ;
+            END IF;
+
+            sReadMemoire <= sMemoryReadPipe2;
             sAddMemoire <= sMemoryAddressPipe2;
             sWriteMemoire <= sMemoryWritePipe2;
             sInputMemoire <= sSALU;
-            
+
             sWriteBackPipe3 <= sWriteBackPipe2;
             sWriteAddressPipe3 <= sWriteAddressPipe2;
-            
+
             sWrite_addRegistre <= sWriteAddressPipe3;
             sWriteRegistre <= sWriteBackPipe3;
             sInputRegistre <= sOutputMemoire;
-            
-        end if;
-    end process;
-end Behavioral;
+
+        END IF;
+    END PROCESS;
+END Behavioral;

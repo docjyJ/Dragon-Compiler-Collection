@@ -1,0 +1,41 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+
+PACKAGE Constants IS
+    CONSTANT op_add : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"01";
+    CONSTANT op_multiply : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"02";
+    CONSTANT op_subtract : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"03";
+    CONSTANT op_divide : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"04";
+    CONSTANT op_copy : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"05";
+    CONSTANT op_define : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"06";
+    CONSTANT op_jump : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"07";
+    CONSTANT op_branch : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"08";
+    CONSTANT op_lower_than : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"09";
+    CONSTANT op_greater_than : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"0A";
+    CONSTANT op_equal_to : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"0B";
+    CONSTANT op_display : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"0C";
+    CONSTANT op_load : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"10";
+    CONSTANT op_store : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"11";
+    CONSTANT op_negate : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"30";
+    CONSTANT op_modulo : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"31";
+    CONSTANT op_bitwise_and : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"50";
+    CONSTANT op_bitwise_or : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"51";
+    CONSTANT op_bitwise_not : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"52";
+    CONSTANT op_bitwise_xor : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"53";
+
+    CONSTANT log_or : STD_LOGIC_VECTOR (3 DOWNTO 0) := "0001";
+    CONSTANT log_nor : STD_LOGIC_VECTOR (3 DOWNTO 0) := "0010";
+    CONSTANT log_and : STD_LOGIC_VECTOR (3 DOWNTO 0) := "0011";
+    CONSTANT log_xor : STD_LOGIC_VECTOR (3 DOWNTO 0) := "0100";
+    CONSTANT log_eq : STD_LOGIC_VECTOR (3 DOWNTO 0) := "0101";
+    -- constant UNUSED: std_logic_vector (3 downto 0) := "0110";
+    -- constant UNUSED: std_logic_vector (3 downto 0) := "0111";
+    CONSTANT u_add : STD_LOGIC_VECTOR (3 DOWNTO 0) := "1000";
+    CONSTANT u_sub : STD_LOGIC_VECTOR (3 DOWNTO 0) := "1001";
+    CONSTANT u_mul : STD_LOGIC_VECTOR (3 DOWNTO 0) := "1010";
+    -- constant UNUSED: std_logic_vector (3 downto 0) := "1011";
+    CONSTANT s_add : STD_LOGIC_VECTOR (3 DOWNTO 0) := "1100";
+    CONSTANT s_sub : STD_LOGIC_VECTOR (3 DOWNTO 0) := "1101";
+    CONSTANT s_mul : STD_LOGIC_VECTOR (3 DOWNTO 0) := "1110";
+    CONSTANT s_div : STD_LOGIC_VECTOR (3 DOWNTO 0) := "1111";
+END Constants;
