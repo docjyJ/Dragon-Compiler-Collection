@@ -10,7 +10,7 @@ ENTITY MasterIO IS
         BTND : IN STD_LOGIC;
         SW : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
         LD : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-        AN : OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
+        AN : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
         C : OUT STD_LOGIC_VECTOR(6 DOWNTO 0);
         DP : OUT STD_LOGIC);
 END MasterIO;
@@ -39,7 +39,7 @@ BEGIN
     en <= SW(0);
     dir <= SW(1);
     clk1 <= CLK;
-    clk2 <= d1(7);
+    clk2 <= NOT d1(7);
     LD(7 DOWNTO 0) <= d1;
     LD(15 DOWNTO 8) <= d2;
 

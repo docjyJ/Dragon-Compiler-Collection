@@ -21,15 +21,17 @@ BEGIN
 
     PROCESS (clk) IS
     BEGIN
-        IF clk = '1' AND en = '1' THEN
-            IF (rst = '1') THEN
+        IF clk = '1' THEN
+            IF rst = '1' THEN
                 mem <= x"00";
-            ELSIF (lod = '1') THEN
-                mem <= a;
-            ELSIF (dir = '1') THEN
-                mem <= mem + 1;
-            ELSE
-                mem <= mem - 1;
+            ELSIF en = '1' THEN
+                IF lod = '1' THEN
+                    mem <= a;
+                ELSIF dir = '1' THEN
+                    mem <= mem - 1;
+                ELSE
+                    mem <= mem + 1;
+                END IF;
             END IF;
         END IF;
     END PROCESS;
