@@ -1,40 +1,34 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
-USE IEEE.std_logic_arith.ALL;
-USE IEEE.std_logic_unsigned.ALL;
-USE work.Constants.ALL;
+USE IEEE.STD_LOGIC_ARITH.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE WORK.DRAGON.ALL;
 
-ENTITY InstructionMemory IS
-    PORT (
-        cnt        : IN STD_LOGIC_VECTOR (7 TO 0);
-        reg_a      : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
-        reg_b      : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
-        alu_code   : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
-        data_wr    : OUT STD_LOGIC;
-        data_rd    : OUT STD_LOGIC;
-        data_addr  : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
-        jump       : OUT STD_LOGIC;
-        branch     : OUT STD_LOGIC;
-        number     : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
-        write_back : OUT STD_LOGIC;
-        reg_s      : OUT STD_LOGIC_VECTOR (3 DOWNTO 0));
+ENTITY InstructionMemory IS PORT (
+    cnt                      : IN std_logic_vector (7 DOWNTO 0);
+    reg_a, reg_b, reg_s      : OUT std_logic_vector (3 DOWNTO 0);
+    alu_code                 : OUT std_logic_vector (3 DOWNTO 0);
+    number, data_addr        : OUT std_logic_vector (7 DOWNTO 0);
+    data_wr, data_rd         : OUT std_logic;
+    write_back, jump, branch : OUT std_logic
+);
 
 END InstructionMemory;
 
 ARCHITECTURE Behavioral OF InstructionMemory IS
-    TYPE ttab IS ARRAY (255 DOWNTO 0) OF STD_LOGIC_VECTOR (31 DOWNTO 0);
+    TYPE ttab IS ARRAY (255 DOWNTO 0) OF std_logic_vector (31 DOWNTO 0);
     CONSTANT mem_inst : ttab := (
-        x"00000000",
-        x"01020304",
-        x"07060304",
-        x"090A0309",
-        x"50010105",
-        OTHERS => (OTHERS => '0'));
+    x"00000000",
+    x"01020304",
+    x"07060304",
+    x"090A0309",
+    x"50010105",
+    OTHERS => (OTHERS => '0'));
 
-    SIGNAL inst : STD_LOGIC_VECTOR (31 DOWNTO 0);
-    SIGNAL op_code : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL inst    : std_logic_vector (31 DOWNTO 0);
+    SIGNAL op_code : std_logic_vector (7 DOWNTO 0);
 BEGIN
-    inst <= mem_inst(conv_integer(cnt));
+    inst    <= mem_inst(conv_integer(cnt));
     op_code <= inst(31 DOWNTO 24);
 
     WITH op_code SELECT alu_code <=
@@ -51,7 +45,7 @@ BEGIN
         (OTHERS => '0') WHEN OTHERS;
 
     data_addr <= inst(23 DOWNTO 16);
-    data_wr <= '1' WHEN op_code = op_store ELSE
+    data_wr   <= '1' WHEN op_code = op_store ELSE
         '0';
     data_rd <= '1' WHEN op_code = op_load ELSE
         '0';
