@@ -3,62 +3,66 @@ USE IEEE.STD_LOGIC_1164.ALL;
 
 ENTITY MasterIO IS
     PORT (
-        CLK : IN STD_LOGIC;
-        BTNL : IN STD_LOGIC;
-        BTNR : IN STD_LOGIC;
-        BTNU : IN STD_LOGIC;
-        BTND : IN STD_LOGIC;
-        SW : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-        LD : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-        AN : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-        C : OUT STD_LOGIC_VECTOR(6 DOWNTO 0);
-        DP : OUT STD_LOGIC);
+        clk  : IN std_logic;
+        btnL : IN std_logic;
+        btnR : IN std_logic;
+        btnU : IN std_logic;
+        btnD : IN std_logic;
+        btnC : IN std_logic;
+        sw   : IN std_logic_vector(15 DOWNTO 0);
+        led  : OUT std_logic_vector(15 DOWNTO 0);
+        an   : OUT std_logic_vector(3 DOWNTO 0);
+        seg  : OUT std_logic_vector(6 DOWNTO 0);
+        dp   : OUT std_logic);
 END MasterIO;
 
 ARCHITECTURE Behavioral OF MasterIO IS
     COMPONENT Counter IS
         PORT (
-            clk : IN STD_LOGIC;
-            en : IN STD_LOGIC;
-            rst : IN STD_LOGIC;
-            dir : IN STD_LOGIC;
-            lod : IN STD_LOGIC;
-            a : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
-            s : OUT STD_LOGIC_VECTOR (7 DOWNTO 0));
+            clk : IN std_logic;
+            en  : IN std_logic;
+            rst : IN std_logic;
+            dir : IN std_logic;
+            lod : IN std_logic;
+            a   : IN std_logic_vector (7 DOWNTO 0);
+            s   : OUT std_logic_vector (7 DOWNTO 0));
     END COMPONENT;
 
-    SIGNAL clk1 : STD_LOGIC;
-    SIGNAL clk2 : STD_LOGIC;
-    SIGNAL en : STD_LOGIC;
-    SIGNAL rst : STD_LOGIC;
-    SIGNAL dir : STD_LOGIC;
-    SIGNAL d1 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL d2 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL clk1 : std_logic;
+    SIGNAL clk2 : std_logic;
+    SIGNAL en   : std_logic;
+    SIGNAL rst  : std_logic;
+    SIGNAL dir  : std_logic;
+    SIGNAL d1   : std_logic_vector(7 DOWNTO 0);
+    SIGNAL d2   : std_logic_vector(7 DOWNTO 0);
 BEGIN
-    rst <= BTNU;
-    en <= SW(0);
-    dir <= SW(1);
-    clk1 <= CLK;
-    clk2 <= NOT d1(7);
-    LD(7 DOWNTO 0) <= d1;
-    LD(15 DOWNTO 8) <= d2;
+    an               <= "0000";
+    dp               <= '0';
+    seg              <= "0000000";
+    rst              <= btnU;
+    en               <= sw(0);
+    dir              <= sw(1);
+    clk1             <= clk;
+    clk2             <= NOT d1(7);
+    led(7 DOWNTO 0)  <= d1;
+    led(15 DOWNTO 8) <= d2;
 
     counter0 : Counter PORT MAP(
         clk => clk1,
-        en => en,
+        en  => en,
         rst => rst,
         dir => dir,
         lod => '0',
-        a => "00000000",
-        s => d1);
+        a   => "00000000",
+        s   => d1);
 
     counter1 : Counter PORT MAP(
         clk => clk2,
-        en => en,
+        en  => en,
         rst => rst,
         dir => dir,
         lod => '0',
-        a => "00000000",
-        s => d2);
+        a   => "00000000",
+        s   => d2);
 
 END Behavioral;
