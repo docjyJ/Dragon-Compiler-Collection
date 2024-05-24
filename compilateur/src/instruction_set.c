@@ -62,7 +62,7 @@ void op_r(op_code code, register_t r) {
     add_instruction(k);
 }
 
-inst nop (address addr) {
+inst op_np (address addr) {
     inst k = {{op_nop.id, 0, 0, 0},
               printf_alloc(pattern_, addr, op_nop.name), NULL};
     return k;
@@ -143,12 +143,16 @@ void var_adr(register_t r, memory_address a) {
         op_rrr(op_add, r, r, RS);
 }
 
-void var_adr_after(register_t r, memory_address a, address addr) {
+char var_adr_after(register_t r, memory_address a, address addr) {
     load_const_after(r, a.value, addr);
-    if (a.isLocal)
+    if (a.isLocal){
         set_instruction (op_rrr_after(op_add, r, r, RS, addr+1), addr +1);
-    else
-         set_instruction( nop(addr+1), addr+1);;
+        return '1';
+    }else {
+        return '0';
+    }
+
+
 }
 
 void load_var(register_t r, label l) {
@@ -157,8 +161,12 @@ void load_var(register_t r, label l) {
 }
 
 void load_var_after(register_t r, label l, address addr) {
-    var_adr_after(r, var_get_or_temp_pop(l), addr);
-    set_instruction(op_rr_after(op_load, r, r, addr+2), addr +2);
+    if (var_adr_after(r, var_get_or_temp_pop(l), addr)){
+        set_instruction(op_rr_after(op_load, r, r, addr+2), addr +2);
+    }else {
+        set_instruction(op_rr_after(op_load, r, r, addr+1), addr +1);
+    }
+
 }
 
 void store_var(register_t r, register_t tmp, label l) {
@@ -222,6 +230,10 @@ void var_copy(label o, label i) {
 void var_define(label o, label i) {
     var_create(o);
     var_copy(o, i);
+}
+
+void nop (){
+    add_instruction(op_np(get_instruction_count()));
 }
 
 void negate(label o, label i) {

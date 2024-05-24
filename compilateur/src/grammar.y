@@ -25,7 +25,6 @@ int yylex();
 
 %type <s> number unary multiplicative additive relational equality bitwise_and bitwise_xor bitwise_or operators
 %type <s> label_pointer_arg label_pointer pointer table callable
-%type <i> callable_args_list callable_args functions_args functions_args_list
 
 %%
 

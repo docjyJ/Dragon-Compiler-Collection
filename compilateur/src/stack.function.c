@@ -1,5 +1,7 @@
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
+
 #include "instruction_set.h"
 #include "memory.h"
 #include "stack.function.h"
@@ -64,6 +66,7 @@ void go_function(char *a) {
     var_copy(NULL, "$");
 
     start_go = get_instruction_count();
+    nop();
 
     alloc_stack(offsetGoFun);
     nb_param = 0;
@@ -72,12 +75,12 @@ void go_function(char *a) {
 
 void end_go_function() {
 
-    jump(tab_fnc[indexGoFun]->fun);
-    number_copy_after("$", get_instruction_count()-1 , start_go);
+    jump(tab_fnc[indexGoFun]->fun-1);
+    number_copy_after("$", get_instruction_count()-1 , start_go-4);
 
     free_stack(offsetGoFun);
 
-    number_copy("$", NULL);
+    var_copy("$", NULL);
 
     if (nb_param != tab_fnc[indexGoFun]->nb_param) {
         yyerror("Wrong number of parameters");
