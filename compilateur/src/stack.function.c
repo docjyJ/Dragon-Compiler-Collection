@@ -20,6 +20,7 @@ int indexGoFun;
 int offsetGoFun;
 int nb_param;
 
+
 void start_function(char *a) {
 
     var_create(a);
@@ -42,7 +43,7 @@ void add_param(char *a) {
 
 void end_function() {
     remove_visibility();
-    jump(0);
+    jump_mem("$");
 }
 
 void go_function(char *a) {
@@ -55,10 +56,12 @@ void go_function(char *a) {
 
     offsetGoFun = nb_declaration() - tab_fnc[nb_fun]->debut_pile_function;
 
+    var_copy(NULL, "$");
+    number_copy("$", get_instruction_count() + 1);
+
     number_copy(NULL, offsetGoFun);
     add("%", "%", NULL);
 
-    number_copy(NULL, get_instruction_count() + 1); //todo : on ne peut pas passer des temps en arguments 
     nb_param = 0;
 
 }
@@ -69,6 +72,8 @@ void end_go_function() {
 
     number_copy(NULL, offsetGoFun);
     subtract("%", "%", NULL);
+
+    number_copy("$", NULL);
 
     if (nb_param != tab_fnc[indexGoFun]->nb_param) {
         yyerror("Wrong number of parameters");
@@ -90,6 +95,6 @@ void give_param(char *a) {
 }
 
 void return_var(char *a) {
-    end_function();
-    var_copy(NULL, a);
+    return_label(NULL, a);
+    jump_mem("$");
 }

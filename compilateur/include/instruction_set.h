@@ -169,17 +169,33 @@ void equal_to(label o, label i1, label i2);
 /**
  * Permet de sauter à une adresse d'exécution spécifique.
  * `jump(c)`
- * @param a l'adresse de saut
+ * @param c l'adresse de saut
  */
-void jump(address a);
+void jump(address c);
+
+/**
+ * Permet de sauter à une adresse d'exécution spécifique.
+ * `jump(c)`
+ * @param c l'adresse de saut en mémoire
+ */
+void jump_mem(label c);
 
 /**
  * Permet de sauter à une adresse d'exécution spécifique si une condition est vérifiée.
  * `if (i) jump(c)`
  * @param i le nom de la variable de condition ou NULL pour obtenir un temporaire
- * @param a l'adresse de saut
+ * @param c l'adresse de saut
  */
-void branch(label i, address a);
+void branch(label i, address c);
+
+/**
+ * Permet de sauter à une adresse d'exécution spécifique si une condition est vérifiée.
+ * `if (i) jump(c)`
+ * @param i le nom de la variable de condition ou NULL pour obtenir un temporaire
+ * @param c l'adresse de saut en mémoire
+ */
+void branch_mem (label i, label c);
+
 
 /**
  * Permet d'ajouter un vide qui pourra être compléter plus tard pendant l'analyse.
@@ -249,6 +265,14 @@ void store_offset(label o, label i, label c);
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  */
 void store(label o, label i);
+
+/**
+ * Permet de return une variable et de flush la mémoire.
+ *
+ * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
+ * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
+ */
+void return_label(label o, label i);
 
 /**
  * Permet d'ajouté cheque token dans un buffer pour pour afficher le code source en commentaire.

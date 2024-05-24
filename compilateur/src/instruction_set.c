@@ -41,6 +41,8 @@ const op_code op_display = {"PRI", 0x0C};
 // Instruction technique
 const op_code op_load = {"LOD", 0x10};
 const op_code op_store = {"STR", 0x11};
+const op_code op_jump_register = {"JMPR", 0x12};
+const op_code op_branch_register = {"JMFR", 0x13};
 
 // Instructions ajoutées (arithmétiques)
 const op_code op_negate = {"NEG", 0x30};
@@ -82,9 +84,21 @@ inst op_jump_c(address line, address target) {
     return k;
 }
 
+inst op_jump_r(address line, register_t target) {
+    inst k = {{op_jump_register.id, target, 0, 0},
+              printf_alloc(pattern_c, line, op_jump.name, r_name[target], r_name[target]), NULL};
+    return k;
+}
+
 inst op_jump_ca(address line, address target, register_t r) {
     inst k = {{op_branch.id, target, r, 0},
               printf_alloc(pattern_ca, line, op_branch.name, target, r_name[r], target), NULL};
+    return k;
+}
+
+inst op_jump_ra(address line, register_t target, register_t r) {
+    inst k = {{op_branch_register.id, target, r, 0},
+              printf_alloc(pattern_ca, line, op_branch.name, r_name[target], r_name[r], r_name[target]), NULL};
     return k;
 }
 
@@ -211,9 +225,20 @@ void jump(address c) {
     add_instruction(op_jump_c(get_instruction_count(), c));
 }
 
+void jump_mem(label c){
+    load_var(R2, c);
+    add_instruction(op_jump_r(get_instruction_count(), R2));
+}
+
 void branch(label i, address c) {
-    load_var(R2, i);
+    load_var(R1, i);
     add_instruction(op_jump_ca(get_instruction_count(), c, R1));
+}
+
+void branch_mem(label i, label c) {
+    load_var(R1, i);
+    load_var(R2, c);
+    add_instruction(op_jump_ra(get_instruction_count(), R2, R1));
 }
 
 address padding_for_later_jump() {
@@ -253,6 +278,12 @@ void store_offset(label o, label i, label c) {
     load_var(R1, NULL);
     op_rr(op_store, R3, R1);
 
+}
+
+void return_label(label o, label i){
+    load_var(R2, i);
+    remove_visibility();
+    store_var(R2, R1, o);
 }
 
 void store(label o, label i) {

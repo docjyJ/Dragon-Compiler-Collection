@@ -46,6 +46,7 @@ code_block: LBRACE code_line_list RBRACE
 
 code_line_list: code_line
               | code_line code_line_list
+              | return END
               ;
 
 code_one_line: operators END { free($1); }
@@ -53,7 +54,6 @@ code_one_line: operators END { free($1); }
              | if { end_branch(1); }
              | while_do { end_branch(0); end_branch(0); }
              | PRINT LPAR operators RPAR END { display($3); free($3); }
-             | RETURN operators END { return_var($2); free($2); }
              | END
              ;
 
@@ -80,16 +80,19 @@ while_do: WHILE init_loop init_cond single_boddy
 
 /* Gestion des fonctions */
 
-functions: functions_header code_block { end_function(); }
-           | functions_header_main code_block
+functions: functions_header_void code_block { end_function(); }
+                | functions_header_main code_block
+                | functions_header_int code_block
          ;
 
-functions_header: TYPE_VOID function_name functions_args
-                | TYPE_INT function_name functions_args
+functions_header_void: TYPE_VOID function_name functions_args
                 ;
 
-functions_header_main:  TYPE_INT MAIN functions_args { start_function("main"); }
-                        |TYPE_VOID MAIN functions_args { start_function("main"); }
+functions_header_int: TYPE_INT function_name functions_args
+                ;
+
+functions_header_main:  TYPE_INT main_name functions_args
+                        |TYPE_VOID main_name functions_args
                 ;
 
 function_name : LABEL { start_function($1); free($1); }
@@ -128,6 +131,7 @@ pointer: table { $$ = $1; }
 
 number: STATIC_INT { $$ = NULL; number_copy($$, $1); }
       | pointer { $$ = $1; }
+      | callable {$$ = NULL; }
       ;
 
 unary: number { $$ = $1 ; }
@@ -173,21 +177,11 @@ bitwise_or: bitwise_xor { $$ = $1 ; }
 operators: bitwise_or { $$ = $1 ; }
          | LABEL ASSIGN operators { var_copy($1, $3); $$ = $1; free($3); }
          | table LBRACKET operators RBRACKET ASSIGN operators { store_offset($1, $3, $6); $$ = $1; free($3); free($6); }
-         | go_fun go_functions_args  { end_go_function();}
          | MUL pointer ASSIGN operators { store($2, $4); $$ = $2; free($4); }
          ;
 
-go_fun : LABEL { go_function($1); free($1); }
-       ;
 
-go_functions_args: LPAR go_functions_args_list RPAR
-              | LPAR TYPE_VOID RPAR
-              | LPAR RPAR
-              ;
 
-go_functions_args_list: operators {give_param($1);free($1);}
-                   | go_functions_args_list COMMA operators {give_param($3); free($3); }
-                   ;
 
 
 /* Gestion des variable */
@@ -211,18 +205,21 @@ label_pointer: LABEL { number_define($1, 0) ; $$ = $1; }
 
 /* Gestion des appel de fonction */
 
-callable: LABEL callable_args { go_function($1); free($1); }
+callable: callable_name callable_args { end_go_function(); }
         ;
 
-callable_args: LPAR callable_args_list RPAR { $$ = $2; }
-             | LPAR RPAR { $$ = 0; }
+callable_name : LABEL { go_function($1); free($1); }
+       ;
+
+callable_args: LPAR callable_args_list RPAR
+             | LPAR RPAR
              ;
 
-callable_args_list: operators { $$ = 1; free($1); }
-                  | callable_args_list COMMA operators { $$ = $1 + 1; free($3); }
+callable_args_list: operators {give_param($1);free($1);}
+                  | callable_args_list COMMA operators {give_param($3); free($3); }
                   ;
 
-return: RETURN operators { free($2); }
+return: RETURN operators { return_var($2); free($2); }
       ;
 
 %%

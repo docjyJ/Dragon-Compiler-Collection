@@ -9,12 +9,13 @@ int compute(int a, int d) {
         b = b + a * 4;
         c=c-1;
     }
+    return c;
 }
 
 
 void main(void) {
-    int p = 1;
-    compute(p,2);
-    print(p);
+    int a = 1;
+    compute(a,2);
+    print(a);
 
 }
