@@ -1,13 +1,17 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 
-ENTITY assemblage IS
-    PORT (
-        clk : IN std_logic;
-        rst : IN std_logic);
-END assemblage;
+ENTITY MasterIO IS PORT (
+    clk, btnL, btnR  : IN std_logic;
+    btnU, btnD, btnC : IN std_logic;
+    sw               : IN std_logic_vector(15 DOWNTO 0);
+    led              : OUT std_logic_vector(15 DOWNTO 0);
+    an               : OUT std_logic_vector(3 DOWNTO 0);
+    seg              : OUT std_logic_vector(6 DOWNTO 0);
+    dp               : OUT std_logic);
+END MasterIO;
 
-ARCHITECTURE Behavioral OF assemblage IS
+ARCHITECTURE Behavioral OF MasterIO IS
     COMPONENT Counter IS PORT (
         clk, rst     : IN std_logic;
         en, dir, lod : IN std_logic;
@@ -125,7 +129,9 @@ ARCHITECTURE Behavioral OF assemblage IS
 
     SIGNAL flush : std_logic_vector (1 DOWNTO 0);
 
+    SIGNAL rst : std_logic;
 BEGIN
+    rst <= btnU;
     Compteur : Counter PORT MAP(
         clk => clk,
         en  => sENCompteur,

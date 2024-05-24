@@ -10,9 +10,7 @@ ENTITY InstructionMemory IS PORT (
     alu_code                 : OUT std_logic_vector (3 DOWNTO 0);
     number, data_addr        : OUT std_logic_vector (7 DOWNTO 0);
     data_wr, data_rd         : OUT std_logic;
-    write_back, jump, branch : OUT std_logic
-);
-
+    write_back, jump, branch : OUT std_logic);
 END InstructionMemory;
 
 ARCHITECTURE Behavioral OF InstructionMemory IS
