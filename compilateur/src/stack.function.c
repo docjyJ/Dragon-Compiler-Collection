@@ -42,7 +42,7 @@ void add_param(char *a) {
 
 void end_function() {
     remove_visibility();
-    jump(NULL);
+    jump(0);
 }
 
 void go_function(char *a) {
@@ -91,5 +91,5 @@ void give_param(char *a) {
 
 void return_var(char *a) {
     end_function();
-    number_copy(NULL, a);
+    var_copy(NULL, a);
 }
