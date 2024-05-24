@@ -86,7 +86,7 @@ inst op_jump_c(address line, address target) {
 
 inst op_jump_r(address line, register_t target) {
     inst k = {{op_jump_register.id, target, 0, 0},
-              printf_alloc(pattern_c, line, op_jump.name, r_name[target], r_name[target]), NULL};
+              printf_alloc(pattern_a, line, op_jump_register.name, r_name[target], r_name[target]), NULL};
     return k;
 }
 
@@ -98,7 +98,7 @@ inst op_jump_ca(address line, address target, register_t r) {
 
 inst op_jump_ra(address line, register_t target, register_t r) {
     inst k = {{op_branch_register.id, target, r, 0},
-              printf_alloc(pattern_ca, line, op_branch.name, r_name[target], r_name[r], r_name[target]), NULL};
+              printf_alloc(pattern_aa, line, op_branch_register.name, r_name[target], r_name[r], r_name[target]), NULL};
     return k;
 }
 
