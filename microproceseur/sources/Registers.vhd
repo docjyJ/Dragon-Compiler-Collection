@@ -18,7 +18,7 @@ BEGIN
     val_a <= reg(conv_integer(addr_a));
     val_b <= reg(conv_integer(addr_b));
 
-    PROCESS (wr, rst)
+    PROCESS (wr, rst, val_wr)
     BEGIN
         IF rst = '1' THEN
             reg <= (OTHERS => (OTHERS => '0'));
