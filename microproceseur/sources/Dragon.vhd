@@ -1,7 +1,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 
-PACKAGE Constants IS
+PACKAGE Dragon IS
     CONSTANT op_add : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"01";
     CONSTANT op_multiply : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"02";
     CONSTANT op_subtract : STD_LOGIC_VECTOR (7 DOWNTO 0) := x"03";
@@ -38,4 +38,4 @@ PACKAGE Constants IS
     CONSTANT s_sub : STD_LOGIC_VECTOR (3 DOWNTO 0) := "1101";
     CONSTANT s_mul : STD_LOGIC_VECTOR (3 DOWNTO 0) := "1110";
     CONSTANT s_div : STD_LOGIC_VECTOR (3 DOWNTO 0) := "1111";
-END Constants;
+END Dragon;
