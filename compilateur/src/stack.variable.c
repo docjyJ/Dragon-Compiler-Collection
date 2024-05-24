@@ -12,7 +12,6 @@ symbole var_stak[MAX_ADDRESS];
 
 address var_head = 1;
 address visibility = 0;
-address var_tmp_head = -1;
 address offset_function = 0;
 
 address nb_declaration() {
@@ -26,7 +25,7 @@ int find_var(label name, address *out) {
     else if (name[0] == '%')
         i = 0;
     else
-        for (i = var_head - 1; i >= 0 && (var_stak[i].nom == NULL || strcmp(var_stak[i].nom, name) != 0); i--);
+        for (i = var_head; i >= 0 && (var_stak[i].nom == NULL || strcmp(var_stak[i].nom, name) != 0); i--);
 
     if (i != -1) {
         if (out != NULL) *out = (address) i;
@@ -37,7 +36,7 @@ int find_var(label name, address *out) {
 }
 
 void var_create(label name) {
-    if (var_tmp_head < var_head)
+    if (var_head == 0xFF)
         yyerror("not enough memory");
     if (find_var(name, NULL))
         yyerror(printf_alloc("<%s> already exist", name));
@@ -79,20 +78,22 @@ memory_address var_get(label name) {
 
 
 address temp_push() {
-    if (var_tmp_head < var_head) yyerror("not enough memory");
-    return var_tmp_head--;
+    if (var_head == 0xFF) yyerror("not enough memory");
+    var_head++;
+    return var_head - offset_function -1 ;
 }
 
 address temp_pop() {
-    if (var_tmp_head == 0xFF) yyerror("var_tmp_head is empty");
-    return ++var_tmp_head;
+    if (var_head == 0x00) yyerror("il n'y a pas de variable");
+    --var_head;
+    return var_head - offset_function;
 }
 
 memory_address var_get_or_temp_push(label name) {
     if (name != NULL)
         return var_get(name);
 
-    memory_address out = {temp_push(), 0};
+    memory_address out = {temp_push(), 1};
     return out;
 }
 
@@ -100,7 +101,7 @@ memory_address var_get_or_temp_pop(label name) {
     if (name != NULL)
         return var_get(name);
 
-    memory_address out = {temp_pop(), 0};
+    memory_address out = {temp_pop(), 1};
     return out;
 
 }
@@ -108,6 +109,8 @@ memory_address var_get_or_temp_pop(label name) {
 void add_visibility() {
     if (visibility == MAX_ADDRESS / 2 - 1) yyerror("can't add visibility level");
     if (visibility == 0) offset_function = var_head;
+    // dans le rpincipe on peut pas déclarer une fonction dans une autre fonction
+    // donc si et seulement si la visibilité augmente et qu'on est pas déja dans une fonction, ondéclare une fonction
     visibility++;
 }
 

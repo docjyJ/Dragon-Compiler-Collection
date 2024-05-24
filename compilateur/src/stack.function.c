@@ -77,7 +77,7 @@ void end_go_function() {
 }
 
     /*
-        TODO : arriver à passer les paramètres dans la pile
+        TODO : trouver une solution pour le return
                jump à une addresse contenu dans un registre pour le end fonction
                bug quand la fonction est un operator il essaye de la var_get les lignes de code
 

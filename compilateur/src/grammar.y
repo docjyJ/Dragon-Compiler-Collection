@@ -24,7 +24,7 @@ int yylex();
 %token ASSIGN COMMA END
 
 %type <s> number unary multiplicative additive relational equality bitwise_and bitwise_xor bitwise_or operators
-%type <s> label_pointer pointer table callable
+%type <s> label_pointer_arg label_pointer pointer table callable
 %type <i> callable_args_list callable_args functions_args functions_args_list
 
 %%
@@ -53,7 +53,7 @@ code_one_line: operators END { free($1); }
              | if { end_branch(1); }
              | while_do { end_branch(0); end_branch(0); }
              | PRINT LPAR operators RPAR END { display($3); free($3); }
-             | RETURN LABEL END { return_var($2); free($2); }
+             | RETURN operators END { return_var($2); free($2); }
              | END
              ;
 
@@ -108,9 +108,12 @@ functions_args_list: functions_arg {}
                    | functions_args_list COMMA functions_arg {}
                    ;
 
-functions_arg: TYPE_INT label_pointer { add_param($2); free($2); }
+functions_arg: TYPE_INT label_pointer_arg { add_param($2); free($2); }
              ;
 
+label_pointer_arg: LABEL { $$ = $1; }
+                 | MUL label_pointer_arg { $$ = $2; }
+                 ;
 
 
 /* Gestion ses opérations */
@@ -183,7 +186,7 @@ go_functions_args: LPAR go_functions_args_list RPAR {}
               ;
 
 go_functions_args_list: operators {give_param($1);free($1);}
-                   | functions_args_list COMMA operators {give_param($3); free($3); }
+                   | go_functions_args_list COMMA operators {give_param($3); free($3); }
                    ;
 
 
@@ -197,11 +200,11 @@ defvars_list: defvar
             ;
 
 defvar: label_pointer { number_define($1, 0) ; free($1); }
-      | label_pointer ASSIGN operators { var_define($1, $3); free($1); free($3); }
+      | label_pointer ASSIGN operators { var_copy($1, $3); free($1); free($3); }
       | LABEL LBRACKET STATIC_INT RBRACKET { tab_define($1, $3); free($1); }
       ;
 
-label_pointer: LABEL { $$ = $1; }
+label_pointer: LABEL { number_define($1, 0) ; $$ = $1; }
              | MUL label_pointer { $$ = $2; }
              ;
 
