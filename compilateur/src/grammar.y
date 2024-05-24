@@ -81,11 +81,11 @@ while_do: WHILE init_loop init_cond single_boddy
 /* Gestion des fonctions */
 
 functions: functions_header code_block { end_function(); }
-           | functions_header_main code_block {}
+           | functions_header_main code_block
          ;
 
-functions_header: TYPE_VOID function_name functions_args {}
-                | TYPE_INT function_name functions_args {}
+functions_header: TYPE_VOID function_name functions_args
+                | TYPE_INT function_name functions_args
                 ;
 
 functions_header_main:  TYPE_INT MAIN functions_args { start_function("main"); }
@@ -99,13 +99,13 @@ main_name : MAIN {  start_function("main"); }
               ;
 
 
-functions_args: LPAR functions_args_list RPAR {}
-              | LPAR TYPE_VOID RPAR {}
-              | LPAR RPAR {}
+functions_args: LPAR functions_args_list RPAR
+              | LPAR TYPE_VOID RPAR
+              | LPAR RPAR
               ;
 
-functions_args_list: functions_arg {}
-                   | functions_args_list COMMA functions_arg {}
+functions_args_list: functions_arg
+                   | functions_args_list COMMA functions_arg
                    ;
 
 functions_arg: TYPE_INT label_pointer_arg { add_param($2); free($2); }
@@ -180,9 +180,9 @@ operators: bitwise_or { $$ = $1 ; }
 go_fun : LABEL { go_function($1); free($1); }
        ;
 
-go_functions_args: LPAR go_functions_args_list RPAR {}
-              | LPAR TYPE_VOID RPAR {}
-              | LPAR RPAR {}
+go_functions_args: LPAR go_functions_args_list RPAR
+              | LPAR TYPE_VOID RPAR
+              | LPAR RPAR
               ;
 
 go_functions_args_list: operators {give_param($1);free($1);}

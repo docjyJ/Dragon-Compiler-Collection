@@ -58,7 +58,7 @@ void go_function(char *a) {
     number_copy(NULL, offsetGoFun);
     add("%", "%", NULL);
 
-    number_copy(NULL, get_instruction_count() + 1);
+    number_copy(NULL, get_instruction_count() + 1); //todo : on ne peut pas passer des temps en arguments 
     nb_param = 0;
 
 }
@@ -90,5 +90,6 @@ void give_param(char *a) {
 }
 
 void return_var(char *a) {
+    end_function();
     number_copy(NULL, a);
 }
