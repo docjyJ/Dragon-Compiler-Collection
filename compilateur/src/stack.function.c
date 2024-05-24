@@ -67,6 +67,11 @@ void go_function(char *a) {
 
     start_go = get_instruction_count();
     nop();
+    nop();
+    nop();
+    nop();
+    nop();
+    nop();
 
     alloc_stack(offsetGoFun);
     nb_param = 0;
@@ -76,7 +81,7 @@ void go_function(char *a) {
 void end_go_function() {
 
     jump(tab_fnc[indexGoFun]->fun-1);
-    number_copy_after("$", get_instruction_count()-1 , start_go-4);
+    number_copy_after("$", get_instruction_count()-1 , start_go+1);
 
     free_stack(offsetGoFun);
 
@@ -98,6 +103,8 @@ void end_go_function() {
                    */
 
 void give_param(char *a) {
+
+    var_copy_address_local(nb_param,a);
     nb_param++;
 }
 

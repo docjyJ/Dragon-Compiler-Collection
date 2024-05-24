@@ -11,3 +11,8 @@
 *.o
 dcc
 .debug
+.~lock.*
+*.rapport.html
+*.xml
+*.csv
+*.output

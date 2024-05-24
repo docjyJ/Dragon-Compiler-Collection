@@ -143,13 +143,13 @@ void var_adr(register_t r, memory_address a) {
         op_rrr(op_add, r, r, RS);
 }
 
-char var_adr_after(register_t r, memory_address a, address addr) {
+void var_adr_after(register_t r, memory_address a, address addr) {
     load_const_after(r, a.value, addr);
     if (a.isLocal){
         set_instruction (op_rrr_after(op_add, r, r, RS, addr+1), addr +1);
-        return '1';
+
     }else {
-        return '0';
+        set_instruction(op_np(addr+1),addr);
     }
 
 
@@ -160,12 +160,9 @@ void load_var(register_t r, label l) {
     op_rr(op_load, r, r);
 }
 
-void load_var_after(register_t r, label l, address addr) {
-    if (var_adr_after(r, var_get_or_temp_pop(l), addr)){
-        set_instruction(op_rr_after(op_load, r, r, addr+2), addr +2);
-    }else {
-        set_instruction(op_rr_after(op_load, r, r, addr+1), addr +1);
-    }
+char load_var_after(register_t r, label l, address addr) {
+     var_adr_after(r, var_get_or_temp_pop(l), addr);
+     set_instruction(op_rr_after(op_load, r, r, addr+2), addr +2);
 
 }
 
@@ -175,9 +172,8 @@ void store_var(register_t r, register_t tmp, label l) {
 }
 
 void store_var_after(register_t r, register_t tmp, label l, address addr) {
-    var_adr_after(tmp, var_get_or_temp_push(l), addr);
-    set_instruction(op_rr_after(op_store, r, tmp, addr +2), addr +2);
-
+     var_adr_after(tmp, var_get_or_temp_push(l), addr);
+     set_instruction(op_rr_after(op_store, r, tmp, addr +3), addr +3);
 }
 
 void unite_operation(op_code code, label o, label i) {
@@ -206,7 +202,7 @@ void number_copy(label o, number c) {
 
 void number_copy_after(label o, number c, address addr) {
     load_const_after(R1, c, addr);
-    store_var_after(R1, R2, o, addr+1);
+    store_var_after(R1, R2, o, (addr+2));
 }
 
 void number_define(label o, number c) {
@@ -225,6 +221,13 @@ void tab_define(label o, address length) {
 void var_copy(label o, label i) {
     load_var(R1, i);
     store_var(R1, R2, o);
+}
+
+void var_copy_address_local(address o, label i) { // todo : refactor possible
+    load_var(R1, i);
+    load_const(R2, o);
+    op_rrr(op_add, R2, R2, RS);
+    op_rr(op_store, R1, R2);
 }
 
 void var_define(label o, label i) {

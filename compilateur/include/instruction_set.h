@@ -28,6 +28,7 @@ void number_copy(label o, number c);
  */
 void number_define(label o, number c);
 
+
 /**
  * Affectation d'une valeur numérique à une variable, tout en ajoutant cette variable au symbole définie.
  * `int o = c`
@@ -52,6 +53,8 @@ void tab_define(label o, address length);
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  */
 void var_copy(label o, label i);
+
+void var_copy_address_local(address o, label i);
 
 /**
  * Copie de la valeur d'une variable dans une autre, tout en ajoutant cette variable au symbole définie.

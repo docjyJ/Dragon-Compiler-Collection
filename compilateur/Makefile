@@ -11,13 +11,13 @@ GCC_TEST = gcc -Itest/
 LEX_SRC = lexer.l
 YACC_SRC = grammar.y
 C_SRC = app.c memory.c instruction_set.c stack.branch.c stack.function.c stack.instruction.c stack.variable.c
-TEST_SRC = arithmetic.c conditional.1.c pointer.c test.c
+TEST_SRC = arithmetic.c conditional.1.c pointer.c  fonction.1.c fonction.2.c
 
 C_GEN = $(YACC_SRC:.y=.tab.c) $(LEX_SRC:.l=.yy.c)
 OBJS = $(C_SRC:.c=.o) $(C_GEN:.c=.o)
 
 .DEFAULT: dcc
-.PHONY: clean all emulate %-emulate test %-test rapport %-rapport open-diag %-open-diag
+.PHONY: clean full-clean all emulate %-emulate test %-test rapport %-rapport open-diag %-open-diag
 .PRECIOUS: %.s %.out
 
 all: test emulate rapport
@@ -79,4 +79,7 @@ src/%.yy.c: src/%.l
 	$(LEX) -o$@ --header-file=include/$*.yy.h $<
 
 clean:
-	rm -f *.report *.out *.s *.o src/*.tab.c include/*.tab.h src/*.yy.c include/*.yy.h dcc dcc.debug test/.report
+	rm -f *.report *.out *.s *.o src/*.tab.c include/*.tab.h src/*.yy.c include/*.yy.h dcc dcc.debug
+
+full-clean: clean
+	rm -f *.rapport.html test/*.report *csv .~lock.* *.output *.xml
