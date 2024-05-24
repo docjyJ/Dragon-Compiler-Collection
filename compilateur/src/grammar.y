@@ -53,17 +53,10 @@ code_one_line: operators END { free($1); }
              | if { end_branch(1); }
              | while_do { end_branch(0); end_branch(0); }
              | PRINT LPAR operators RPAR END { display($3); free($3); }
-             | go_fun LPAR go_args RPAR END {end_go_function(); }
-             | return LABEL END { return_var($2); free($2); }
+             | RETURN LABEL END { return_var($2); free($2); }
              | END
              ;
 
-go_fun : LABEL { go_function($1); free($1); }
-       ;
-
-go_args: LABEL { give_param($1); free($1); }
-         | LABEL COMMA go_args { give_param($1); free($1); }
-         ;
 
 
 code_line: code_one_line
@@ -100,13 +93,13 @@ function_name : LABEL { start_function($1); free($1); }
               ;
 
 
-functions_args: LPAR functions_args_list RPAR { $$ = $2; }
-              | LPAR TYPE_VOID RPAR { $$ = 0;}
-              | LPAR RPAR { $$ = 0;}
+functions_args: LPAR functions_args_list RPAR {}
+              | LPAR TYPE_VOID RPAR {}
+              | LPAR RPAR {}
               ;
 
-functions_args_list: functions_arg { $$ = 1; }
-                   | functions_args_list COMMA functions_arg { $$ = $1 + 1; }
+functions_args_list: functions_arg {}
+                   | functions_args_list COMMA functions_arg {}
                    ;
 
 functions_arg: TYPE_INT label_pointer { add_param($2); free($2); }
@@ -116,7 +109,6 @@ functions_arg: TYPE_INT label_pointer { add_param($2); free($2); }
 
 /* Gestion ses opérations */
 table: LABEL { $$ = $1; }
-     | callable { $$ = NULL; }
      | table LBRACKET operators RBRACKET { $$ = NULL; load_offset($$, $1, $3); free($1); free($3); }
      | LPAR operators RPAR { $$ = $2; }
      ;
@@ -172,8 +164,21 @@ bitwise_or: bitwise_xor { $$ = $1 ; }
 operators: bitwise_or { $$ = $1 ; }
          | LABEL ASSIGN operators { var_copy($1, $3); $$ = $1; free($3); }
          | table LBRACKET operators RBRACKET ASSIGN operators { store_offset($1, $3, $6); $$ = $1; free($3); free($6); }
+         | go_fun go_functions_args  { end_go_function();}
          | MUL pointer ASSIGN operators { store($2, $4); $$ = $2; free($4); }
          ;
+
+go_fun : LABEL { go_function($1); free($1); }
+       ;
+
+go_functions_args: LPAR go_functions_args_list RPAR {}
+              | LPAR TYPE_VOID RPAR {}
+              | LPAR RPAR {}
+              ;
+
+go_functions_args_list: operators {give_param($1);free($1);}
+                   | functions_args_list COMMA operators {give_param($3); free($3); }
+                   ;
 
 
 /* Gestion des variable */

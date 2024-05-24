@@ -1,7 +1,7 @@
 #include "dragon.h"
 
 int compute() {
-    int a = 1;
+    int a =1;
     int d = 2;
     int b, c = a + d;
     b = a;
@@ -15,10 +15,11 @@ int compute() {
 
 void main(void) {
     int a = 1;
+    int b;
     if (a == 3) {
         print(a);
     } else {
-        int b = compute();
+        b = compute();
         print(b);
     }
 }

@@ -71,7 +71,6 @@ void end_go_function() {
         yyerror("Wrong number of parameters");
     }
 
-    //TODO : faire que les returns puissent fonctionner (concidere les fonctions comme des variables dans le yaac)
 }
 
 void give_param(char *a) {
@@ -80,5 +79,5 @@ void give_param(char *a) {
 }
 
 void return_var(char *a) {
-    // TODO :  mettre le return dans une var temp
+    number_copy(NULL, a);
 }
