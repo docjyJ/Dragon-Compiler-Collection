@@ -55,6 +55,8 @@ class VM:
         if self.fetched[1]:
             match get_name():
                 # Instructions données par le sujet
+                case "NOP":
+                    pass
                 case "ADD":
                     r_write(1, (r_read(2) + r_read(3)))
                 case "MUL":
@@ -69,9 +71,14 @@ class VM:
                     r_write(1, get_int(2))
                 case "JMP":
                     self.pc = get_int(1)
+                case "JMPR":
+                    self.pc = r_read(1)
                 case "JMF":
                     if r_read(2) == 0:
                         self.pc = get_int(1)
+                case "JMF":
+                    if r_read(2) == 0:
+                        self.pc = r_read(1)
                 case "INF":
                     r_write(1, (r_read(2) < r_read(3)))
                 case "SUP":

@@ -19,9 +19,14 @@ int nb_fun = -1;
 int indexGoFun;
 int offsetGoFun;
 int nb_param;
+int start_go;
 
 
 void start_function(char *a) {
+
+    if (!strcmp(a, "main")){
+        jump_before(0,get_instruction_count()-1);
+    }
 
     var_create(a);
     add_visibility();
@@ -57,11 +62,10 @@ void go_function(char *a) {
     offsetGoFun = nb_declaration() - tab_fnc[nb_fun]->debut_pile_function;
 
     var_copy(NULL, "$");
-    number_copy("$", get_instruction_count() + 1);
 
-    number_copy(NULL, offsetGoFun);
-    add("%", "%", NULL);
+    start_go = get_instruction_count();
 
+    alloc_stack(offsetGoFun);
     nb_param = 0;
 
 }
@@ -69,9 +73,9 @@ void go_function(char *a) {
 void end_go_function() {
 
     jump(tab_fnc[indexGoFun]->fun);
+    number_copy_after("$", get_instruction_count()-1 , start_go);
 
-    number_copy(NULL, offsetGoFun);
-    subtract("%", "%", NULL);
+    free_stack(offsetGoFun);
 
     number_copy("$", NULL);
 

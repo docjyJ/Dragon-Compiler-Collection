@@ -28,6 +28,15 @@ void number_define(label o, number c);
 
 /**
  * Affectation d'une valeur numérique à une variable, tout en ajoutant cette variable au symbole définie.
+ * `int o = c`
+ * @param o le nom de la variable d'entrée qui sera définie, ne peut pas être NULL
+ * @param c une constante numérique
+ * @param addr la ligne d'ajout au code
+ */
+void number_copy_after(label o, number c, address addr);
+
+/**
+ * Affectation d'une valeur numérique à une variable, tout en ajoutant cette variable au symbole définie.
  * `int o[c]`
  * @param o le nom de la variable d'entrée qui sera définie, ne peut pas être NULL
  * @param c une constante numérique
@@ -289,5 +298,8 @@ void append_hint_buffer(char *token, int length, int line);
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  */
 void var_to_address(label o, label i);
+
+void alloc_stack(address c);
+void free_stack(address c);
 
 #endif

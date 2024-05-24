@@ -2,7 +2,9 @@
 
 int zz= 1;
 
-int compute(int a, int d) {
+int compute() {
+    int a =1;
+     int d = 2;
     int  c = a + d;
     int b = a;
     while (c > 0) {
@@ -15,7 +17,7 @@ int compute(int a, int d) {
 
 void main(void) {
     int a = 1;
-    compute(a,2);
+    compute();
     print(a);
 
 }

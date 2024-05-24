@@ -2,7 +2,7 @@
 #include "memory.h"
 #include "stack.instruction.h"
 
-address inst_count = 0;
+address inst_count = 1;
 inst tab_instruct[MAX_ADDRESS] = {0};
 int full = 0;
 

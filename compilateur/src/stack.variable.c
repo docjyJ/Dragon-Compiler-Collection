@@ -22,8 +22,6 @@ int find_var(label name, address *out) {
     int i;
     if (strlen(name) == 0)
         i = -1;
-    else if (name[0] == '%')
-        i = 0;
     else if (name[0] == '$')
         i = 1;
     else

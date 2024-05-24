@@ -19,12 +19,14 @@ const char *r_name[] = {"RS", "R1", "R2", "R3"};
 const char *pattern_c = "%02X#%8s x%02X //%d\n";
 const char *pattern_ca = "%02X#%8s x%02X  %2s //%d\n";
 const char *pattern_a = "%02X#%8s %2s\n";
+const char *pattern_ = "%02X#%8s\n";
 const char *pattern_ac = "%02X#%8s %2s x%02X //%d\n";
 const char *pattern_aa = "%02X#%8s %2s %2s\n";
 const char *pattern_aaa = "%02X#%8s %2s %2s %2s\n";
 const char *hint_pattern = "//%3d: %s\n";
 
 // Instructions données par le sujet
+const op_code op_nop = {"NOP", 0x00};
 const op_code op_add = {"ADD", 0x01};
 const op_code op_multiply = {"MUL", 0x02};
 const op_code op_subtract = {"SUB", 0x03};
@@ -60,11 +62,24 @@ void op_r(op_code code, register_t r) {
     add_instruction(k);
 }
 
+inst nop (address addr) {
+    inst k = {{op_nop.id, 0, 0, 0},
+              printf_alloc(pattern_, addr, op_nop.name), NULL};
+    return k;
+}
+
 void op_rc(op_code code, register_t r, address c) {
     inst k = {{code.id, r, c, 0},
               printf_alloc(pattern_ac, get_instruction_count(), code.name, r_name[r], c, c), NULL};
     add_instruction(k);
 }
+
+inst op_rc_after (op_code code, register_t r, address c, address addr) {
+    inst k = {{code.id, r, c, 0},
+              printf_alloc(pattern_ac, addr, code.name, r_name[r], c, c), NULL};
+    return k;
+}
+
 
 void op_rr(op_code code, register_t r1, register_t r2) {
     inst k = {{code.id, r1, r2, 0},
@@ -72,10 +87,22 @@ void op_rr(op_code code, register_t r1, register_t r2) {
     add_instruction(k);
 }
 
+inst op_rr_after(op_code code, register_t r1, register_t r2,address addr) {
+    inst k = {{code.id, r1, r2, 0},
+              printf_alloc(pattern_aa, addr, code.name, r_name[r1], r_name[r2]), NULL};
+    return k;
+}
+
 void op_rrr(op_code code, register_t r1, register_t r2, register_t r3) {
     inst k = {{code.id, r1, r2, r3},
               printf_alloc(pattern_aaa, get_instruction_count(), code.name, r_name[r1], r_name[r2], r_name[r3]), NULL};
     add_instruction(k);
+}
+
+inst op_rrr_after(op_code code, register_t r1, register_t r2, register_t r3, address addr) {
+    inst k = {{code.id, r1, r2, r3},
+              printf_alloc(pattern_aaa, addr, code.name, r_name[r1], r_name[r2], r_name[r3]), NULL};
+    return k;
 }
 
 inst op_jump_c(address line, address target) {
@@ -106,10 +133,22 @@ void load_const(register_t r, number c) {
     op_rc(op_define, r, c);
 }
 
+void load_const_after(register_t r, number c, address addr) {
+   set_instruction( op_rc_after(op_define, r, c, addr), addr);
+}
+
 void var_adr(register_t r, memory_address a) {
     load_const(r, a.value);
     if (a.isLocal)
         op_rrr(op_add, r, r, RS);
+}
+
+void var_adr_after(register_t r, memory_address a, address addr) {
+    load_const_after(r, a.value, addr);
+    if (a.isLocal)
+        set_instruction (op_rrr_after(op_add, r, r, RS, addr+1), addr +1);
+    else
+         set_instruction( nop(addr+1), addr+1);;
 }
 
 void load_var(register_t r, label l) {
@@ -117,9 +156,20 @@ void load_var(register_t r, label l) {
     op_rr(op_load, r, r);
 }
 
+void load_var_after(register_t r, label l, address addr) {
+    var_adr_after(r, var_get_or_temp_pop(l), addr);
+    set_instruction(op_rr_after(op_load, r, r, addr+2), addr +2);
+}
+
 void store_var(register_t r, register_t tmp, label l) {
     var_adr(tmp, var_get_or_temp_push(l));
     op_rr(op_store, r, tmp);
+}
+
+void store_var_after(register_t r, register_t tmp, label l, address addr) {
+    var_adr_after(tmp, var_get_or_temp_push(l), addr);
+    set_instruction(op_rr_after(op_store, r, tmp, addr +2), addr +2);
+
 }
 
 void unite_operation(op_code code, label o, label i) {
@@ -144,6 +194,11 @@ void display(label i) {
 void number_copy(label o, number c) {
     load_const(R1, c);
     store_var(R1, R2, o);
+}
+
+void number_copy_after(label o, number c, address addr) {
+    load_const_after(R1, c, addr);
+    store_var_after(R1, R2, o, addr+1);
 }
 
 void number_define(label o, number c) {
@@ -299,6 +354,17 @@ void var_to_address(label o, label i) {
     var_adr(R1, var_get(i));
     store_var(R1, R2, o);
 }
+
+
+void alloc_stack(address c){
+    load_const(R1, c);
+    op_rrr(op_add, RS, RS, R1);
+}
+void free_stack(address c){
+  load_const(R1, c);
+  op_rrr(op_subtract, RS, RS, R1);
+}
+
 
 int buffer_col = 0;
 char hint_buffer[MAX_ADDRESS];
