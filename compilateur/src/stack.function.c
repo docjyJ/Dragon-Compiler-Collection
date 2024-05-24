@@ -42,6 +42,7 @@ void add_param(char *a) {
 
 void end_function() {
     remove_visibility();
+    jump(NULL);
 }
 
 void go_function(char *a) {
@@ -56,12 +57,14 @@ void go_function(char *a) {
 
     number_copy(NULL, offsetGoFun);
     add("%", "%", NULL);
+
+    number_copy(NULL, get_instruction_count() + 1);
     nb_param = 0;
 
 }
 
 void end_go_function() {
-    number_copy(NULL, get_instruction_count() + 1);
+
     jump(tab_fnc[indexGoFun]->fun);
 
     number_copy(NULL, offsetGoFun);
@@ -73,9 +76,17 @@ void end_go_function() {
 
 }
 
+    /*
+        TODO : arriver à passer les paramètres dans la pile
+               jump à une addresse contenu dans un registre pour le end fonction
+               bug quand la fonction est un operator il essaye de la var_get les lignes de code
+
+        TODO : fix le transcompilateur qui fait toutes les actions 2 fois
+
+                   */
+
 void give_param(char *a) {
     nb_param++;
-    // TODO :  arriver à passer les paramètres dans la pile
 }
 
 void return_var(char *a) {

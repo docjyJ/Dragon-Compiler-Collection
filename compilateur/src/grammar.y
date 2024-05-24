@@ -81,15 +81,21 @@ while_do: WHILE init_loop init_cond single_boddy
 /* Gestion des fonctions */
 
 functions: functions_header code_block { end_function(); }
+           | functions_header_main code_block {}
          ;
 
 functions_header: TYPE_VOID function_name functions_args {}
                 | TYPE_INT function_name functions_args {}
-                | TYPE_VOID function_name LPAR TYPE_VOID RPAR {}
-                | TYPE_VOID function_name LPAR RPAR {}
                 ;
+
+functions_header_main:  TYPE_INT MAIN functions_args { start_function("main"); }
+                        |TYPE_VOID MAIN functions_args { start_function("main"); }
+                ;
+
 function_name : LABEL { start_function($1); free($1); }
-              | MAIN { start_function("main"); }
+              ;
+
+main_name : MAIN {  start_function("main"); }
               ;
 
 

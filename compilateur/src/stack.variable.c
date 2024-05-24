@@ -10,7 +10,7 @@ typedef struct {
 
 symbole var_stak[MAX_ADDRESS];
 
-address var_head = 0;
+address var_head = 1;
 address visibility = 0;
 address var_tmp_head = -1;
 address offset_function = 0;
