@@ -69,6 +69,9 @@ void go_function(char *a) {
         yyerror("Unknow function");
     }
 
+    temp_push();
+    var_copy( NULL, "$");
+
     offsetGoFun = nb_declaration() - tab_fnc[nb_fun]->debut_pile_function;
 
     start_go = get_instruction_count();
@@ -88,8 +91,8 @@ void end_go_function() {
     number_copy_after("$", get_instruction_count()-1 , start_go);
 
     free_stack(offsetGoFun);
-    temp_push();
 
+    var_copy("$", NULL);
 
 
     if (nb_param != tab_fnc[indexGoFun]->nb_param) {

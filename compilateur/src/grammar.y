@@ -193,7 +193,7 @@ defvars_list: defvar
             | defvars_list COMMA defvar
             ;
 
-defvar: label_pointer { number_define($1, 0) ; free($1); }
+defvar: label_pointer { free($1); }
       | label_pointer ASSIGN operators { var_copy($1, $3); free($1); free($3); }
       | LABEL LBRACKET STATIC_INT RBRACKET { tab_define($1, $3); free($1); }
       ;
