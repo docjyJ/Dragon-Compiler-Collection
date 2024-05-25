@@ -9,4 +9,5 @@ void main_nb_inst (address addr);
 
 void part_var_global();
 
+void start_first_function();
 #endif

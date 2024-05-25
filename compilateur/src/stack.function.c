@@ -27,6 +27,7 @@ int start_go;
 
 
 void start_function(char *a) {
+    start_first_function (); //on l'appel avant au cas ou main est la première fonction
 
     if (!strcmp(a, "main")){
         main_nb_inst(get_instruction_count());

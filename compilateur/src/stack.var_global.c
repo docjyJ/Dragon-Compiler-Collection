@@ -12,6 +12,8 @@ var_global *tab_var[MAX_VAR_GLOBAL];
 int nb_var = -1;
 int main_addr;
 
+address first_function=0xFF;
+
 void var_create_global(char *a){
     nb_var++;
 
@@ -21,18 +23,24 @@ void var_create_global(char *a){
     tab_var[nb_var] -> name = a;
 }
 
+void start_first_function (){
+    if (first_function==0xFF){
+        first_function = get_instruction_count();
+        nop();
+        nop();
+        nop();
+        nop();
+    }
+}
+
 void main_nb_inst (address addr){
     main_addr = addr;
 }
 
 void part_var_global(){
-    int where = get_instruction_count();
-        nop();
 
-    jump_before(0,get_instruction_count()-1);
-    alloc_stack(nb_var+2); // on en rajoutte une pour $ qui n'est pour l'instant pas une variable global
+    alloc_stack_before(first_function, nb_var+2); // on en rajoutte une pour $ qui n'est pour l'instant pas une variable global
                             // todo: la mettre en var global
 
-    jump(main_addr-1);
-    jump_before(where,get_instruction_count()-1);
+    jump_before(first_function+2, main_addr-1);
 }

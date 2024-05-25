@@ -389,6 +389,11 @@ void free_stack(address c){
   op_rrr(op_subtract, RS, RS, R1);
 }
 
+void alloc_stack_before(address line ,address c){
+    load_const_after(R1, c, line);
+    set_instruction( op_rrr_after(op_add, RS, RS, R1,line+1), line+1);
+}
+
 
 int buffer_col = 0;
 char hint_buffer[MAX_ADDRESS];

@@ -306,5 +306,7 @@ void var_to_address(label o, label i);
 
 void alloc_stack(address c);
 void free_stack(address c);
+void alloc_stack_before(address line ,address c);
+
 
 #endif
