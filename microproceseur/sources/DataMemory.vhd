@@ -15,7 +15,7 @@ ARCHITECTURE Behavioral OF DataMemory IS
 BEGIN
     val_out <= mem(conv_integer(addr));
 
-    PROCESS (wr, rd)
+    PROCESS (wr)
     BEGIN
         IF rst = '1' THEN
             mem <= (OTHERS => (OTHERS => '0'));

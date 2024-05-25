@@ -39,35 +39,6 @@ PACKAGE Dragon IS
     CONSTANT s_sub : std_logic_vector (3 DOWNTO 0) := "1101";
     CONSTANT s_mul : std_logic_vector (3 DOWNTO 0) := "1110";
     CONSTANT s_div : std_logic_vector (3 DOWNTO 0) := "1111";
+    CONSTANT s_mod : std_logic_vector (3 DOWNTO 0) := "1011";
 
-    FUNCTION op_to_alu_code (code : IN std_logic_vector(7 DOWNTO 0)) RETURN std_logic_vector;
-END Dragon;
-
-PACKAGE BODY Dragon IS
-    FUNCTION op_to_alu_code (code : IN std_logic_vector(7 DOWNTO 0)) RETURN std_logic_vector IS
-    BEGIN
-        CASE code IS
-            WHEN op_add          => RETURN u_add;
-            WHEN op_multiply     => RETURN u_mul;
-            WHEN op_subtract     => RETURN u_sub;
-            WHEN op_divide       => RETURN s_div;
-            WHEN op_copy         => RETURN u_add;
-            WHEN op_define       => RETURN u_add;
-            WHEN op_jump         => RETURN u_add;
-            WHEN op_branch       => RETURN u_add;
-            WHEN op_lower_than   => RETURN u_add;
-            WHEN op_greater_than => RETURN u_add;
-            WHEN op_equal_to     => RETURN u_add;
-            WHEN op_display      => RETURN u_add;
-            WHEN op_load         => RETURN u_add;
-            WHEN op_store        => RETURN u_add;
-            WHEN op_negate       => RETURN u_add;
-            WHEN op_modulo       => RETURN u_add;
-            WHEN op_bitwise_and  => RETURN u_add;
-            WHEN op_bitwise_or   => RETURN u_add;
-            WHEN op_bitwise_not  => RETURN u_add;
-            WHEN op_bitwise_xor  => RETURN u_add;
-            WHEN OTHERS          => RETURN u_add;
-        END CASE;
-    END op_to_alu_code;
 END Dragon;
