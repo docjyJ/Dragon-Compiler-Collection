@@ -13,9 +13,9 @@ int compute(int a , int d) {
 
 
 void main(void) {
-    int a = 1;
+    int a = 2;
     int b = 9;
-    a = compute(a, 2);
+    a = compute(1, a); //todo pourquoi compute(2, 1) et compute(1, 2) donne le même résultals chez nous
     print(a);
     print(b);
 

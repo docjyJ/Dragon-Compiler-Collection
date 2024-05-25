@@ -215,9 +215,11 @@ callable_args: LPAR callable_args_list RPAR
              | LPAR RPAR
              ;
 
-callable_args_list: operators {give_param($1);free($1);}
-                  | callable_args_list COMMA operators {give_param($3); free($3); }
+callable_args_list: callable_arg
+                  | callable_arg COMMA callable_args_list
                   ;
+
+callable_arg : operators {give_param($1); free($1); };
 
 return: RETURN operators { return_var($2); free($2); }
       ;

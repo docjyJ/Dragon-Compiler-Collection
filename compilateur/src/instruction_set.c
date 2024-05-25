@@ -367,6 +367,7 @@ void var_to_address(label o, label i) {
         yyerror("NULL pointer");
 
     var_adr(R1, var_get(i));
+    //op_rrr(op_add, R1, R1, RS);
     store_var(R1, R2, o);
 }
 

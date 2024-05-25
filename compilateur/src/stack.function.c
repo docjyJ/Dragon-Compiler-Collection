@@ -12,7 +12,7 @@
 
 typedef struct {
     address debut_pile_function;
-    int index;
+    char* name;
     int nb_param;
     int fun;
 } function;
@@ -38,7 +38,7 @@ void start_function(char *a) {
 
     nb_fun++;
     tab_fnc[nb_fun] = empty_alloc(sizeof(function));
-    tab_fnc[nb_fun]->index = var_get(a).value;
+    tab_fnc[nb_fun]->name = a;
     tab_fnc[nb_fun]->nb_param = 0;
     tab_fnc[nb_fun]->fun = get_instruction_count();
     tab_fnc[nb_fun]->debut_pile_function = nb_declaration();
@@ -58,10 +58,15 @@ void end_function() {
 
 void go_function(char *a) {
     indexGoFun = nb_fun;
-    int function_index = var_get(a).value;
 
-    while (indexGoFun >= 0 && tab_fnc[indexGoFun]->index != function_index) {
+    while (indexGoFun >= 1 && strcmp(a, tab_fnc[indexGoFun]->name)) {
         indexGoFun--;
+    }
+    if ( strcmp(a, tab_fnc[0]->name)){
+        indexGoFun = 0;
+    }
+    else if(strcmp(a, tab_fnc[indexGoFun]->name) ){
+        yyerror("Unknow function");
     }
 
     offsetGoFun = nb_declaration() - tab_fnc[nb_fun]->debut_pile_function;
@@ -83,8 +88,9 @@ void end_go_function() {
     number_copy_after("$", get_instruction_count()-1 , start_go);
 
     free_stack(offsetGoFun);
+    temp_push();
 
-    var_copy("$", NULL);
+
 
     if (nb_param != tab_fnc[indexGoFun]->nb_param) {
         yyerror("Wrong number of parameters");
@@ -93,9 +99,9 @@ void end_go_function() {
 }
 
 void give_param(char *a) {
+    nb_param++;
 
     var_copy_address_local(nb_declaration(),a);
-    nb_param++;
 }
 
 void return_var(char *a) {

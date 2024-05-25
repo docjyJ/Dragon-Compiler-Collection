@@ -13,7 +13,6 @@ int nb_var = -1;
 int main_addr;
 
 void var_create_global(char *a){
-     var_create(a);
 
      nb_var++;
 
@@ -31,6 +30,11 @@ void part_var_global(){
 
     jump_before(0,get_instruction_count()-1);
     alloc_stack(nb_var+1);
+
+    for (int index = 0; index < nb_var; index++){
+        var_create(tab_var[index] -> name);
+    }
+
 
     jump(main_addr);
     jump_before(where,get_instruction_count()-1);
