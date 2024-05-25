@@ -10,7 +10,7 @@ typedef struct {
 
 symbole var_stak[MAX_ADDRESS];
 
-address var_head = 1;
+address var_head = 0;
 address visibility = 0;
 address global = 0;
 address offset_function = 0;
@@ -23,15 +23,13 @@ int find_var(label name, address *out) {
     int i;
     if (strlen(name) == 0)
         i = -1;
-    else if (name[0] == '$')
-        i = 0;
     else
-        for (i = var_head; i >= 1 && (var_stak[i].nom == NULL || strcmp(var_stak[i].nom, name) != 0); i--);
+        for (i = var_head; i >= 0 && (var_stak[i].nom == NULL || strcmp(var_stak[i].nom, name) != 0); i--);
 
-    if (i > 1) {
+    if (i > 0) {
         if (out != NULL) *out = (address) i;
         return 1;
-    } else if (i == 1 && strcmp(var_stak[i].nom, name) == 0){
+    } else if (i == 0 && strcmp(var_stak[i].nom, name) == 0){
         if (out != NULL) *out = (address) i;
         return 1;
 

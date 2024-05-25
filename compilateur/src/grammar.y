@@ -4,6 +4,7 @@
 #include "stack.function.h"
 #include "stack.instruction.h"
 #include "stack.variable.h"
+#include "stack.var_global.h"
 
 int yylex();
 %}
@@ -28,7 +29,7 @@ int yylex();
 
 %%
 
-global : global_code_list {print_instruction();}
+global : global_code_list {part_var_global(); print_instruction();}
        ; // permet de tout print
 
 global_code_list: global_code

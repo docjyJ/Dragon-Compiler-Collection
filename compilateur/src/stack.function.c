@@ -7,6 +7,8 @@
 #include "stack.function.h"
 #include "stack.variable.h"
 #include "stack.instruction.h"
+#include "stack.var_global.h"
+
 
 typedef struct {
     address debut_pile_function;
@@ -27,11 +29,11 @@ int start_go;
 void start_function(char *a) {
 
     if (!strcmp(a, "main")){
-        jump_before(0,get_instruction_count()-1);
-        var_create("$");
+        main_nb_inst(get_instruction_count());
+        var_create_global("$");
     }
 
-    var_create(a);
+    var_create_global(a);
     add_visibility();
 
     nb_fun++;
@@ -70,13 +72,13 @@ void go_function(char *a) {
     nop();
     nop();
 
-    alloc_stack(offsetGoFun);
+
     nb_param = 0;
 
 }
 
 void end_go_function() {
-
+    alloc_stack(offsetGoFun);
     jump(tab_fnc[indexGoFun]->fun-1);
     number_copy_after("$", get_instruction_count()-1 , start_go);
 
@@ -92,7 +94,7 @@ void end_go_function() {
 
 void give_param(char *a) {
 
-    var_copy_address_local(nb_param,a);
+    var_copy_address_local(nb_declaration(),a);
     nb_param++;
 }
 
