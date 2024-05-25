@@ -16,6 +16,8 @@ PACKAGE Dragon IS
     CONSTANT op_display      : std_logic_vector (7 DOWNTO 0) := x"0C";
     CONSTANT op_load         : std_logic_vector (7 DOWNTO 0) := x"10";
     CONSTANT op_store        : std_logic_vector (7 DOWNTO 0) := x"11";
+    CONSTANT op_jump_r       : std_logic_vector (7 DOWNTO 0) := x"12";
+    CONSTANT op_branch_r     : std_logic_vector (7 DOWNTO 0) := x"13";
     CONSTANT op_negate       : std_logic_vector (7 DOWNTO 0) := x"30";
     CONSTANT op_modulo       : std_logic_vector (7 DOWNTO 0) := x"31";
     CONSTANT op_bitwise_and  : std_logic_vector (7 DOWNTO 0) := x"50";

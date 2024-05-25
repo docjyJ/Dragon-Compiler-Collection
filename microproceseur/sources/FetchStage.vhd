@@ -1,10 +1,15 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
+USE WORK.DRAGON.ALL;
 
 ENTITY FetchStage IS PORT (
     clk, rst, en, lod : IN std_logic;
-    go_to_address     : IN std_logic_vector(7 DOWNTO 0);
-    instruction       : OUT std_logic_vector(7 DOWNTO 0));
+    go_to             : IN std_logic_vector(7 DOWNTO 0);
+    output            : OUT std_logic_vector(3 DOWNTO 0);
+    code              : OUT std_logic_vector(7 DOWNTO 0);
+    input_a           : OUT std_logic_vector(7 DOWNTO 0);
+    input_b           : OUT std_logic_vector(3 DOWNTO 0)
+);
 END ENTITY FetchStage;
 
 ARCHITECTURE behavioral OF FetchStage IS
@@ -20,7 +25,8 @@ ARCHITECTURE behavioral OF FetchStage IS
         data : OUT std_logic_vector(31 DOWNTO 0));
     END COMPONENT;
 
-    SIGNAL pc : std_logic_vector(7 DOWNTO 0);
+    SIGNAL pc   : std_logic_vector(7 DOWNTO 0);
+    SIGNAL data : std_logic_vector(31 DOWNTO 0);
 BEGIN
     program_counter : Counter PORT MAP(
         clk => clk,
@@ -28,10 +34,24 @@ BEGIN
         en  => en,
         dir => '1',
         lod => lod,
-        a   => go_to_address,
+        a   => go_to,
         s   => pc);
 
     instruction_memory : InstructionMemory PORT MAP(
         addr => pc,
-        data => instruction);
+        data => data);
+
+    code <= data(31 DOWNTO 24);
+
+    output <= data(23 DOWNTO 16);
+
+    WITH code SELECT input_a <=
+        data(23 DOWNTO 16) WHEN op_jump | op_branch | op_display | op_store | op_jump_r | op_branch_r,
+        (OTHERS => '0') WHEN op_negate | op_bitwise_not,
+        data(15 DOWNTO 8) WHEN OTHERS;
+
+    WITH code SELECT input_b <=
+        data(11 DOWNTO 8) WHEN op_branch | op_load | op_store | op_branch_r | op_negate | op_bitwise_not,
+        data(3 DOWNTO 0) WHEN OTHERS;
+
 END ARCHITECTURE behavioral;
