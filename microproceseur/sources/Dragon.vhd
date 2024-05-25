@@ -33,9 +33,9 @@ PACKAGE Dragon IS
     CONSTANT log_eq  : std_logic_vector (3 DOWNTO 0) := "0101";
     -- constant UNUSED: std_logic_vector (3 downto 0) := "0110";
     -- constant UNUSED: std_logic_vector (3 downto 0) := "0111";
-    CONSTANT u_add : std_logic_vector (3 DOWNTO 0) := "1000";
-    CONSTANT u_sub : std_logic_vector (3 DOWNTO 0) := "1001";
-    CONSTANT u_mul : std_logic_vector (3 DOWNTO 0) := "1010";
+    -- CONSTANT u_add : std_logic_vector (3 DOWNTO 0) := "1000";
+    -- CONSTANT u_sub : std_logic_vector (3 DOWNTO 0) := "1001";
+    -- CONSTANT u_mul : std_logic_vector (3 DOWNTO 0) := "1010";
     -- constant UNUSED: std_logic_vector (3 downto 0) := "1011";
     CONSTANT s_add : std_logic_vector (3 DOWNTO 0) := "1100";
     CONSTANT s_sub : std_logic_vector (3 DOWNTO 0) := "1101";
