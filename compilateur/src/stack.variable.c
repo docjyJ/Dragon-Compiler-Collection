@@ -10,7 +10,7 @@ typedef struct {
 
 symbole var_stak[MAX_ADDRESS];
 
-address var_head = 0;
+address var_head = 1;
 address visibility = 0;
 address global = 0;
 address offset_function = 0;
@@ -19,10 +19,19 @@ address nb_declaration() {
     return var_head;
 }
 
+address nb_global() {
+    return global;
+}
+
 int find_var(label name, address *out) {
     int i;
     if (strlen(name) == 0)
         i = -1;
+    else if(name[0]=='$'){
+        var_stak[0].visibility = 0; //TODO : trouver une solution pour les variables globals
+        *out = (address) 0;
+        return 1;
+    }
     else
         for (i = var_head; i >= 0 && (var_stak[i].nom == NULL || strcmp(var_stak[i].nom, name) != 0); i--);
 
@@ -32,7 +41,6 @@ int find_var(label name, address *out) {
     } else if (i == 0 && strcmp(var_stak[i].nom, name) == 0){
         if (out != NULL) *out = (address) i;
         return 1;
-
     } else {
         return -1;
     }
@@ -77,7 +85,7 @@ memory_address tab_alloc(address length) {
 
 memory_address var_get(label name) {
     address add;
-    if (!find_var(name, &add))
+    if (find_var(name, &add)==-1)
         yyerror(printf_alloc("<%s> does not exist", name));
 
     memory_address out = {add, 0};
@@ -139,7 +147,10 @@ void remove_visibility() {
     if (visibility == 1) offset_function = 0;
     visibility--;
 
-    while (var_head > 0 && var_stak[var_head - 1].visibility > visibility) {
+     // on pense aussi à remove les quelque temps qui pourrais rester
+     // même si en théorie ceux-ci n'arrive jamais
+
+    while (var_head > 0 && (var_stak[var_head - 1].visibility > visibility || var_stak[var_head - 1].nom==NULL )) {
         var_head--;
         free(var_stak[var_head].nom);
         var_stak[var_head].nom = NULL;

@@ -30,7 +30,6 @@ void start_function(char *a) {
 
     if (!strcmp(a, "main")){
         main_nb_inst(get_instruction_count());
-        var_create_global("$");
     }
 
     var_create_global(a);
@@ -69,8 +68,9 @@ void go_function(char *a) {
         yyerror("Unknow function");
     }
 
-    temp_push();
-    var_copy( NULL, "$");
+    add_hint("copie dans NULL de $\n");
+    var_copy(NULL, "$");
+        add_hint("fin de la copie\n");
 
     offsetGoFun = nb_declaration() - tab_fnc[nb_fun]->debut_pile_function;
 
@@ -87,11 +87,18 @@ void go_function(char *a) {
 
 void end_go_function() {
     alloc_stack(offsetGoFun);
+    add_hint("jum pour aller à la fonction ");
+
     jump(tab_fnc[indexGoFun]->fun-1);
     number_copy_after("$", get_instruction_count()-1 , start_go);
 
     free_stack(offsetGoFun);
 
+    add_hint("echanger de $ et du return ");
+    temp_push(); // sert à modéliser le return potentiel
+    switch_tmp();
+
+    add_hint("copie dans $ de NULL");
     var_copy("$", NULL);
 
 
@@ -102,9 +109,10 @@ void end_go_function() {
 }
 
 void give_param(char *a) {
-    nb_param++;
 
-    var_copy_address_local(nb_declaration(),a);
+    add_hint("passage de l'argument ");
+    var_copy_address_local(offsetGoFun+nb_param ,a);
+    nb_param++;
 }
 
 void return_var(char *a) {

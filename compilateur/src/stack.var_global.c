@@ -13,7 +13,6 @@ int nb_var = -1;
 int main_addr;
 
 void var_create_global(char *a){
-
      nb_var++;
 
      tab_var[nb_var] = empty_alloc(sizeof(var_global));

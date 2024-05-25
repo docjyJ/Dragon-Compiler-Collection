@@ -296,6 +296,7 @@ void return_label(label o, label i);
  */
 void append_hint_buffer(char *token, int length, int line);
 
+void switch_tmp();
 
 /**
  * Permet d'obtenir l'adresse d'une variable.

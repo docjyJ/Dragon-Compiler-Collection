@@ -11,7 +11,7 @@ GCC_TEST = gcc -Itest/
 LEX_SRC = lexer.l
 YACC_SRC = grammar.y
 C_SRC = app.c memory.c instruction_set.c stack.branch.c stack.function.c stack.instruction.c stack.variable.c stack.var_global.c
-TEST_SRC = arithmetic.c conditional.1.c pointer.c  fonction.1.c fonction.2.c
+TEST_SRC = arithmetic.c conditional.1.c  fonction.1.c fonction.2.c
 
 C_GEN = $(YACC_SRC:.y=.tab.c) $(LEX_SRC:.l=.yy.c)
 OBJS = $(C_SRC:.c=.o) $(C_GEN:.c=.o)

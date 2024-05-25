@@ -349,6 +349,13 @@ void store_offset(label o, label i, label c) {
 
 }
 
+void switch_tmp(){
+    load_var(R1, NULL);
+    load_var(R2,NULL);
+    store_var(R1,R3,NULL);
+    store_var(R2,R3,NULL);
+}
+
 void return_label(label o, label i){
     load_var(R2, i);
     remove_visibility();
