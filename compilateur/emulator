@@ -2,6 +2,8 @@
 
 
 class VM:
+    _registers = ["RS", "R1", "R2", "R3"]
+
     def __init__(self, debug=False, csv_file="", arch=8):
         self.arch = arch
         self.datas = bytearray()
@@ -10,6 +12,7 @@ class VM:
         self.fetched = ("", [])
         self.debug = debug
         self.csv_file = csv_file
+        self.register = bytearray()
 
     def load(self, instructions: list[tuple[str, list[str]]]):
         self.instructions = instructions.copy()
@@ -26,13 +29,25 @@ class VM:
         def get_name() -> str:
             return self.fetched[1][0]
 
-        def get_arg(i) -> int:
-            arg = self.fetched[1][i]
-            return self.datas[int(arg[1:], 16)] if arg[0] == "@" else int(arg)
+        # def get_arg(i) -> int:
+        #     arg = self.fetched[1][i]
+        #     return self.datas[int(arg[1:], 16)] if arg[0] == "@" else int(arg)
 
-        def set_ram(i, value: int):
+        def get_int(i) -> int:
             arg = self.fetched[1][i]
-            self.datas[int(arg[1:], 16)] = (value & 0xFF)
+            return int(arg[1:], 16)
+
+        def r_read(i) -> int:
+            arg = self.fetched[1][i]
+            return self.register[self._registers.index(arg)]
+
+        # def set_ram(i, value: int):
+        #     arg = self.fetched[1][i]
+        #     self.datas[int(arg[1:], 16)] = (value & 0xFF)
+
+        def r_write(i, value: int):
+            arg = self.fetched[1][i]
+            self.register[self._registers.index(arg)] = (value & 0xFF)
 
         def neg(value: int) -> int:
             return 0x100 - value
@@ -40,50 +55,57 @@ class VM:
         if self.fetched[1]:
             match get_name():
                 # Instructions données par le sujet
+                case "NOP":
+                    pass
                 case "ADD":
-                    set_ram(1, (get_arg(2) + get_arg(3)))
+                    r_write(1, (r_read(2) + r_read(3)))
                 case "MUL":
-                    set_ram(1, (get_arg(2) * get_arg(3)))
+                    r_write(1, (r_read(2) * r_read(3)))
                 case "SUB":
-                    set_ram(1, (get_arg(2) + neg(get_arg(3))))
+                    r_write(1, (r_read(2) + neg(r_read(3))))
                 case "DIV":
-                    set_ram(1, (get_arg(2) // get_arg(3)))
+                    r_write(1, (r_read(2) // r_read(3)))
                 case "COP":
-                    set_ram(1, get_arg(2))
+                    r_write(1, r_read(2))
                 case "AFC":
-                    set_ram(1, get_arg(2))
+                    r_write(1, get_int(2))
                 case "JMP":
-                    self.pc = get_arg(1)
+                    self.pc = get_int(1)
+                case "JMPR":
+                    self.pc = r_read(1)
                 case "JMF":
-                    if get_arg(1) == 0:
-                        self.pc = get_arg(2)
+                    if r_read(2) == 0:
+                        self.pc = get_int(1)
+                case "JMF":
+                    if r_read(2) == 0:
+                        self.pc = r_read(1)
                 case "INF":
-                    set_ram(1, (get_arg(2) < get_arg(3)))
+                    r_write(1, (r_read(2) < r_read(3)))
                 case "SUP":
-                    set_ram(1, (get_arg(2) > get_arg(3)))
+                    r_write(1, (r_read(2) > r_read(3)))
                 case "EQU":
-                    set_ram(1, (get_arg(2) == get_arg(3)))
+                    r_write(1, (r_read(2) == r_read(3)))
                 case "PRI":
-                    print(get_arg(1))
+                    print(r_read(1))
                 # Instruction technique
                 case "LOD":
-                    set_ram(1, self.datas[get_arg(2) + get_arg(3)])
+                    r_write(1, self.datas[r_read(2)])
                 case "STR":
-                    self.datas[get_arg(1) + get_arg(2)] = get_arg(3)
+                    self.datas[r_read(2)] = r_read(1)
                 # Instructions ajoutées (arithmétiques)
                 case "NEG":
-                    set_ram(1, neg(get_arg(2)))
+                    r_write(1, neg(r_read(2)))
                 case "MOD":
-                    set_ram(1, (get_arg(2) % get_arg(3)))
+                    r_write(1, (r_read(2) % r_read(3)))
                 # Instructions ajoutées (bit à bit)
                 case "AND":
-                    set_ram(1, (get_arg(2) & get_arg(3)))
+                    r_write(1, (r_read(2) & r_read(3)))
                 case "OR":
-                    set_ram(1, (get_arg(2) | get_arg(3)))
+                    r_write(1, (r_read(2) | r_read(3)))
                 case "XOR":
-                    set_ram(1, (get_arg(2) ^ get_arg(3)))
+                    r_write(1, (r_read(2) ^ r_read(3)))
                 case "NOT":
-                    set_ram(1, ~get_arg(2))
+                    r_write(1, ~r_read(2))
                 case _:
                     raise NotImplementedError(f"Instruction {self.fetched} not implemented")
         self.pc += 1
@@ -95,16 +117,17 @@ class VM:
     def csv_header(self):
         if self.csv_file:
             with open(self.csv_file, 'w') as f:
-                print(f"FETCH;{bytes(range(1 << self.arch)).hex(';').upper()}", file=f)
+                print(f"FETCH;{';'.join(self._registers)};{bytes(range(1 << self.arch)).hex(';').upper()}", file=f)
 
     def csv_datas(self):
         if self.csv_file:
             with open(self.csv_file, 'a') as f:
-                print(f"{self.fetched[0]};{';'.join(map(str, self.datas))}", file=f)
+                print(f"{self.fetched[0]};{';'.join(map(str, self.register))};{';'.join(map(str, self.datas))}", file=f)
 
-    def run(self, max_iter=255):
+    def run(self, max_iter):
         self.pc = 0
         self.datas = bytearray(1 << self.arch)
+        self.register = bytearray(len(self._registers))
         self.csv_header()
         self.csv_datas()
         while self.fetch():
@@ -131,8 +154,8 @@ if __name__ == "__main__":
     parser = ArgumentParser(add_help=False, description="A simple virtual machine to run Dragon programs.")
     parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
     parser.add_argument("file", type=str, help="The file to run")
-    parser.add_argument("-i", "--max-iter", type=int, default=255,
-                        help="Maximum number of instruction can be executed, prevent infinite loop. (default: 255)")
+    parser.add_argument("-i", "--max-iter", type=int, default=1024,
+                        help="Maximum number of instruction can be executed, prevent infinite loop. (default: 1024)")
     parser.add_argument("-d", "--debug", action="store_true",
                         help="Enable debug mode, it will print the state of the VM between each execution.")
     parser.add_argument("-r", "--csv-ram", default="",

@@ -22,7 +22,7 @@ void start_loop();
 /**
  * Permet de terminer une branche, quelque soit son type.
  */
-void end_branch();
+void end_branch(address offset);
 
 
 #endif
