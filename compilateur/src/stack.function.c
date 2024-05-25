@@ -70,7 +70,7 @@ void go_function(char *a) {
 
     add_hint("copie dans NULL de $\n");
     var_copy(NULL, "$");
-        add_hint("fin de la copie\n");
+    add_hint("fin de la copie\n");
 
     offsetGoFun = nb_declaration() - tab_fnc[nb_fun]->debut_pile_function;
 
@@ -86,6 +86,12 @@ void go_function(char *a) {
 }
 
 void end_go_function() {
+
+    for (int index = 0; index < nb_param; index++){
+        temp_pop();
+    }   // on désempile les protection des paramètre avant de changer RS
+
+
     alloc_stack(offsetGoFun);
     add_hint("jum pour aller à la fonction ");
 
@@ -112,6 +118,8 @@ void give_param(char *a) {
 
     add_hint("passage de l'argument ");
     var_copy_address_local(offsetGoFun+nb_param ,a);
+    temp_push(); // protège l'argument des autres arguments
+    add_hint("fin passage de l'argument ");
     nb_param++;
 }
 
