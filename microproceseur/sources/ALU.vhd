@@ -1,7 +1,6 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
-USE IEEE.STD_LOGIC_ARITH.ALL;
-USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE IEEE.NUMERIC_STD.ALL;
 USE WORK.DRAGON.ALL;
 
 ENTITY ALU IS PORT (
@@ -12,32 +11,24 @@ ENTITY ALU IS PORT (
 END ALU;
 
 ARCHITECTURE Behavioral OF ALU IS
-    CONSTANT MAX_UINT : integer                       := 255;
-    CONSTANT MAX_INT  : integer                       := 127;
-    CONSTANT MIN_INT  : integer                       := - 128;
-    CONSTANT ZERROS   : std_logic_vector (9 DOWNTO 0) := (OTHERS => '0');
-    CONSTANT ONES     : std_logic_vector (9 DOWNTO 0) := (OTHERS => '1');
-
-    SIGNAL sA, sB, sS : std_logic_vector (17 DOWNTO 0);
-
+    CONSTANT MAX_INT  : integer := 127;
+    CONSTANT MIN_INT  : integer := - 128;
+    SIGNAL sA, sB, sS : signed (15 DOWNTO 0);
 BEGIN
-    sA <= ONES & A WHEN A(7) = '1' AND (CMD = S_ADD OR CMD = S_SUB OR CMD = S_MUL) ELSE
-        ZERROS & NOT(A) WHEN CMD = LOG_NOR OR CMD = LOG_EQ ELSE
-        ZERROS & A;
+    sA <= resize(signed(A), 16);
 
-    sB <= ONES & B WHEN B(7) = '1' AND (CMD = S_ADD OR CMD = S_SUB OR CMD = S_MUL) ELSE
-        ZERROS & NOT(B) WHEN CMD = LOG_NOR ELSE
-        ZERROS & B;
+    sB <= resize(signed(B), 16);
 
     WITH CMD SELECT sS <=
-        sA OR sB WHEN LOG_OR,
-        sA AND sB WHEN LOG_AND | LOG_NOR,
-        sA XOR sB WHEN LOG_XOR | LOG_EQ,
-
-        sA + sB WHEN U_ADD | S_ADD,
-        sA - sB WHEN U_SUB | S_SUB,
-        sA(8 DOWNTO 0) * sB(8 DOWNTO 0) WHEN U_MUL | S_MUL,
-
+        sA OR sB WHEN alu_or,
+        sA AND sB WHEN alu_and,
+        sA XOR sB WHEN alu_xor,
+        sA XNOR sB WHEN alu_eq,
+        sA + sB WHEN alu_add,
+        sA - sB WHEN alu_sub,
+        signed(A) * signed(B) WHEN alu_mul,
+        sA / sB WHEN alu_div,
+        sA MOD sB WHEN alu_mod,
         sA WHEN OTHERS;
 
     Z <= '1' WHEN sS = 0 ELSE
@@ -46,15 +37,12 @@ BEGIN
     N <= '1' WHEN sS < 0 ELSE
         '0';
 
-    C <= '1' WHEN CMD = U_ADD AND sS > MAX_UINT ELSE
-        '1' WHEN CMD = U_SUB AND sS < 0 ELSE
-        '1' WHEN (CMD = S_ADD OR CMD = S_SUB) AND (sS < MIN_INT OR sS > MAX_INT) ELSE
+    C <= '1' WHEN (CMD = alu_add OR CMD = alu_sub) AND (sS < MIN_INT OR sS > MAX_INT) ELSE
         '0';
 
-    O <= '1' WHEN CMD = U_MUL AND sS > MAX_UINT ELSE
-        '1' WHEN CMD = S_MUL AND (sS < MIN_INT OR sS > MAX_INT) ELSE
+    O <= '1' WHEN CMD = alu_mul AND (sS < MIN_INT OR sS > MAX_INT) ELSE
         '0';
 
-    S <= Ss(7 DOWNTO 0);
+    S <= std_logic_vector(resize(sS, 8));
 
 END Behavioral;

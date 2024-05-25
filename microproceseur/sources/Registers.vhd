@@ -1,6 +1,6 @@
-LIBRARY ieee;
+LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
-USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED.conv_integer;
 
 ENTITY Registers IS PORT (
     rst            : IN std_logic;
@@ -18,7 +18,7 @@ BEGIN
     val_a <= reg(conv_integer(addr_a));
     val_b <= reg(conv_integer(addr_b));
 
-    PROCESS (wr, rst, val_wr)
+    PROCESS (wr, rst, val_wr, addr_wr)
     BEGIN
         IF rst = '1' THEN
             reg <= (OTHERS => (OTHERS => '0'));

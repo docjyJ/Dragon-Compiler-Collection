@@ -66,7 +66,7 @@ BEGIN
         pipin  => execute_in_pipe,
         pipout => execute_out_pipe);
 
-    led <= decode_in_pipe.output(15 DOWNTO 0);
+    led <= "0000000000000000";
     an  <= "1111";
     seg <= "0000000";
     dp  <= '0';

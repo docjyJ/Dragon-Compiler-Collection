@@ -1,5 +1,6 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.STD_LOGIC_MISC.NOR_REDUCE;
 USE WORK.DRAGON.ALL;
 
 ENTITY DecodeStage IS PORT (
@@ -41,7 +42,7 @@ BEGIN
     code_tmp <= pipin.code;
 
     WITH code_tmp SELECT jump <=
-        NOR tmp_scnd WHEN op_branch | op_branch_r,
+        NOR_REDUCE(tmp_scnd) WHEN op_branch | op_branch_r,
         '1' WHEN op_jump | op_jump_r,
         '0' WHEN OTHERS;
 
