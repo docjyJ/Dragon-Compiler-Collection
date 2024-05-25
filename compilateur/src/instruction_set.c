@@ -149,7 +149,7 @@ void var_adr_after(register_t r, memory_address a, address addr) {
         set_instruction (op_rrr_after(op_add, r, r, RS, addr+1), addr +1);
 
     }else {
-        set_instruction(op_np(addr+1),addr);
+        set_instruction(op_np(addr+1),addr+1);
     }
 
 
@@ -160,10 +160,9 @@ void load_var(register_t r, label l) {
     op_rr(op_load, r, r);
 }
 
-char load_var_after(register_t r, label l, address addr) {
+void load_var_after(register_t r, label l, address addr) {
      var_adr_after(r, var_get_or_temp_pop(l), addr);
      set_instruction(op_rr_after(op_load, r, r, addr+2), addr +2);
-
 }
 
 void store_var(register_t r, register_t tmp, label l) {
@@ -173,7 +172,7 @@ void store_var(register_t r, register_t tmp, label l) {
 
 void store_var_after(register_t r, register_t tmp, label l, address addr) {
      var_adr_after(tmp, var_get_or_temp_push(l), addr);
-     set_instruction(op_rr_after(op_store, r, tmp, addr +3), addr +3);
+     set_instruction(op_rr_after(op_store, r, tmp, addr +2), addr +2);
 }
 
 void unite_operation(op_code code, label o, label i) {
@@ -202,7 +201,7 @@ void number_copy(label o, number c) {
 
 void number_copy_after(label o, number c, address addr) {
     load_const_after(R1, c, addr);
-    store_var_after(R1, R2, o, (addr+2));
+    store_var_after(R1, R2, o, (addr+1));
 }
 
 void number_define(label o, number c) {
@@ -353,6 +352,7 @@ void store_offset(label o, label i, label c) {
 void return_label(label o, label i){
     load_var(R2, i);
     remove_visibility();
+        add_hint("//return\n");
     store_var(R2, R1, o);
 }
 

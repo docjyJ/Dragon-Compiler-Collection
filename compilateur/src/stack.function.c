@@ -28,6 +28,7 @@ void start_function(char *a) {
 
     if (!strcmp(a, "main")){
         jump_before(0,get_instruction_count()-1);
+        var_create("$");
     }
 
     var_create(a);
@@ -63,11 +64,7 @@ void go_function(char *a) {
 
     offsetGoFun = nb_declaration() - tab_fnc[nb_fun]->debut_pile_function;
 
-    var_copy(NULL, "$");
-
     start_go = get_instruction_count();
-    nop();
-    nop();
     nop();
     nop();
     nop();
@@ -81,7 +78,7 @@ void go_function(char *a) {
 void end_go_function() {
 
     jump(tab_fnc[indexGoFun]->fun-1);
-    number_copy_after("$", get_instruction_count()-1 , start_go+1);
+    number_copy_after("$", get_instruction_count()-1 , start_go);
 
     free_stack(offsetGoFun);
 
@@ -92,15 +89,6 @@ void end_go_function() {
     }
 
 }
-
-    /*
-        TODO : trouver une solution pour le return
-               jump à une addresse contenu dans un registre pour le end fonction
-               bug quand la fonction est un operator il essaye de la var_get les lignes de code
-
-        TODO : fix le transcompilateur qui fait toutes les actions 2 fois
-
-                   */
 
 void give_param(char *a) {
 
