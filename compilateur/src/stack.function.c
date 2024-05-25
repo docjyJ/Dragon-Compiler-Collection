@@ -124,6 +124,7 @@ void give_param(char *a) {
 }
 
 void return_var(char *a) {
-    return_label(NULL, a);
+    add_hint("passage de la valeur de retour ");
+    return_label(a);
     jump_mem("$");
 }

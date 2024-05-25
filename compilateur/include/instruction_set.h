@@ -283,10 +283,9 @@ void store(label o, label i);
 /**
  * Permet de return une variable et de flush la mémoire.
  *
- * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  */
-void return_label(label o, label i);
+void return_label(label i);
 
 /**
  * Permet d'ajouté cheque token dans un buffer pour pour afficher le code source en commentaire.

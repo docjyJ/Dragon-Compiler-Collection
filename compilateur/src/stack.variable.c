@@ -23,6 +23,10 @@ address nb_global() {
     return global;
 }
 
+address get_visibility(){
+    return visibility;
+}
+
 int find_var(label name, address *out) {
     int i;
     if (strlen(name) == 0)
@@ -69,7 +73,7 @@ memory_address tab_alloc(address length) {
     memory_address out = {var_head, 0};
 
     if (visibility != 0) {
-        out.value =out.value + offset_function + global;
+        out.value =out.value - offset_function;
         out.isLocal = 1;
     }
     int max = var_head + length;
@@ -90,7 +94,7 @@ memory_address var_get(label name) {
 
     memory_address out = {add, 0};
     if (var_stak[add].visibility != 0) {
-        out.value =  out.value - offset_function + global;
+        out.value =  out.value - offset_function ;
         out.isLocal = 1;
     }
     return out;
@@ -100,7 +104,7 @@ memory_address var_get(label name) {
 address temp_push() {
     if (var_head == 0xFF) yyerror("not enough memory");
     var_head++;
-    address out =(var_head + global) - offset_function -1;
+    address out =var_head  - offset_function -1;
 
     return  out;
 }
@@ -108,15 +112,22 @@ address temp_push() {
 address temp_pop() {
     if (var_head == 0x00) yyerror("il n'y a pas de variable");
     var_head --;
-    address out =(var_head + global) - offset_function ;
+    address out =var_head  - offset_function ;
     return out ;
 }
 
 memory_address var_get_or_temp_push(label name) {
-    if (name != NULL)
-        return var_get(name);
+    memory_address out;
 
-    memory_address out = {temp_push(), 1};
+    if (name != NULL){
+        out = var_get(name);
+    } else {
+        out.value = temp_push();
+
+        if(visibility>=1) out.isLocal = 1; // on peut avoir des temps globaux
+        else             out.isLocal = 0;
+    }
+
     return out;
 }
 
@@ -127,7 +138,9 @@ memory_address var_get_or_temp_pop(label name) {
         out = var_get(name);
     } else {
         out.value = temp_pop();
-        out.isLocal = 1;
+
+        if(visibility>=1) out.isLocal = 1; // on peut avoir des temps globaux
+        else             out.isLocal = 0;
     }
 
     return out;

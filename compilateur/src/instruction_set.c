@@ -356,11 +356,12 @@ void switch_tmp(){
     store_var(R2,R3,NULL);
 }
 
-void return_label(label o, label i){
+void return_label( label i){
     load_var(R2, i);
     remove_visibility();
-        add_hint("//return\n");
-    store_var(R2, R1, o);
+    memory_address l = {0,1};
+    var_adr(R1, l);
+    op_rr(op_store, R2, R1);
 }
 
 void store(label o, label i) {

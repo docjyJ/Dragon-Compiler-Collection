@@ -10,7 +10,7 @@ void main() {
     int *p = a;
     print(p[0]);
     print(p[1]);
-    //print(p[2]);
+    print(p[2]);
 
     int **p2 = &p;
     print(**p2);
