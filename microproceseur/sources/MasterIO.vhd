@@ -52,14 +52,11 @@ ARCHITECTURE Behavioral OF MasterIO IS
         z, c, o, n : OUT std_logic);
     END COMPONENT;
 
-    COMPONENT Memoire IS
-        PORT (
-            rst    : IN std_logic;
-            write  : IN std_logic;
-            read   : IN std_logic;
-            add    : IN std_logic_vector (7 DOWNTO 0);
-            input  : IN std_logic_vector (7 DOWNTO 0);
-            output : OUT std_logic_vector (7 DOWNTO 0));
+    COMPONENT DataMemory IS PORT (
+        rst, wr : IN std_logic;
+        addr    : IN std_logic_vector (7 DOWNTO 0);
+        val_in  : IN std_logic_vector (7 DOWNTO 0);
+        val_out : OUT std_logic_vector (7 DOWNTO 0));
     END COMPONENT;
 
     SIGNAL sSensCompteur : std_logic;
@@ -186,13 +183,12 @@ BEGIN
         N   => sNALU
     );
 
-    MemoireDonne : Memoire PORT MAP(
-        rst    => rst,
-        read   => sReadMemoire,
-        add    => sAddMemoire,
-        write  => sWriteMemoire,
-        input  => sInputMemoire,
-        output => sOutputMemoire
+    MemoireDonne : DataMemory PORT MAP(
+        rst     => rst,
+        wr      => sWriteMemoire,
+        addr    => sAddMemoire,
+        val_in  => sInputMemoire,
+        val_out => sOutputMemoire
     );
 
     sCntMI        <= sDoutCompteur;

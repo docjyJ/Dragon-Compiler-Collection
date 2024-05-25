@@ -16,7 +16,7 @@ BEGIN
     s <= mem;
     PROCESS (clk) IS
     BEGIN
-        IF clk'EVENT AND clk = '1' THEN
+        IF rising_edge(clk) THEN
             IF rst = '1' THEN
                 mem <= x"00";
             ELSIF en = '1' THEN
