@@ -3,18 +3,27 @@ USE IEEE.STD_LOGIC_1164.ALL;
 USE WORK.DRAGON.ALL;
 
 ENTITY MasterIO IS PORT (
-    clk, btnL, btnR  : IN std_logic;
-    btnU, btnD, btnC : IN std_logic;
-    sw               : IN std_logic_vector(15 DOWNTO 0);
-    led              : OUT std_logic_vector(15 DOWNTO 0);
-    an               : OUT std_logic_vector(3 DOWNTO 0);
-    seg              : OUT std_logic_vector(6 DOWNTO 0);
-    dp               : OUT std_logic);
+    clk, clk_100, btnL, btnR : IN std_logic;
+    btnU, btnD, btnC         : IN std_logic;
+    sw                       : IN std_logic_vector(15 DOWNTO 0);
+    led                      : OUT std_logic_vector(15 DOWNTO 0);
+    an                       : OUT std_logic_vector(3 DOWNTO 0);
+    seg                      : OUT std_logic_vector(6 DOWNTO 0);
+    dp                       : OUT std_logic);
 END MasterIO;
 
 ARCHITECTURE Behavioral OF MasterIO IS
     SIGNAL rst  : std_logic;
     SIGNAL jump : std_logic;
+
+    COMPONENT IOManager IS PORT (
+        clk, rst, test : IN std_logic;
+        rd, wr         : IN std_logic_vector(15 DOWNTO 0);
+        led            : OUT std_logic_vector(15 DOWNTO 0);
+        an             : OUT std_logic_vector(3 DOWNTO 0);
+        seg            : OUT std_logic_vector(6 DOWNTO 0);
+        dp             : OUT std_logic);
+    END COMPONENT;
 
     COMPONENT FetchStage IS PORT (
         clk, rst, en, lod : IN std_logic;
@@ -45,7 +54,18 @@ ARCHITECTURE Behavioral OF MasterIO IS
 
 BEGIN
 
-    rst <= btnl OR btnr OR btnu OR btnd OR btnc;
+    IO : IOManager PORT MAP(
+        clk  => clk_100,
+        rst  => rst,
+        test => btnD,
+        rd   => sw,
+        wr   => x"0000",
+        led  => led,
+        an   => an,
+        seg  => seg,
+        dp   => dp);
+
+    rst <= btnu;
 
     fetch : FetchStage PORT MAP(
         clk      => clk,
@@ -65,11 +85,6 @@ BEGIN
         rst    => rst,
         pipin  => execute_in_pipe,
         pipout => execute_out_pipe);
-
-    led <= "0000000000000000";
-    an  <= "1111";
-    seg <= "0000000";
-    dp  <= '0';
 
     PROCESS (clk, rst)
     BEGIN
