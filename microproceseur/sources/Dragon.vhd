@@ -2,6 +2,13 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 
 PACKAGE Dragon IS
+    TYPE pipe_line IS RECORD
+        code   : std_logic_vector(7 DOWNTO 0);
+        first  : std_logic_vector(7 DOWNTO 0);
+        second : std_logic_vector(7 DOWNTO 0);
+        output : std_logic_vector(3 DOWNTO 0);
+    END RECORD pipe_line;
+
     CONSTANT op_add          : std_logic_vector (7 DOWNTO 0) := x"01";
     CONSTANT op_multiply     : std_logic_vector (7 DOWNTO 0) := x"02";
     CONSTANT op_subtract     : std_logic_vector (7 DOWNTO 0) := x"03";
@@ -26,21 +33,20 @@ PACKAGE Dragon IS
     CONSTANT op_bitwise_xor  : std_logic_vector (7 DOWNTO 0) := x"53";
 
     CONSTANT alu_nop : std_logic_vector (3 DOWNTO 0) := "0001";
-    CONSTANT log_or  : std_logic_vector (3 DOWNTO 0) := "0001";
-    CONSTANT log_nor : std_logic_vector (3 DOWNTO 0) := "0010";
-    CONSTANT log_and : std_logic_vector (3 DOWNTO 0) := "0011";
-    CONSTANT log_xor : std_logic_vector (3 DOWNTO 0) := "0100";
-    CONSTANT log_eq  : std_logic_vector (3 DOWNTO 0) := "0101";
+    CONSTANT alu_or  : std_logic_vector (3 DOWNTO 0) := "0001";
+    CONSTANT alu_and : std_logic_vector (3 DOWNTO 0) := "0011";
+    CONSTANT alu_xor : std_logic_vector (3 DOWNTO 0) := "0100";
+    CONSTANT alu_eq  : std_logic_vector (3 DOWNTO 0) := "0101";
     -- constant UNUSED: std_logic_vector (3 downto 0) := "0110";
     -- constant UNUSED: std_logic_vector (3 downto 0) := "0111";
     -- CONSTANT u_add : std_logic_vector (3 DOWNTO 0) := "1000";
     -- CONSTANT u_sub : std_logic_vector (3 DOWNTO 0) := "1001";
     -- CONSTANT u_mul : std_logic_vector (3 DOWNTO 0) := "1010";
     -- constant UNUSED: std_logic_vector (3 downto 0) := "1011";
-    CONSTANT s_add : std_logic_vector (3 DOWNTO 0) := "1100";
-    CONSTANT s_sub : std_logic_vector (3 DOWNTO 0) := "1101";
-    CONSTANT s_mul : std_logic_vector (3 DOWNTO 0) := "1110";
-    CONSTANT s_div : std_logic_vector (3 DOWNTO 0) := "1111";
-    CONSTANT s_mod : std_logic_vector (3 DOWNTO 0) := "1011";
+    CONSTANT alu_add : std_logic_vector (3 DOWNTO 0) := "1100";
+    CONSTANT alu_sub : std_logic_vector (3 DOWNTO 0) := "1101";
+    CONSTANT alu_mul : std_logic_vector (3 DOWNTO 0) := "1110";
+    CONSTANT alu_div : std_logic_vector (3 DOWNTO 0) := "1111";
+    CONSTANT alu_mod : std_logic_vector (3 DOWNTO 0) := "1011";
 
 END Dragon;

@@ -5,8 +5,7 @@ USE WORK.DRAGON.ALL;
 ENTITY FetchStage IS PORT (
     clk, rst, en, lod : IN std_logic;
     go_to             : IN std_logic_vector(7 DOWNTO 0);
-    code, input_a     : OUT std_logic_vector(7 DOWNTO 0);
-    output, input_b   : OUT std_logic_vector(3 DOWNTO 0));
+    pipeline          : OUT pipe_line);
 END ENTITY FetchStage;
 
 ARCHITECTURE behavioral OF FetchStage IS
@@ -41,17 +40,17 @@ BEGIN
 
     code_tmp <= data(31 DOWNTO 24);
 
-    code <= code_tmp;
+    pipeline.code <= code_tmp;
 
-    output <= data(19 DOWNTO 16);
+    pipeline.output <= data(19 DOWNTO 16);
 
-    WITH code_tmp SELECT input_a <=
+    WITH code_tmp SELECT pipeline.first <=
         data(23 DOWNTO 16) WHEN op_jump | op_branch | op_display | op_store | op_jump_r | op_branch_r,
         (OTHERS => '0') WHEN op_negate | op_bitwise_not,
         data(15 DOWNTO 8) WHEN OTHERS;
 
-    WITH code_tmp SELECT input_b <=
-        data(11 DOWNTO 8) WHEN op_branch | op_load | op_store | op_branch_r | op_negate | op_bitwise_not,
-        data(3 DOWNTO 0) WHEN OTHERS;
+    WITH code_tmp SELECT pipeline.second <=
+        data(15 DOWNTO 8) WHEN op_branch | op_load | op_store | op_branch_r | op_negate | op_bitwise_not,
+        data(7 DOWNTO 0) WHEN OTHERS;
 
 END ARCHITECTURE behavioral;

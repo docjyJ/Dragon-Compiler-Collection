@@ -3,11 +3,10 @@ USE IEEE.STD_LOGIC_1164.ALL;
 USE WORK.DRAGON.ALL;
 
 ENTITY DecodeStage IS PORT (
-        rst                : IN std_logic;
-        code, input_a      : IN std_logic_vector(7 DOWNTO 0);
-        input_b            : IN std_logic_vector(3 DOWNTO 0);
-        output_a, output_b : OUT std_logic_vector(7 DOWNTO 0);
-        jump               : OUT std_logic);
+    rst    : IN std_logic;
+    pipin  : IN pipe_line;
+    pipout : OUT pipe_line;
+    jump   : OUT std_logic);
 END DecodeStage;
 
 ARCHITECTURE Behavioral OF DecodeStage IS
@@ -24,27 +23,37 @@ ARCHITECTURE Behavioral OF DecodeStage IS
     SIGNAL addr_wr : std_logic_vector(3 DOWNTO 0);
     SIGNAL val_wr  : std_logic_vector(7 DOWNTO 0);
 
-    SIGNAL tmp_a : std_logic_vector(7 DOWNTO 0);
-    SIGNAL tmp_b : std_logic_vector(7 DOWNTO 0);
+    SIGNAL code_tmp : std_logic_vector(7 DOWNTO 0);
+    SIGNAL tmp_frst : std_logic_vector(7 DOWNTO 0);
+    SIGNAL tmp_scnd : std_logic_vector(7 DOWNTO 0);
 BEGIN
     datas : Registers PORT MAP(
         rst     => rst,
-        addr_a  => input_a(3 DOWNTO 0),
-        addr_b  => input_b,
-        val_a   => tmp_a,
-        val_b   => tmp_b,
+        addr_a  => pipin.first(3 DOWNTO 0),
+        addr_b  => pipin.second(3 DOWNTO 0),
+        val_a   => tmp_frst,
+        val_b   => tmp_scnd,
         wr      => wr,
         addr_wr => addr_wr,
         val_wr  => val_wr
     );
 
-    jump <= '1' WHEN (tmp_b = "00000000" AND (code = op_branch OR code = op_branch_r)) OR code = op_jump OR code = op_jump_r ELSE
-        '0';
+    code_tmp <= pipin.code;
 
-    output_a <= input_a WHEN code = op_define OR code = op_jump OR code = op_branch ELSE
-        tmp_a;
+    WITH code_tmp SELECT jump <=
+        NOR tmp_scnd WHEN op_branch | op_branch_r,
+        '1' WHEN op_jump | op_jump_r,
+        '0' WHEN OTHERS;
 
-    output_b <= tmp_b;
+    pipout.code <= code_tmp;
+
+    pipout.output <= pipin.output;
+
+    WITH code_tmp SELECT pipout.first <=
+        pipin.first WHEN op_define | op_jump | op_branch,
+        tmp_frst WHEN OTHERS;
+
+    pipout.second <= tmp_scnd;
 
     --TODO Aléa
 
