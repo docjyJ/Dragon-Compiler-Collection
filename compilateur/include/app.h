@@ -3,7 +3,9 @@
 
 #define MAX_ADDRESS 0x100
 #define MAX_BRANCH 10
-#define MAX_FUNCTION 20
+#define MAX_FUNCTION 10
+#define MAX_VAR_GLOBAL 20
+
 
 typedef unsigned char address;
 typedef unsigned short number;

@@ -349,11 +349,19 @@ void store_offset(label o, label i, label c) {
 
 }
 
-void return_label(label o, label i){
+void switch_tmp(){
+    load_var(R1, NULL);
+    load_var(R2,NULL);
+    store_var(R1,R3,NULL);
+    store_var(R2,R3,NULL);
+}
+
+void return_label( label i){
     load_var(R2, i);
     remove_visibility();
-        add_hint("//return\n");
-    store_var(R2, R1, o);
+    memory_address l = {0,1};
+    var_adr(R1, l);
+    op_rr(op_store, R2, R1);
 }
 
 void store(label o, label i) {
@@ -367,6 +375,7 @@ void var_to_address(label o, label i) {
         yyerror("NULL pointer");
 
     var_adr(R1, var_get(i));
+    //op_rrr(op_add, R1, R1, RS);
     store_var(R1, R2, o);
 }
 
@@ -378,6 +387,11 @@ void alloc_stack(address c){
 void free_stack(address c){
   load_const(R1, c);
   op_rrr(op_subtract, RS, RS, R1);
+}
+
+void alloc_stack_before(address line ,address c){
+    load_const_after(R1, c, line);
+    set_instruction( op_rrr_after(op_add, RS, RS, R1,line+1), line+1);
 }
 
 

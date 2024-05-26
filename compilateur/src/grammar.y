@@ -4,6 +4,7 @@
 #include "stack.function.h"
 #include "stack.instruction.h"
 #include "stack.variable.h"
+#include "stack.var_global.h"
 
 int yylex();
 %}
@@ -28,7 +29,7 @@ int yylex();
 
 %%
 
-global : global_code_list {print_instruction();}
+global : global_code_list {part_var_global(); print_instruction();}
        ; // permet de tout print
 
 global_code_list: global_code
@@ -192,7 +193,7 @@ defvars_list: defvar
             | defvars_list COMMA defvar
             ;
 
-defvar: label_pointer { number_define($1, 0) ; free($1); }
+defvar: label_pointer { free($1); }
       | label_pointer ASSIGN operators { var_copy($1, $3); free($1); free($3); }
       | LABEL LBRACKET STATIC_INT RBRACKET { tab_define($1, $3); free($1); }
       ;
@@ -214,9 +215,11 @@ callable_args: LPAR callable_args_list RPAR
              | LPAR RPAR
              ;
 
-callable_args_list: operators {give_param($1);free($1);}
-                  | callable_args_list COMMA operators {give_param($3); free($3); }
+callable_args_list: callable_arg
+                  | callable_arg COMMA callable_args_list
                   ;
+
+callable_arg : operators {give_param($1); free($1); };
 
 return: RETURN operators { return_var($2); free($2); }
       ;

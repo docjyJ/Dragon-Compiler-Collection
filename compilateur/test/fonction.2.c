@@ -2,10 +2,12 @@
 
 
 int factoriel(int a){
-    int c;
+    int c ;
+    int b = a-1;
 
     if (a > 0){
-        c = factoriel(a-1) * a;
+
+        c = factoriel(b) * a;
     }else {
         c = 1;
     }

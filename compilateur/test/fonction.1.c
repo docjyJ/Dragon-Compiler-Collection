@@ -13,9 +13,10 @@ int compute(int a , int d) {
 
 
 void main(void) {
-    int a = 1;
-    int b = 9;
-    a = compute(a, 2);
+    int a = 2;
+    int b;
+    b = compute(a, 1);
+    a = compute(1, a);
     print(a);
     print(b);
 

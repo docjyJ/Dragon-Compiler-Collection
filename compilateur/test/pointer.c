@@ -5,7 +5,7 @@ void main() {
     a[0] = 9;
     a[1] = 5;
     a[2] = 1;
-
+    print(a[0]);
 
     int *p = a;
     print(p[0]);
@@ -14,4 +14,5 @@ void main() {
 
     int **p2 = &p;
     print(**p2);
+
 }
