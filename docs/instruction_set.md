@@ -420,7 +420,7 @@
         <td>:black_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4">:large_blue_diamond: Entré</td>
+        <td colspan="4">:large_blue_diamond: @</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
         <td colspan="4"></td>
@@ -440,9 +440,9 @@
         <td>:black_large_square:</td>
         <td>:black_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4">:large_blue_diamond: Entré</td>
+        <td colspan="4">:large_blue_diamond: @</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">COND</td>
+        <td colspan="4">:large_blue_diamond: 0? jump: pass</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
