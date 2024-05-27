@@ -3,13 +3,13 @@ USE IEEE.STD_LOGIC_1164.ALL;
 USE WORK.DRAGON.ALL;
 
 ENTITY MasterIO IS PORT (
-    clk, clk_100, btnL, btnR : IN std_logic;
-    btnU, btnD, btnC         : IN std_logic;
-    sw                       : IN std_logic_vector(15 DOWNTO 0);
-    led                      : OUT std_logic_vector(15 DOWNTO 0);
-    an                       : OUT std_logic_vector(3 DOWNTO 0);
-    seg                      : OUT std_logic_vector(6 DOWNTO 0);
-    dp                       : OUT std_logic);
+    clk, btnL, btnR  : IN std_logic;
+    btnU, btnD, btnC : IN std_logic;
+    sw               : IN std_logic_vector(15 DOWNTO 0);
+    led              : OUT std_logic_vector(15 DOWNTO 0);
+    an               : OUT std_logic_vector(3 DOWNTO 0);
+    seg              : OUT std_logic_vector(6 DOWNTO 0);
+    dp               : OUT std_logic);
 END MasterIO;
 
 ARCHITECTURE Behavioral OF MasterIO IS
@@ -55,7 +55,7 @@ ARCHITECTURE Behavioral OF MasterIO IS
 BEGIN
 
     IO : IOManager PORT MAP(
-        clk  => clk_100,
+        clk  => clk,
         rst  => rst,
         test => btnD,
         rd   => sw,
