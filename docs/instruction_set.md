@@ -1,3 +1,7 @@
+- :red_circle: Registre de sortie
+- :large_blue_diamond: Registre d'entrée
+- :green_square: Donnée hardcodée
+
 <table>
 <thead>
     <tr>
@@ -80,14 +84,14 @@
         <td>:white_large_square:</td>
         <td>:black_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A+B</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: B</td>
     </tr>
     <tr>
-        <td></td>
+        <td>Multiplication</td>
         <td><code>MUL</code></td>
         <td>2</td>
         <td><code>02</code></td>
@@ -100,14 +104,14 @@
         <td>:black_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A*B</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: B</td>
     </tr>
     <tr>
-        <td></td>
+        <td>Soustraction</td>
         <td><code>SUB</code></td>
         <td>3</td>
         <td><code>03</code></td>
@@ -120,14 +124,14 @@
         <td>:black_large_square:</td>
         <td>:black_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A-B</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: B</td>
     </tr>
     <tr>
-        <td></td>
+        <td>Division</td>
         <td><code>DIV</code></td>
         <td>4</td>
         <td><code>04</code></td>
@@ -140,14 +144,14 @@
         <td>:white_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A/B</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: B</td>
     </tr>
     <tr>
-        <td></td>
+        <td>Copie</td>
         <td><code>COP</code></td>
         <td>5</td>
         <td><code>05</code></td>
@@ -160,14 +164,14 @@
         <td>:white_large_square:</td>
         <td>:black_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
     <tr>
-        <td></td>
+        <td>Affectation</td>
         <td><code>AFC</code></td>
         <td>6</td>
         <td><code>06</code></td>
@@ -180,13 +184,13 @@
         <td>:black_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
-        <td colspan="8">Data[8]</td>
+        <td colspan="4">:red_circle: A</td>
+        <td colspan="8">:green_square: A</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
     <tr>
-        <td></td>
+        <td>Saut</td>
         <td><code>JMP</code></td>
         <td>7</td>
         <td><code>07</code></td>
@@ -198,14 +202,14 @@
         <td>:black_large_square:</td>
         <td>:black_large_square:</td>
         <td>:black_large_square:</td>
-        <td colspan="8">Data[8]</td>
+        <td colspan="8">:green_square: @</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
     <tr>
-        <td></td>
+        <td>Branchement</td>
         <td><code>JMF</code></td>
         <td>8</td>
         <td><code>08</code></td>
@@ -217,14 +221,14 @@
         <td>:white_large_square:</td>
         <td>:white_large_square:</td>
         <td>:white_large_square:</td>
-        <td colspan="8">Data[8]</td>
+        <td colspan="8">:green_square: @</td>
+        <td colspan="4"></td>
+        <td colspan="4">:large_blue_diamond: 0? jump: pass</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
-        <td colspan="4"></td>
-        <td></td>
     </tr>
     <tr>
-        <td></td>
+        <td>Inférieur</td>
         <td><code>INF</code></td>
         <td>9</td>
         <td><code>09</code></td>
@@ -237,14 +241,14 @@
         <td>:white_large_square:</td>
         <td>:black_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A &lt; B</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: B</td>
     </tr>
     <tr>
-        <td></td>
+        <td>Supérieur</td>
         <td><code>SUP</code></td>
         <td>10</td>
         <td><code>0A</code></td>
@@ -257,14 +261,14 @@
         <td>:black_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A &gt; B</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: B</td>
     </tr>
     <tr>
-        <td></td>
+        <td>Eguale</td>
         <td><code>EQU</code></td>
         <td>11</td>
         <td><code>0B</code></td>
@@ -277,14 +281,14 @@
         <td>:black_large_square:</td>
         <td>:black_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A == B</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: B</td>
     </tr>
     <tr>
-        <td></td>
+        <td>Écriture</td>
         <td><code>PRI</code></td>
         <td>12</td>
         <td><code>0C</code></td>
@@ -297,9 +301,8 @@
         <td>:white_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
-        <td colspan="4"></td>
-        <td colspan="4"></td>
+        <td colspan="4">:large_blue_diamond: A</td>
+        <td colspan="8">:green_square: Channel &lt;&lt; A</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
@@ -364,7 +367,7 @@
         <td colspan="4"></td>
     </tr>
     <tr>
-        <td></td>
+        <td>Chargement</td>
         <td><code>LOD</code></td>
         <td>16</td>
         <td><code>10</code></td>
@@ -377,14 +380,14 @@
         <td>:white_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: &lt;&lt; @</td>
         <td colspan="4"></td>
-        <td colspan="4">ADDR</td>
+        <td colspan="4">:large_blue_diamond: @</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
     <tr>
-        <td></td>
+        <td>Sauvegarde</td>
         <td><code>STR</code></td>
         <td>17</td>
         <td><code>11</code></td>
@@ -397,15 +400,15 @@
         <td>:white_large_square:</td>
         <td>:black_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4">ADDR</td>
+        <td colspan="4">:large_blue_diamond: @ &lt;&lt; A</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
     <tr>
-        <td></td>
-        <td>JMPR</td>
+        <td>Saut (version regisre)</td>
+        <td><code>JMPR</code></td>
         <td>18</td>
         <td><code>12</code></td>
         <td>:white_large_square:</td>
@@ -417,15 +420,15 @@
         <td>:black_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4">REG</td>
+        <td colspan="4">:large_blue_diamond: Entré</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
     <tr>
-        <td></td>
-        <td>JMFR</td>
+        <td>Branchement (version regisre)</td>
+        <td><code>JMFR</code></td>
         <td>19</td>
         <td><code>13</code></td>
         <td>:white_large_square:</td>
@@ -437,15 +440,15 @@
         <td>:black_large_square:</td>
         <td>:black_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4">REG</td>
+        <td colspan="4">:large_blue_diamond: Entré</td>
         <td colspan="4"></td>
-        <td colspan="4">IF</td>
+        <td colspan="4" style="background-color: aliceblue">COND</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
     <tr>
-        <td></td>
-        <td></td>
+        <td>Lecture</td>
+        <td><code>RED</code></td>
         <td>20</td>
         <td><code>14</code></td>
         <td>:white_large_square:</td>
@@ -457,9 +460,8 @@
         <td>:white_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4"></td>
-        <td colspan="4"></td>
-        <td colspan="4"></td>
+        <td colspan="4">:red_circle: &lt;&lt; Channel</td>
+        <td colspan="8">:green_square: Channel</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
@@ -657,14 +659,14 @@
         <td>:black_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: -A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
     <tr>
-        <td></td>
+        <td>Reste</td>
         <td><code>MOD</code></td>
         <td>31</td>
         <td><code>1F</code></td>
@@ -677,11 +679,11 @@
         <td>:black_large_square:</td>
         <td>:black_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A % B</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: B</td>
     </tr>
     <tr>
         <td></td>
@@ -1044,7 +1046,7 @@
         <td colspan="4"></td>
     </tr>
     <tr>
-        <td></td>
+        <td>Et bit à bit</td>
         <td><code>AND</code></td>
         <td>50</td>
         <td><code>32</code></td>
@@ -1057,15 +1059,15 @@
         <td>:black_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A & B</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: B</td>
     </tr>
     <tr>
-        <td></td>
-        <td>OR</td>
+        <td>Ou bit à bit</td>
+        <td><code>OR</code></td>
         <td>51</td>
         <td><code>33</code></td>
         <td>:white_large_square:</td>
@@ -1077,14 +1079,14 @@
         <td>:black_large_square:</td>
         <td>:black_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A | B</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: B</td>
     </tr>
     <tr>
-        <td></td>
+        <td>Non bit à bit</td>
         <td><code>NOT</code></td>
         <td>52</td>
         <td><code>34</code></td>
@@ -1097,14 +1099,14 @@
         <td>:white_large_square:</td>
         <td>:white_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: ~A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
         <td colspan="4"></td>
     </tr>
     <tr>
-        <td></td>
+        <td>Ou exclusif bit à bit</td>
         <td><code>XOR</code></td>
         <td>53</td>
         <td><code>35</code></td>
@@ -1117,11 +1119,11 @@
         <td>:white_large_square:</td>
         <td>:black_large_square:</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: lavenderblush">OUT</td>
+        <td colspan="4">:red_circle: A ^ B</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: A</td>
         <td colspan="4"></td>
-        <td colspan="4" style="background-color: aliceblue">IN</td>
+        <td colspan="4">:large_blue_diamond: B</td>
     </tr>
     <tr>
         <td></td>
