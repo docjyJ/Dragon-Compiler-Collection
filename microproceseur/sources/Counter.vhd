@@ -10,7 +10,7 @@ PORT (
     en, dir, lod : IN std_logic;
     a            : IN std_logic_vector (N - 1 DOWNTO 0);
     s            : OUT std_logic_vector (N - 1 DOWNTO 0));
-END Counter;
+END ENTITY;
 
 ARCHITECTURE Behavioral OF Counter IS
     SIGNAL mem : std_logic_vector (N - 1 DOWNTO 0);
@@ -32,4 +32,4 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
-END Behavioral;
+END ARCHITECTURE;

@@ -8,7 +8,7 @@ ENTITY ALU IS PORT (
     a, b       : IN std_logic_vector (7 DOWNTO 0);
     s          : OUT std_logic_vector (7 DOWNTO 0);
     z, c, o, n : OUT std_logic);
-END ALU;
+END ENTITY;
 
 ARCHITECTURE Behavioral OF ALU IS
     CONSTANT MAX_INT  : integer := 127;
@@ -45,4 +45,4 @@ BEGIN
 
     S <= std_logic_vector(resize(sS, 8));
 
-END Behavioral;
+END ARCHITECTURE;

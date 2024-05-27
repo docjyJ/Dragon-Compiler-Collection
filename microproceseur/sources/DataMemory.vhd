@@ -1,4 +1,4 @@
-LIBRARY ieee;
+LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.STD_LOGIC_UNSIGNED.conv_integer;
 
@@ -6,7 +6,7 @@ ENTITY DataMemory IS PORT (
     rst, wr      : IN std_logic;
     addr, val_in : IN std_logic_vector (7 DOWNTO 0);
     val_out      : OUT std_logic_vector (7 DOWNTO 0));
-END DataMemory;
+END ENTITY;
 
 ARCHITECTURE Behavioral OF DataMemory IS
     TYPE ttab IS ARRAY (255 DOWNTO 0) OF std_logic_vector (7 DOWNTO 0);
@@ -23,4 +23,4 @@ BEGIN
         END IF;
     END PROCESS;
 
-END Behavioral;
+END ARCHITECTURE;

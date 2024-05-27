@@ -6,7 +6,7 @@ ENTITY StoreStage IS PORT (
     rst    : IN std_logic;
     pipin  : IN pipe_line;
     pipout : OUT pipe_line);
-END ENTITY StoreStage;
+END ENTITY;
 
 ARCHITECTURE StoreStage OF StoreStage IS
     COMPONENT DataMemory IS PORT (
@@ -27,4 +27,4 @@ BEGIN
         val_in  => pipin.first,
         val_out => pipout.first);
 
-END ARCHITECTURE StoreStage;
+END ARCHITECTURE;

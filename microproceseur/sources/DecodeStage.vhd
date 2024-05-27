@@ -8,7 +8,7 @@ ENTITY DecodeStage IS PORT (
     pipin, pipwr : IN pipe_line;
     pipout       : OUT pipe_line;
     jump         : OUT std_logic);
-END DecodeStage;
+END ENTITY;
 
 ARCHITECTURE Behavioral OF DecodeStage IS
     COMPONENT Registers IS PORT (
@@ -51,4 +51,4 @@ BEGIN
 
     pipout.second <= tmp_scnd;
 
-END Behavioral;
+END ARCHITECTURE;

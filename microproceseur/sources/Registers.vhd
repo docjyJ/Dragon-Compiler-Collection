@@ -9,7 +9,7 @@ ENTITY Registers IS PORT (
     wr             : IN std_logic;
     addr_wr        : IN std_logic_vector (3 DOWNTO 0);
     val_wr         : IN std_logic_vector (7 DOWNTO 0));
-END Registers;
+END ENTITY;
 
 ARCHITECTURE Behavioral OF Registers IS
     TYPE ttab IS ARRAY (0 TO 15) OF std_logic_vector (7 DOWNTO 0);
@@ -27,4 +27,4 @@ BEGIN
         END IF;
     END PROCESS;
 
-END Behavioral;
+END ARCHITECTURE;

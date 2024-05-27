@@ -6,7 +6,7 @@ ENTITY FetchStage IS PORT (
     clk, rst, en, lod : IN std_logic;
     go_to             : IN std_logic_vector(7 DOWNTO 0);
     pipeline          : OUT pipe_line);
-END ENTITY FetchStage;
+END ENTITY;
 
 ARCHITECTURE behavioral OF FetchStage IS
     COMPONENT Counter IS PORT (
@@ -53,4 +53,4 @@ BEGIN
         data(15 DOWNTO 8) WHEN op_branch | op_load | op_store | op_branch_r | op_negate | op_bitwise_not,
         data(7 DOWNTO 0) WHEN OTHERS;
 
-END ARCHITECTURE behavioral;
+END ARCHITECTURE;

@@ -10,13 +10,13 @@ ENTITY DragonUnit IS PORT (
     an               : OUT std_logic_vector(3 DOWNTO 0);
     seg              : OUT std_logic_vector(6 DOWNTO 0);
     dp               : OUT std_logic);
-END DragonUnit;
+END ENTITY;
 
 ARCHITECTURE Behavioral OF DragonUnit IS
     SIGNAL rst  : std_logic;
     SIGNAL jump : std_logic;
 
-    COMPONENT IOManager IS PORT (
+    COMPONENT DigitalIO IS PORT (
         clk, rst, test, mode : IN std_logic;
         rd, wr               : IN std_logic_vector(15 DOWNTO 0);
         led                  : OUT std_logic_vector(15 DOWNTO 0);
@@ -64,7 +64,7 @@ BEGIN
 
     --TODO print/aléa et jump
 
-    IO : IOManager PORT MAP(
+    IO : DigitalIO PORT MAP(
         clk  => clk,
         rst  => rst,
         test => btnD,
@@ -117,4 +117,4 @@ BEGIN
 
     END PROCESS;
 
-END Behavioral;
+END ARCHITECTURE;

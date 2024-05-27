@@ -1,7 +1,7 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 
-ENTITY IOManager IS PORT (
+ENTITY DigitalIO IS PORT (
     clk, rst, test, mode : IN std_logic;
     rd, wr               : IN std_logic_vector(15 DOWNTO 0);
     led                  : OUT std_logic_vector(15 DOWNTO 0);
@@ -10,7 +10,7 @@ ENTITY IOManager IS PORT (
     dp                   : OUT std_logic);
 END ENTITY;
 
-ARCHITECTURE Behavioral OF IOManager IS
+ARCHITECTURE Behavioral OF DigitalIO IS
     COMPONENT Counter IS GENERIC
         (N : integer := 8);
         PORT (

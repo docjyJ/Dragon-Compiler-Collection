@@ -6,7 +6,7 @@ ENTITY ExecuteStage IS PORT (
     rst    : IN std_logic;
     pipin  : IN pipe_line;
     pipout : OUT pipe_line);
-END ENTITY ExecuteStage;
+END ENTITY;
 
 ARCHITECTURE Behavioral OF ExecuteStage IS
     COMPONENT ALU IS PORT (
@@ -63,4 +63,4 @@ BEGIN
 
     pipout.second <= pipin.second;
 
-END Behavioral;
+END ARCHITECTURE;

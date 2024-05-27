@@ -51,7 +51,7 @@ PACKAGE Dragon IS
     CONSTANT alu_div : std_logic_vector (3 DOWNTO 0) := "1111";
     CONSTANT alu_mod : std_logic_vector (3 DOWNTO 0) := "1011";
 
-END Dragon;
+END PACKAGE;
 
 PACKAGE BODY Dragon IS
     FUNCTION have_write_back (code : std_logic_vector) RETURN std_logic IS
@@ -82,4 +82,4 @@ PACKAGE BODY Dragon IS
             WHEN OTHERS          => RETURN '0';
         END CASE;
     END FUNCTION;
-END Dragon;
+END PACKAGE BODY;
