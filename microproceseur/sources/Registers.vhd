@@ -22,7 +22,7 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             reg <= (OTHERS => (OTHERS => '0'));
-        ELSIF wr = '1' THEN
+        ELSIF rising_edge(wr) THEN
             reg(conv_integer(addr_wr)) <= val_wr;
         END IF;
     END PROCESS;

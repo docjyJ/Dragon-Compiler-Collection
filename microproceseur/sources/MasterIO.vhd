@@ -35,10 +35,10 @@ ARCHITECTURE Behavioral OF MasterIO IS
     SIGNAL decode_in_pipe : pipe_line;
 
     COMPONENT DecodeStage IS PORT (
-        rst    : IN std_logic;
-        pipin  : IN pipe_line;
-        pipout : OUT pipe_line;
-        jump   : OUT std_logic);
+        rst          : IN std_logic;
+        pipin, pipwr : IN pipe_line;
+        pipout       : OUT pipe_line;
+        jump         : OUT std_logic);
     END COMPONENT;
 
     SIGNAL decode_out_pipe : pipe_line;
@@ -51,8 +51,18 @@ ARCHITECTURE Behavioral OF MasterIO IS
     END COMPONENT;
 
     SIGNAL execute_out_pipe : pipe_line;
+    SIGNAL store_in_pipe    : pipe_line;
 
+    COMPONENT StoreStage IS PORT (
+        rst    : IN std_logic;
+        pipin  : IN pipe_line;
+        pipout : OUT pipe_line);
+    END COMPONENT;
+
+    SIGNAL store_out_pipe : pipe_line;
 BEGIN
+
+    --TODO print/aléa et jump
 
     IO : IOManager PORT MAP(
         clk  => clk,
@@ -79,6 +89,7 @@ BEGIN
         rst    => rst,
         pipin  => decode_in_pipe,
         pipout => decode_out_pipe,
+        pipwr  => store_out_pipe,
         jump   => jump);
 
     execute : ExecuteStage PORT MAP(
@@ -86,17 +97,21 @@ BEGIN
         pipin  => execute_in_pipe,
         pipout => execute_out_pipe);
 
+    store : StoreStage PORT MAP(
+        rst    => rst,
+        pipin  => store_in_pipe,
+        pipout => store_out_pipe);
+
     PROCESS (clk, rst)
     BEGIN
         IF rst = '1' THEN
-            fetch_out_pipe   <= (OTHERS => (OTHERS => '0'));
-            decode_in_pipe   <= (OTHERS => (OTHERS => '0'));
-            decode_out_pipe  <= (OTHERS => (OTHERS => '0'));
-            execute_in_pipe  <= (OTHERS => (OTHERS => '0'));
-            execute_out_pipe <= (OTHERS => (OTHERS => '0'));
-        ELSIF clk'event AND clk = '1' THEN
+            decode_in_pipe  <= (OTHERS => (OTHERS => '0'));
+            execute_in_pipe <= (OTHERS => (OTHERS => '0'));
+            store_in_pipe   <= (OTHERS => (OTHERS => '0'));
+        ELSIF rising_edge(clk) THEN
             decode_in_pipe  <= fetch_out_pipe;
             execute_in_pipe <= decode_out_pipe;
+            store_in_pipe   <= execute_out_pipe;
         END IF;
 
     END PROCESS;

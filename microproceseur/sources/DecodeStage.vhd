@@ -4,10 +4,10 @@ USE IEEE.STD_LOGIC_MISC.NOR_REDUCE;
 USE WORK.DRAGON.ALL;
 
 ENTITY DecodeStage IS PORT (
-    rst    : IN std_logic;
-    pipin  : IN pipe_line;
-    pipout : OUT pipe_line;
-    jump   : OUT std_logic);
+    rst          : IN std_logic;
+    pipin, pipwr : IN pipe_line;
+    pipout       : OUT pipe_line;
+    jump         : OUT std_logic);
 END DecodeStage;
 
 ARCHITECTURE Behavioral OF DecodeStage IS
@@ -20,10 +20,6 @@ ARCHITECTURE Behavioral OF DecodeStage IS
         val_wr         : IN std_logic_vector (7 DOWNTO 0));
     END COMPONENT;
 
-    SIGNAL wr      : std_logic;
-    SIGNAL addr_wr : std_logic_vector(3 DOWNTO 0);
-    SIGNAL val_wr  : std_logic_vector(7 DOWNTO 0);
-
     SIGNAL code_tmp : std_logic_vector(7 DOWNTO 0);
     SIGNAL tmp_frst : std_logic_vector(7 DOWNTO 0);
     SIGNAL tmp_scnd : std_logic_vector(7 DOWNTO 0);
@@ -34,10 +30,9 @@ BEGIN
         addr_b  => pipin.second(3 DOWNTO 0),
         val_a   => tmp_frst,
         val_b   => tmp_scnd,
-        wr      => wr,
-        addr_wr => addr_wr,
-        val_wr  => val_wr
-    );
+        wr      => have_write_back(pipwr.code),
+        addr_wr => pipwr.output,
+        val_wr  => pipwr.first);
 
     code_tmp <= pipin.code;
 
@@ -55,7 +50,5 @@ BEGIN
         tmp_frst WHEN OTHERS;
 
     pipout.second <= tmp_scnd;
-
-    --TODO Aléa
 
 END Behavioral;

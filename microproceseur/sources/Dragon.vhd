@@ -32,11 +32,13 @@ PACKAGE Dragon IS
     CONSTANT op_bitwise_not  : std_logic_vector (7 DOWNTO 0) := x"52";
     CONSTANT op_bitwise_xor  : std_logic_vector (7 DOWNTO 0) := x"53";
 
-    CONSTANT alu_nop : std_logic_vector (3 DOWNTO 0) := "0001";
+    FUNCTION have_write_back (code : std_logic_vector) RETURN std_logic;
+
+    CONSTANT alu_nop : std_logic_vector (3 DOWNTO 0) := "0000";
     CONSTANT alu_or  : std_logic_vector (3 DOWNTO 0) := "0001";
-    CONSTANT alu_and : std_logic_vector (3 DOWNTO 0) := "0011";
-    CONSTANT alu_xor : std_logic_vector (3 DOWNTO 0) := "0100";
-    CONSTANT alu_eq  : std_logic_vector (3 DOWNTO 0) := "0101";
+    CONSTANT alu_and : std_logic_vector (3 DOWNTO 0) := "0010";
+    CONSTANT alu_xor : std_logic_vector (3 DOWNTO 0) := "0011";
+    CONSTANT alu_eq  : std_logic_vector (3 DOWNTO 0) := "0100";
     -- constant UNUSED: std_logic_vector (3 downto 0) := "0110";
     -- constant UNUSED: std_logic_vector (3 downto 0) := "0111";
     -- CONSTANT u_add : std_logic_vector (3 DOWNTO 0) := "1000";
@@ -49,4 +51,35 @@ PACKAGE Dragon IS
     CONSTANT alu_div : std_logic_vector (3 DOWNTO 0) := "1111";
     CONSTANT alu_mod : std_logic_vector (3 DOWNTO 0) := "1011";
 
+END Dragon;
+
+PACKAGE BODY Dragon IS
+    FUNCTION have_write_back (code : std_logic_vector) RETURN std_logic IS
+    BEGIN
+        CASE code IS
+            WHEN op_add          => RETURN '1';
+            WHEN op_multiply     => RETURN '1';
+            WHEN op_subtract     => RETURN '1';
+            WHEN op_divide       => RETURN '1';
+            WHEN op_copy         => RETURN '1';
+            WHEN op_define       => RETURN '1';
+            WHEN op_jump         => RETURN '0';
+            WHEN op_branch       => RETURN '0';
+            WHEN op_lower_than   => RETURN '1';
+            WHEN op_greater_than => RETURN '1';
+            WHEN op_equal_to     => RETURN '1';
+            WHEN op_display      => RETURN '0';
+            WHEN op_load         => RETURN '1';
+            WHEN op_store        => RETURN '0';
+            WHEN op_jump_r       => RETURN '0';
+            WHEN op_branch_r     => RETURN '0';
+            WHEN op_negate       => RETURN '1';
+            WHEN op_modulo       => RETURN '1';
+            WHEN op_bitwise_and  => RETURN '1';
+            WHEN op_bitwise_or   => RETURN '1';
+            WHEN op_bitwise_not  => RETURN '1';
+            WHEN op_bitwise_xor  => RETURN '1';
+            WHEN OTHERS          => RETURN '0';
+        END CASE;
+    END FUNCTION;
 END Dragon;

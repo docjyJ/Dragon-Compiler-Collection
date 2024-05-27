@@ -1,12 +1,11 @@
 LIBRARY ieee;
 USE IEEE.STD_LOGIC_1164.ALL;
-USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED.conv_integer;
 
 ENTITY DataMemory IS PORT (
-    rst, wr : IN std_logic;
-    addr    : IN std_logic_vector (7 DOWNTO 0);
-    val_in  : IN std_logic_vector (7 DOWNTO 0);
-    val_out : OUT std_logic_vector (7 DOWNTO 0));
+    rst, wr      : IN std_logic;
+    addr, val_in : IN std_logic_vector (7 DOWNTO 0);
+    val_out      : OUT std_logic_vector (7 DOWNTO 0));
 END DataMemory;
 
 ARCHITECTURE Behavioral OF DataMemory IS
@@ -15,11 +14,11 @@ ARCHITECTURE Behavioral OF DataMemory IS
 BEGIN
     val_out <= mem(conv_integer(addr));
 
-    PROCESS (wr)
+    PROCESS (wr, rst, addr, val_in)
     BEGIN
         IF rst = '1' THEN
             mem <= (OTHERS => (OTHERS => '0'));
-        ELSIF wr = '1' THEN
+        ELSIF rising_edge(wr) THEN
             mem(conv_integer(addr)) <= val_in;
         END IF;
     END PROCESS;
