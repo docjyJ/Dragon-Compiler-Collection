@@ -14,10 +14,10 @@ ARCHITECTURE Behavioral OF IOManager IS
     COMPONENT Counter IS GENERIC
         (N : integer := 8);
         PORT (
-            clk, rst     : IN std_logic;
-            en, dir, lod : IN std_logic;
-            a            : IN std_logic_vector (N - 1 DOWNTO 0);
-            s            : OUT std_logic_vector (N - 1 DOWNTO 0));
+            clk, rst, mode : IN std_logic;
+            en, dir, lod   : IN std_logic;
+            a              : IN std_logic_vector (N - 1 DOWNTO 0);
+            s              : OUT std_logic_vector (N - 1 DOWNTO 0));
     END COMPONENT;
 
     SIGNAL state : std_logic_vector(1 DOWNTO 0);
@@ -27,8 +27,8 @@ ARCHITECTURE Behavioral OF IOManager IS
     SIGNAL nul   : std_logic_vector(16 DOWNTO 0);
 
 BEGIN
-    Counter0 : Counter GENERIC
-    MAP (18)
+    clkDiviser : Counter GENERIC
+    MAP (18) -- 2**18 * 10 ns => 2.62144 ms
     PORT MAP(
         clk            => clk,
         rst            => rst,
@@ -76,22 +76,22 @@ BEGIN
         "1110" WHEN "11";
 
     WITH digit SELECT seg <=
-        "0000001" WHEN "0000",
-        "1001111" WHEN "0001",
-        "0010010" WHEN "0010",
-        "0000110" WHEN "0011",
-        "1001100" WHEN "0100",
-        "0100100" WHEN "0101",
-        "0100000" WHEN "0110",
-        "0001111" WHEN "0111",
-        "0000000" WHEN "1000",
-        "0000100" WHEN "1001",
-        "0000010" WHEN "1010",
-        "1100000" WHEN "1011",
-        "0110001" WHEN "1100",
-        "1000010" WHEN "1101",
-        "0110000" WHEN "1110",
-        "0111000" WHEN "1111";
+        "1000000" WHEN "0000", -- 0
+        "0000110" WHEN "0001", -- 1
+        "0100100" WHEN "0010", -- 2
+        "0110000" WHEN "0011", -- 3
+        "0011001" WHEN "0100", -- 4
+        "0010010" WHEN "0101", -- 5
+        "0000010" WHEN "0110", -- 6
+        "1111000" WHEN "0111", -- 7
+        "0000000" WHEN "1000", -- 8
+        "0011000" WHEN "1001", -- 9
+        "0001000" WHEN "1010", -- A
+        "0000011" WHEN "1011", -- B
+        "1000110" WHEN "1100", -- C
+        "0100001" WHEN "1101", -- D
+        "0000110" WHEN "1110", -- E
+        "0001110" WHEN "1111"; -- F
 
     dp <= NOT (mode OR test);
 
