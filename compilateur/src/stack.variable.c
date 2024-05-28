@@ -31,11 +31,7 @@ int find_var(label name, address *out) {
     int i;
     if (strlen(name) == 0)
         i = -1;
-    else if(name[0]=='$'){
-        var_stak[0].visibility = 0; //TODO : trouver une solution pour les variables globals
-        *out = (address) 0;
-        return 1;
-    }
+
     else
         for (i = var_head; i >= 0 && (var_stak[i].nom == NULL || strcmp(var_stak[i].nom, name) != 0); i--);
 

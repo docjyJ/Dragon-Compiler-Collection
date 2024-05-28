@@ -10,7 +10,6 @@
  */
 void display(label i);
 
-void nop ();
 
 /**
  * Affectation d'une valeur numérique à une variable.

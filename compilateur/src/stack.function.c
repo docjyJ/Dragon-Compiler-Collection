@@ -76,10 +76,11 @@ void go_function(char *a) {
     offsetGoFun = nb_declaration() - tab_fnc[nb_fun]->debut_pile_function;
 
     start_go = get_instruction_count();
-    nop();
-    nop();
-    nop();
-    nop();
+    padding_for_later_jump();
+    padding_for_later_jump();
+    padding_for_later_jump();
+    padding_for_later_jump();
+
 
 
     nb_param = 0;

@@ -29,8 +29,9 @@ int yylex();
 
 %%
 
-global : global_code_list {part_var_global(); print_instruction();}
+global : {var_create("$");} global_code_list {part_var_global(); print_instruction();}
        ; // permet de tout print
+
 
 global_code_list: global_code
                 | global_code_list global_code

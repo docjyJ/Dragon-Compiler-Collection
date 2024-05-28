@@ -191,7 +191,7 @@ void operation(op_code code, label o, label i1, label i2) {
 
 void display(label i) {
     load_var(R1, i);
-    op_r(op_display, R1);
+    op_rc(op_display, R1,1);
 }
 
 void number_copy(label o, number c) {
@@ -222,7 +222,7 @@ void var_copy(label o, label i) {
     store_var(R1, R2, o);
 }
 
-void var_copy_address_local(address o, label i) { // todo : refactor possible
+void var_copy_address_local(address o, label i) {
     load_var(R1, i);
     load_const(R2, o);
     op_rrr(op_add, R2, R2, RS);
