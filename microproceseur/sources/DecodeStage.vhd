@@ -35,7 +35,7 @@ BEGIN
         addr_wr => pipwr.output,
         val_wr  => pipwr.first);
 
-    wr <= code_mode(pipwr.code)(0) WHEN clk = '0' ELSE
+    wr <= pipwr.info(0) WHEN clk = '0' ELSE
         '0';
 
     code_tmp <= pipin.code;
@@ -46,6 +46,8 @@ BEGIN
         '0' WHEN OTHERS;
 
     pipout.code <= code_tmp;
+
+    pipout.info <= pipin.info;
 
     pipout.output <= pipin.output;
 

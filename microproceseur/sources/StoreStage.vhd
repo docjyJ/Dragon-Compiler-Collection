@@ -30,6 +30,7 @@ BEGIN
         val_out => val_out);
 
     pipout.code  <= pipin.code;
+    pipout.info  <= pipin.info;
     pipout.first <= val_out WHEN pipin.code = op_load ELSE
     pipin.first;
     pipout.second <= pipin.second;

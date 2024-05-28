@@ -19,8 +19,22 @@ ARCHITECTURE Behavioral OF Registers IS
 BEGIN
     -- synthesis translate_off
     spy_registers <= (
-        reg(0), reg(1), reg(2), reg(3), reg(4), reg(5), reg(6), reg(7),
-        reg(8), reg(9), reg(10), reg(11), reg(12), reg(13), reg(14), reg(15)
+        0  => reg(0),
+        1  => reg(1),
+        2  => reg(2),
+        3  => reg(3),
+        4  => reg(4),
+        5  => reg(5),
+        6  => reg(6),
+        7  => reg(7),
+        8  => reg(8),
+        9  => reg(9),
+        10 => reg(10),
+        11 => reg(11),
+        12 => reg(12),
+        13 => reg(13),
+        14 => reg(14),
+        15 => reg(15)
         );
     -- synthesis translate_on
 

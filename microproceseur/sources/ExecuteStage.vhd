@@ -59,6 +59,8 @@ BEGIN
 
     pipout.code <= pipin.code;
 
+    pipout.info <= pipin.info;
+
     pipout.output <= pipin.output;
 
     pipout.first <=
