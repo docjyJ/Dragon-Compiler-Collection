@@ -73,13 +73,13 @@ BEGIN
     spy_jump      <= jump;
     spy_jump_addr <= decode_out_pipe.first;
     -- synthesis translate_on
-    data <= '1' WHEN ((fetch_out_pipe.first = decode_out_pipe.output 
-                OR fetch_out_pipe.second = decode_out_pipe.output) 
-                AND (have_write_back(decode_out_pipe.code)='1')) 
+    data <= '1' WHEN (((fetch_out_pipe.first = decode_out_pipe.output AND code_mode(fetch_out_pipe.code)(2)='1')  
+                OR (fetch_out_pipe.second = decode_out_pipe.output AND code_mode(fetch_out_pipe.code)(3)='1')) 
+                AND (code_mode(decode_out_pipe.code)(0)='1')) 
     
-                OR ((fetch_out_pipe.first = execute_out_pipe.output 
-                OR fetch_out_pipe.second = execute_out_pipe.output ) 
-                AND (have_write_back(execute_out_pipe.code)='1')) 
+                OR (((fetch_out_pipe.first = execute_out_pipe.output AND code_mode(fetch_out_pipe.code)(2)='1')  
+                OR (fetch_out_pipe.second = execute_out_pipe.output AND code_mode(fetch_out_pipe.code)(3)='1')) 
+                AND (code_mode(execute_out_pipe.code)(0)='1')) 
                 
                 ELSE '0';
     -- aléa data 
