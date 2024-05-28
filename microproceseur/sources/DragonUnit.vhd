@@ -14,7 +14,7 @@ ENTITY DragonUnit IS PORT (
 END ENTITY;
 
 ARCHITECTURE Behavioral OF DragonUnit IS
-    SIGNAL rst, jump : std_logic;
+    SIGNAL rst, jump, en, data : std_logic;
     SIGNAL io_output : std_logic_vector(15 DOWNTO 0);
 
     COMPONENT DigitalIO IS PORT (
@@ -73,7 +73,18 @@ BEGIN
     spy_jump      <= jump;
     spy_jump_addr <= decode_out_pipe.first;
     -- synthesis translate_on
-    --TODO aléa
+    data <= '1' WHEN ((fetch_out_pipe.first = decode_out_pipe.output 
+                OR fetch_out_pipe.second = decode_out_pipe.output) 
+                AND (have_write_back(decode_out_pipe.code)='1')) 
+    
+                OR ((fetch_out_pipe.first = execute_out_pipe.output 
+                OR fetch_out_pipe.second = execute_out_pipe.output ) 
+                AND (have_write_back(execute_out_pipe.code)='1')) 
+                
+                ELSE '0';
+    -- aléa data 
+    
+    
     rst <= btnu;
 
     IO : DigitalIO PORT MAP(
@@ -91,7 +102,7 @@ BEGIN
     fetch : FetchStage PORT MAP(
         clk      => clk,
         rst      => rst,
-        en       => '1',
+        en       => en,
         lod      => jump,
         go_to    => decode_out_pipe.first,
         pipeline => fetch_out_pipe);
@@ -131,7 +142,15 @@ BEGIN
             ELSE
                 decode_in_pipe <= fetch_out_pipe;
             END IF;
-            execute_in_pipe <= decode_out_pipe;
+            
+            IF (data='1') THEN
+                decode_in_pipe <= (OTHERS => (OTHERS => '0'));
+                en <='0';
+            ELSE         
+                en <='1';
+                execute_in_pipe <= decode_out_pipe;
+            END IF;
+            
             store_in_pipe   <= execute_out_pipe;
             back_in_pipe    <= store_out_pipe;
         END IF;
