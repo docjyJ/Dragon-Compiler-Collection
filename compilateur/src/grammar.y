@@ -30,7 +30,7 @@ int yylex();
 %%
 
 global : {var_create("$");} global_code_list {part_var_global(); print_instruction();}
-       ; // permet de tout print
+       ;
 
 
 global_code_list: global_code
@@ -121,6 +121,7 @@ label_pointer_arg: LABEL { $$ = $1; }
 
 
 /* Gestion ses opérations */
+
 table: LABEL { $$ = $1; }
      | table LBRACKET operators RBRACKET { $$ = NULL; load_offset($$, $1, $3); free($1); free($3); }
      | LPAR operators RPAR { $$ = $2; }
