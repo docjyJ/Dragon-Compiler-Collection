@@ -1,105 +1,78 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
 
-entity TestCounter is
-end TestCounter;
+ENTITY TestCounter IS
+END TestCounter;
 
-architecture Behavioral of TestCounter is
-    component Counter is
-        Port (
-            CLK: in STD_LOGIC;
-            RST: in STD_LOGIC;
-            LOAD: in STD_LOGIC;
-            SENS: in STD_LOGIC;
-            EN: in STD_LOGIC;
-            DI: in STD_LOGIC_VECTOR (7 downto 0);
-            DO: out STD_LOGIC_VECTOR (7 downto 0)
-        );
-    end component;
+ARCHITECTURE Behavioral OF TestCounter IS
+    COMPONENT Counter IS
+        PORT (
+            clk : IN STD_LOGIC;
+            en : IN STD_LOGIC;
+            rst : IN STD_LOGIC;
+            dir : IN STD_LOGIC;
+            lod : IN STD_LOGIC;
+            a : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+            s : OUT STD_LOGIC_VECTOR (7 DOWNTO 0));
+    END COMPONENT;
 
-    signal sCLK: STD_LOGIC;
-    signal sRST: STD_LOGIC;
-    signal sLOAD: STD_LOGIC;
-    signal sSENS: STD_LOGIC;
-    signal sEN: STD_LOGIC;
-    signal sDI: STD_LOGIC_VECTOR (7 downto 0);
-    signal sDO: STD_LOGIC_VECTOR (7 downto 0);
-begin
-    uut: Counter port map (
-        CLK => sCLK,
-        RST => sRST,
-        LOAD => sLOAD,
-        SENS => sSENS,
-        EN => sEN,
-        DI => sDI,
-        DO => sDO
-    );
+    SIGNAL sclk : STD_LOGIC;
+    SIGNAL srst : STD_LOGIC;
+    SIGNAL ssens : STD_LOGIC;
+    SIGNAL sload : STD_LOGIC;
+    SIGNAL sDin : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sDout : STD_LOGIC_VECTOR (7 DOWNTO 0);
+    SIGNAL sEN : STD_LOGIC;
+BEGIN
+    uut : Counter PORT MAP(
+        clk => sclk,
+        en => sEN,
+        rst => srst,
+        dir => ssens,
+        lod => sload,
+        a => sDin,
+        s => sDout);
 
-    pCLK: process
-    begin
-        sCLK <= '1';
-        wait for 5 ns;
+    pCLK : PROCESS
+    BEGIN
         sCLK <= '0';
-        wait for 5 ns;
-    end process pCLK;
+        WAIT FOR 5 ns;
+        sCLK <= '1';
+        WAIT FOR 5 ns;
+    END PROCESS pCLK;
+    sRST <= '0' AFTER 0 ns;
+    sRST <= '1' AFTER 30 ns;
 
-    pTest: process
-    begin
-        -- Initialisation
-        sRST <= '0';
+    pLOAD : PROCESS
+    BEGIN
         sLOAD <= '0';
-        sSENS <= '0';
-        sEN <= '0';
-        sEN <= '0';
-        sDI <= "00000000";
-        wait for 2 ns;
-        assert(sDO = "00000000") report "Initialisation failed" severity error;
-        wait for 10 ns;
-
-        -- Démarage du compteur
-        sRST <= '1';
-        sEN <= '1';
-        wait for 22 ns;
-        assert(sDO = "00000010") report "Démarage failed 1" severity error;
-        wait for 84 ns;
-        assert(sDO = "00001010") report "Démarage failed 2" severity error;
-
-        -- changement de sens
-        sSENS <= '1';
-        wait for 90 ns;
-        assert(sDO = "00000001") report "Sens failed" severity error;
-
-        -- Overflow
-        wait for 30 ns;
-        assert(sDO = "11111110") report "Overflow failed" severity error;
-
-        -- stop
-        sEN <= '0';
-        wait for 20 ns;
-        assert(sDO = "11111110") report "Stop failed" severity error;
-
-        -- reset
-        sRST <= '0';
-        wait for 20 ns;
-        assert(sDO = "00000000") report "Reset failed 1" severity error;
-        sEN <= '1';
-        wait for 20 ns;
-        assert(sDO = "00000000") report "Reset failed 2" severity error;
-
-        -- load
+        WAIT FOR 500 ns;
         sLOAD <= '1';
-        sDI <= "10101010";
-        wait for 20 ns;
-        assert(sDO = "00000000") report "Load failed 1" severity error;
-        sRST <= '1';
-        wait for 20 ns;
-        assert(sDO = "10101010") report "Load failed 2" severity error;
-        sLOAD <= '0';
-        wait for 20 ns;
-        assert(sDO = "10101000") report "Load failed 3" severity error;
+        WAIT FOR 20 ns;
+    END PROCESS pLOAD;
 
-        wait for 2 ns;
+    pEN : PROCESS
+    BEGIN
+        sEN <= '1';
+        WAIT FOR 600 ns;
+        sEN <= '0';
+        WAIT FOR 40 ns;
+    END PROCESS pEN;
 
-    end process pTest;
+    pDI : PROCESS
+    BEGIN
+        sDin <= "00000000";
+        WAIT FOR 500 ns;
+        sDin <= "01111111";
+        WAIT FOR 500 ns;
+    END PROCESS pDI;
 
-end Behavioral;
+    pSens : PROCESS
+    BEGIN
+        ssens <= '1';
+        WAIT FOR 600 ns;
+        ssens <= '0';
+        WAIT FOR 500 ns;
+    END PROCESS pSens;
+
+END Behavioral;

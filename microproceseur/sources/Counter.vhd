@@ -1,38 +1,35 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use IEEE.std_logic_arith.all;
-use IEEE.std_logic_unsigned.all;
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED."+";
+USE IEEE.STD_LOGIC_UNSIGNED."-";
 
-entity Counter is
-    Port (
-        CLK: in std_logic;
-        RST: in std_logic;
-        LOAD: in std_logic;
-        SENS: in std_logic;
-        EN: in std_logic;
-        DI: in std_logic_vector (7 downto 0);
-        DO: out std_logic_vector (7 downto 0)
-    );
-end Counter;
+ENTITY Counter IS GENERIC
+    (N : integer := 8);
+PORT (
+    clk, rst     : IN std_logic;
+    en, dir, lod : IN std_logic;
+    a            : IN std_logic_vector (N - 1 DOWNTO 0);
+    s            : OUT std_logic_vector (N - 1 DOWNTO 0));
+END ENTITY;
 
-architecture Behavioral of Counter is
-    signal count: std_logic_vector (7 downto 0);
-begin
-    process(CLK)
-    begin
-        if rising_edge(CLK) then
-            if RST = '0' then
-                count <= (others => '0');
-            elsif LOAD = '1' then
-                count <= DI;
-            elsif EN = '1' then
-                if SENS = '0' then
-                    count <= count + 1;
-                else
-                    count <= count - 1;
-                end if;
-            end if;
-        end if;
-    end process;
-    DO <= count;
-end Behavioral;
+ARCHITECTURE Behavioral OF Counter IS
+    SIGNAL mem : std_logic_vector (N - 1 DOWNTO 0);
+BEGIN
+    s <= mem;
+    PROCESS (clk) IS
+    BEGIN
+        IF rising_edge(clk) THEN
+            IF rst = '1' THEN
+                mem <= (OTHERS => '0');
+            ELSIF en = '1' THEN
+                IF lod = '1' THEN
+                    mem <= a;
+                ELSIF dir = '1' THEN
+                    mem <= mem - 1;
+                ELSE
+                    mem <= mem + 1;
+                END IF;
+            END IF;
+        END IF;
+    END PROCESS;
+END ARCHITECTURE;
