@@ -35,7 +35,7 @@ BEGIN
         addr_wr => pipwr.output,
         val_wr  => pipwr.first);
 
-    wr <= have_write_back(pipwr.code) WHEN clk = '0' ELSE
+    wr <= code_mode(pipwr.code)(0) WHEN clk = '0' ELSE
         '0';
 
     code_tmp <= pipin.code;

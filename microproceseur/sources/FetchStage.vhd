@@ -25,6 +25,7 @@ ARCHITECTURE behavioral OF FetchStage IS
     SIGNAL pc       : std_logic_vector(7 DOWNTO 0);
     SIGNAL data     : std_logic_vector(31 DOWNTO 0);
     SIGNAL code_tmp : std_logic_vector(7 DOWNTO 0);
+    SIGNAL mode     : std_logic_vector(4 DOWNTO 0);
 BEGIN
     program_counter : Counter PORT MAP(
         clk => clk,
@@ -45,18 +46,22 @@ BEGIN
 
     code_tmp <= data(31 DOWNTO 24);
 
+    mode <= code_mode(code_tmp);
+
     pipeline.code <= code_tmp;
 
-    pipeline.output <= data(19 DOWNTO 16);
+    pipeline.output <= (OTHERS => '0') WHEN mode(0) = '0' ELSE
+    data(19 DOWNTO 16);
 
-    WITH code_tmp SELECT pipeline.first <=
-        data(23 DOWNTO 16) WHEN op_jump | op_branch | op_store | op_jump_r | op_branch_r,
-        (OTHERS => '0') WHEN op_negate | op_bitwise_not,
-        data(15 DOWNTO 8) WHEN OTHERS;
+    pipeline.first <=
+    (OTHERS => '0') WHEN mode(1 DOWNTO 2) = "00" ELSE
+    data(23 DOWNTO 16) WHEN code_tmp = op_jump OR code_tmp = op_branch OR code_tmp = op_store OR code_tmp = op_jump_r OR code_tmp = op_branch_r ELSE
+    data(15 DOWNTO 8);
 
-    WITH code_tmp SELECT pipeline.second <=
-        data(23 DOWNTO 16) WHEN op_display,
-        data(15 DOWNTO 8) WHEN op_branch | op_load | op_store | op_branch_r | op_negate | op_bitwise_not,
-        data(7 DOWNTO 0) WHEN OTHERS;
+    pipeline.second <=
+    (OTHERS => '0') WHEN mode(3) = '0' ELSE
+    data(23 DOWNTO 16) WHEN code_tmp = op_display ELSE
+    data(15 DOWNTO 8) WHEN code_tmp = op_branch OR code_tmp = op_load OR code_tmp = op_store OR code_tmp = op_branch_r OR code_tmp = op_negate OR code_tmp = op_bitwise_not ELSE
+    data(7 DOWNTO 0);
 
 END ARCHITECTURE;

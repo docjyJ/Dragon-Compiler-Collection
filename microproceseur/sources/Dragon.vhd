@@ -33,8 +33,8 @@ PACKAGE Dragon IS
     CONSTANT op_bitwise_not  : std_logic_vector (7 DOWNTO 0) := x"52";
     CONSTANT op_bitwise_xor  : std_logic_vector (7 DOWNTO 0) := x"53";
 
-    FUNCTION have_write_back (code : std_logic_vector(7 DOWNTO 0)) RETURN std_logic;
-    FUNCTION code_to_alu (code     : std_logic_vector(7 DOWNTO 0)) RETURN std_logic_vector;
+    FUNCTION code_mode (code   : std_logic_vector(7 DOWNTO 0)) RETURN std_logic_vector;
+    FUNCTION code_to_alu (code : std_logic_vector(7 DOWNTO 0)) RETURN std_logic_vector;
 
     CONSTANT alu_nop : std_logic_vector (3 DOWNTO 0) := "0000";
     CONSTANT alu_or  : std_logic_vector (3 DOWNTO 0) := "0001";
@@ -56,33 +56,36 @@ PACKAGE Dragon IS
 END PACKAGE;
 
 PACKAGE BODY Dragon IS
-    FUNCTION have_write_back (code : std_logic_vector(7 DOWNTO 0)) RETURN std_logic IS
+    -- out & const & ina & inb
+    FUNCTION code_mode (code : std_logic_vector(7 DOWNTO 0)) RETURN std_logic_vector IS
+        CONSTANT op_binaire      : std_logic_vector (3 DOWNTO 0) := "1011";
+        CONSTANT op_unair        : std_logic_vector (3 DOWNTO 0) := "1001";
     BEGIN
         CASE code IS
-            WHEN op_add          => RETURN '1';
-            WHEN op_multiply     => RETURN '1';
-            WHEN op_subtract     => RETURN '1';
-            WHEN op_divide       => RETURN '1';
-            WHEN op_copy         => RETURN '1';
-            WHEN op_define       => RETURN '1';
-            WHEN op_jump         => RETURN '0';
-            WHEN op_branch       => RETURN '0';
-            WHEN op_lower_than   => RETURN '1';
-            WHEN op_greater_than => RETURN '1';
-            WHEN op_equal_to     => RETURN '1';
-            WHEN op_display      => RETURN '0';
-            WHEN op_load         => RETURN '1';
-            WHEN op_store        => RETURN '0';
-            WHEN op_jump_r       => RETURN '0';
-            WHEN op_branch_r     => RETURN '0';
-            WHEN op_read         => RETURN '1';
-            WHEN op_negate       => RETURN '1';
-            WHEN op_modulo       => RETURN '1';
-            WHEN op_bitwise_and  => RETURN '1';
-            WHEN op_bitwise_or   => RETURN '1';
-            WHEN op_bitwise_not  => RETURN '1';
-            WHEN op_bitwise_xor  => RETURN '1';
-            WHEN OTHERS          => RETURN '0';
+            WHEN op_add          => RETURN op_binaire;
+            WHEN op_multiply     => RETURN op_binaire;
+            WHEN op_subtract     => RETURN op_binaire;
+            WHEN op_divide       => RETURN op_binaire;
+            WHEN op_copy         => RETURN "1010";
+            WHEN op_define       => RETURN "1100";
+            WHEN op_jump         => RETURN "0100";
+            WHEN op_branch       => RETURN "0101";
+            WHEN op_lower_than   => RETURN op_binaire;
+            WHEN op_greater_than => RETURN op_binaire;
+            WHEN op_equal_to     => RETURN op_binaire;
+            WHEN op_display      => RETURN "0101";
+            WHEN op_load         => RETURN "1010";
+            WHEN op_store        => RETURN "0011";
+            WHEN op_jump_r       => RETURN "0100";
+            WHEN op_branch_r     => RETURN "0101";
+            WHEN op_read         => RETURN "1100";
+            WHEN op_negate       => RETURN op_unair;
+            WHEN op_modulo       => RETURN op_binaire;
+            WHEN op_bitwise_and  => RETURN op_binaire;
+            WHEN op_bitwise_or   => RETURN op_binaire;
+            WHEN op_bitwise_not  => RETURN op_unair;
+            WHEN op_bitwise_xor  => RETURN op_binaire;
+            WHEN OTHERS          => RETURN "0000";
         END CASE;
     END FUNCTION;
 
