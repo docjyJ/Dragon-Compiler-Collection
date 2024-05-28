@@ -25,6 +25,7 @@ PACKAGE Dragon IS
     CONSTANT op_store        : std_logic_vector (7 DOWNTO 0) := x"11";
     CONSTANT op_jump_r       : std_logic_vector (7 DOWNTO 0) := x"12";
     CONSTANT op_branch_r     : std_logic_vector (7 DOWNTO 0) := x"13";
+    CONSTANT op_read         : std_logic_vector (7 DOWNTO 0) := x"14";
     CONSTANT op_negate       : std_logic_vector (7 DOWNTO 0) := x"30";
     CONSTANT op_modulo       : std_logic_vector (7 DOWNTO 0) := x"31";
     CONSTANT op_bitwise_and  : std_logic_vector (7 DOWNTO 0) := x"50";
@@ -32,7 +33,8 @@ PACKAGE Dragon IS
     CONSTANT op_bitwise_not  : std_logic_vector (7 DOWNTO 0) := x"52";
     CONSTANT op_bitwise_xor  : std_logic_vector (7 DOWNTO 0) := x"53";
 
-    FUNCTION have_write_back (code : std_logic_vector) RETURN std_logic;
+    FUNCTION have_write_back (code : std_logic_vector(7 DOWNTO 0)) RETURN std_logic;
+    FUNCTION code_to_alu (code     : std_logic_vector(7 DOWNTO 0)) RETURN std_logic_vector;
 
     CONSTANT alu_nop : std_logic_vector (3 DOWNTO 0) := "0000";
     CONSTANT alu_or  : std_logic_vector (3 DOWNTO 0) := "0001";
@@ -54,7 +56,7 @@ PACKAGE Dragon IS
 END PACKAGE;
 
 PACKAGE BODY Dragon IS
-    FUNCTION have_write_back (code : std_logic_vector) RETURN std_logic IS
+    FUNCTION have_write_back (code : std_logic_vector(7 DOWNTO 0)) RETURN std_logic IS
     BEGIN
         CASE code IS
             WHEN op_add          => RETURN '1';
@@ -73,6 +75,7 @@ PACKAGE BODY Dragon IS
             WHEN op_store        => RETURN '0';
             WHEN op_jump_r       => RETURN '0';
             WHEN op_branch_r     => RETURN '0';
+            WHEN op_read         => RETURN '1';
             WHEN op_negate       => RETURN '1';
             WHEN op_modulo       => RETURN '1';
             WHEN op_bitwise_and  => RETURN '1';
@@ -80,6 +83,36 @@ PACKAGE BODY Dragon IS
             WHEN op_bitwise_not  => RETURN '1';
             WHEN op_bitwise_xor  => RETURN '1';
             WHEN OTHERS          => RETURN '0';
+        END CASE;
+    END FUNCTION;
+
+    FUNCTION code_to_alu (code : std_logic_vector(7 DOWNTO 0)) RETURN std_logic_vector IS
+    BEGIN
+        CASE code IS
+            WHEN op_add          => RETURN alu_add;
+            WHEN op_multiply     => RETURN alu_mul;
+            WHEN op_subtract     => RETURN alu_sub;
+            WHEN op_divide       => RETURN alu_div;
+            WHEN op_copy         => RETURN alu_nop;
+            WHEN op_define       => RETURN alu_nop;
+            WHEN op_jump         => RETURN alu_nop;
+            WHEN op_branch       => RETURN alu_nop;
+            WHEN op_lower_than   => RETURN alu_sub;
+            WHEN op_greater_than => RETURN alu_sub;
+            WHEN op_equal_to     => RETURN alu_eq;
+            WHEN op_display      => RETURN alu_nop;
+            WHEN op_load         => RETURN alu_nop;
+            WHEN op_store        => RETURN alu_nop;
+            WHEN op_jump_r       => RETURN alu_nop;
+            WHEN op_branch_r     => RETURN alu_nop;
+            WHEN op_read         => RETURN alu_nop;
+            WHEN op_negate       => RETURN alu_sub;
+            WHEN op_modulo       => RETURN alu_mod;
+            WHEN op_bitwise_and  => RETURN alu_and;
+            WHEN op_bitwise_or   => RETURN alu_or;
+            WHEN op_bitwise_not  => RETURN alu_eq;
+            WHEN op_bitwise_xor  => RETURN alu_xor;
+            WHEN OTHERS          => RETURN alu_nop;
         END CASE;
     END FUNCTION;
 END PACKAGE BODY;

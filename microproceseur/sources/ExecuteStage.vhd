@@ -1,11 +1,14 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED.conv_integer;
 USE WORK.DRAGON.ALL;
 
 ENTITY ExecuteStage IS PORT (
-    rst    : IN std_logic;
-    pipin  : IN pipe_line;
-    pipout : OUT pipe_line);
+    clk, rst  : IN std_logic;
+    io_input  : IN std_logic_vector(15 DOWNTO 0);
+    io_output : OUT std_logic_vector(15 DOWNTO 0);
+    pipin     : IN pipe_line;
+    pipout    : OUT pipe_line);
 END ENTITY;
 
 ARCHITECTURE Behavioral OF ExecuteStage IS
@@ -16,50 +19,55 @@ ARCHITECTURE Behavioral OF ExecuteStage IS
         z, c, o, n : OUT std_logic);
     END COMPONENT;
 
-    SIGNAL ALU_cmd : std_logic_vector(3 DOWNTO 0);
-
+    COMPONENT IORegister IS PORT (
+        rst, wr : IN std_logic;
+        chanel  : IN integer RANGE 0 TO 1;
+        input   : IN std_logic_vector(15 DOWNTO 0);
+        output  : OUT std_logic_vector(15 DOWNTO 0);
+        val_in  : IN std_logic_vector(7 DOWNTO 0);
+        val_out : OUT std_logic_vector(7 DOWNTO 0));
+    END COMPONENT;
     SIGNAL z, c, o, n : std_logic;
 
-    SIGNAL tmp_code : std_logic_vector(7 DOWNTO 0);
-    SIGNAL tmp_frst : std_logic_vector(7 DOWNTO 0);
+    SIGNAL wr : std_logic;
 
+    SIGNAL io_out  : std_logic_vector(7 DOWNTO 0);
+    SIGNAL alu_out : std_logic_vector(7 DOWNTO 0);
 BEGIN
 
     uALU : ALU PORT MAP(
-        cmd => ALU_cmd,
+        cmd => code_to_alu(pipin.code),
         a   => pipin.first,
         b   => pipin.second,
-        s   => tmp_frst,
+        s   => alu_out,
         z   => z,
         c   => c,
         o   => o,
         n   => n);
 
-    WITH tmp_code SELECT alu_cmd <=
-        alu_add WHEN op_add,
-        alu_mul WHEN op_multiply,
-        alu_sub WHEN op_subtract,
-        alu_div WHEN op_divide,
-        alu_mod WHEN op_modulo,
-        alu_sub WHEN op_negate,
-        alu_sub WHEN op_lower_than,
-        alu_sub WHEN op_greater_than,
-        alu_eq WHEN op_equal_to,
-        alu_or WHEN op_bitwise_or,
-        alu_and WHEN op_bitwise_and,
-        alu_eq WHEN op_bitwise_not,
-        alu_xor WHEN op_bitwise_xor,
-        alu_nop WHEN OTHERS;
+    wr <= '1' WHEN pipin.code = op_display AND clk = '0' ELSE
+        '0';
 
-    pipout.code <= tmp_code;
+    uIOReg : IORegister PORT MAP(
+        rst     => rst,
+        wr      => wr,
+        chanel  => conv_integer(pipin.first),
+        input   => io_input,
+        output  => io_output,
+        val_in  => pipin.second,
+        val_out => io_out);
+
+    pipout.code <= pipin.code;
 
     pipout.output <= pipin.output;
 
-    WITH tmp_code SELECT pipout.first <=
-        (0 => n, OTHERS => '0') WHEN op_lower_than,
-        (0 => NOT n, OTHERS => '0') WHEN op_greater_than,
-        (0 => z, OTHERS => '0') WHEN op_equal_to,
-        tmp_frst WHEN OTHERS;
+    pipout.first <=
+    (0 => n, OTHERS => '0') WHEN pipin.code = op_lower_than ELSE
+    (0 => NOT n, OTHERS => '0') WHEN pipin.code = op_greater_than ELSE
+    (0 => z, OTHERS => '0') WHEN pipin.code = op_equal_to ELSE
+    alu_out WHEN code_to_alu(pipin.code) /= alu_nop ELSE
+    io_out WHEN pipin.code = op_read ELSE
+    pipin.first;
 
     pipout.second <= pipin.second;
 

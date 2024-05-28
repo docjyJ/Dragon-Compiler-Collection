@@ -44,10 +44,11 @@ BEGIN
             state <= "00";
         ELSIF rising_edge(clkms) THEN
             CASE state IS
-                WHEN "00" => state <= "01";
-                WHEN "01" => state <= "10";
-                WHEN "10" => state <= "11";
-                WHEN "11" => state <= "00";
+                WHEN "00"   => state <= "01";
+                WHEN "01"   => state <= "10";
+                WHEN "10"   => state <= "11";
+                WHEN "11"   => state <= "00";
+                WHEN OTHERS => NULL; -- pour faire plaisir à la simulation
             END CASE;
         END IF;
     END PROCESS;
@@ -89,7 +90,8 @@ BEGIN
         "1000110" WHEN "1100", -- C
         "0100001" WHEN "1101", -- D
         "0000110" WHEN "1110", -- E
-        "0001110" WHEN "1111"; -- F
+        "0001110" WHEN "1111", -- F
+        "UUUUUUU" WHEN OTHERS; -- pour faire plaisir à la simulation
 
     dp <= NOT (mode OR test);
 

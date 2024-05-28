@@ -1,6 +1,7 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE WORK.DRAGON.ALL;
+USE WORK.DRAGONSPY.ALL;
 
 ENTITY FetchStage IS PORT (
     clk, rst, en, lod : IN std_logic;
@@ -29,10 +30,14 @@ BEGIN
         clk => clk,
         rst => rst,
         en  => en,
-        dir => '1',
+        dir => '0',
         lod => lod,
         a   => go_to,
         s   => pc);
+
+    -- synthesis translate_off
+    spy_pc <= pc;
+    -- synthesis translate_on
 
     instruction_memory : InstructionMemory PORT MAP(
         addr => pc,
@@ -45,11 +50,12 @@ BEGIN
     pipeline.output <= data(19 DOWNTO 16);
 
     WITH code_tmp SELECT pipeline.first <=
-        data(23 DOWNTO 16) WHEN op_jump | op_branch | op_display | op_store | op_jump_r | op_branch_r,
+        data(23 DOWNTO 16) WHEN op_jump | op_branch | op_store | op_jump_r | op_branch_r,
         (OTHERS => '0') WHEN op_negate | op_bitwise_not,
         data(15 DOWNTO 8) WHEN OTHERS;
 
     WITH code_tmp SELECT pipeline.second <=
+        data(23 DOWNTO 16) WHEN op_display,
         data(15 DOWNTO 8) WHEN op_branch | op_load | op_store | op_branch_r | op_negate | op_bitwise_not,
         data(7 DOWNTO 0) WHEN OTHERS;
 

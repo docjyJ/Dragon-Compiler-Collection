@@ -14,8 +14,7 @@ ARCHITECTURE Behavioral OF DataMemory IS
 BEGIN
     val_out <= mem(conv_integer(addr));
 
-    PROCESS (wr, rst, addr, val_in)
-    BEGIN
+    PROCESS (wr, rst) BEGIN
         IF rst = '1' THEN
             mem <= (OTHERS => (OTHERS => '0'));
         ELSIF rising_edge(wr) THEN
