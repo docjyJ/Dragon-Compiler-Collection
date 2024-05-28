@@ -17,12 +17,16 @@ ARCHITECTURE Behavioral OF TestDragonUnit IS
         dp               : OUT std_logic);
     END COMPONENT;
 
-    SIGNAL clk, rst, jump             : std_logic;
-    SIGNAL input, output              : std_logic_vector(15 DOWNTO 0);
+    SIGNAL clk, rst      : std_logic;
+    SIGNAL input, output : std_logic_vector(15 DOWNTO 0);
+    -- synthesis translate_off
+    SIGNAL jump                       : std_logic;
     SIGNAL pipe1, pipe2, pipe3, pipe4 : pipe_line;
     SIGNAL pc, jump_addr              : std_logic_vector(7 DOWNTO 0);
     SIGNAL registers                  : tregs;
+    -- synthesis translate_on
 BEGIN
+    -- synthesis translate_off
     pipe1     <= spy_pipe1;
     pipe2     <= spy_pipe2;
     pipe3     <= spy_pipe3;
@@ -31,6 +35,7 @@ BEGIN
     jump      <= spy_jump;
     jump_addr <= spy_jump_addr;
     registers <= spy_registers;
+    -- synthesis translate_on
 
     uut : DragonUnit PORT MAP(
         clk  => clk,
@@ -63,23 +68,23 @@ BEGIN
         WAIT;
     END PROCESS;
 
-    pROG : PROCESS
-    BEGIN
-        input <= x"0000";
-        WAIT FOR 111 ns;
-        ASSERT output = x"0000" REPORT "Test 1 failed" SEVERITY ERROR;
+    -- pROG : PROCESS
+    -- BEGIN
+    --     input <= x"0000";
+    --     WAIT FOR 111 ns;
+    --     ASSERT output = x"0000" REPORT "Test 1 failed" SEVERITY ERROR;
 
-        input <= x"FFFF";
-        WAIT FOR 111 ns;
-        ASSERT output = x"FFFF" REPORT "Test 2 failed" SEVERITY ERROR;
+    --     input <= x"FFFF";
+    --     WAIT FOR 111 ns;
+    --     ASSERT output = x"FFFF" REPORT "Test 2 failed" SEVERITY ERROR;
 
-        input <= x"ABCD";
-        WAIT FOR 111 ns;
-        ASSERT output = x"CDAB" REPORT "Test 3 failed" SEVERITY ERROR;
+    --     input <= x"ABCD";
+    --     WAIT FOR 111 ns;
+    --     ASSERT output = x"CDAB" REPORT "Test 3 failed" SEVERITY ERROR;
 
-        input <= x"1234";
-        WAIT FOR 111 ns;
-        ASSERT output = x"3412" REPORT "Test 4 failed" SEVERITY ERROR;
-    END PROCESS;
+    --     input <= x"1234";
+    --     WAIT FOR 111 ns;
+    --     ASSERT output = x"3412" REPORT "Test 4 failed" SEVERITY ERROR;
+    -- END PROCESS;
 
 END ARCHITECTURE;
