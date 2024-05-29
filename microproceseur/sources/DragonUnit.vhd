@@ -1,7 +1,6 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE WORK.DRAGON.ALL;
-USE WORK.DRAGONSPY.ALL;
 
 ENTITY DragonUnit IS PORT (
     clk, btnL, btnR  : IN std_logic;
@@ -65,15 +64,6 @@ ARCHITECTURE Behavioral OF DragonUnit IS
     SIGNAL store_out_pipe : pipe_line;
     SIGNAL back_in_pipe   : pipe_line;
 BEGIN
-    -- synthesis translate_off
-    spy_pipe1     <= decode_in_pipe;
-    spy_pipe2     <= execute_in_pipe;
-    spy_pipe3     <= store_in_pipe;
-    spy_pipe4     <= back_in_pipe;
-    spy_jump      <= jump;
-    spy_jump_addr <= decode_out_pipe.first;
-    spy_aller     <= data;
-    -- synthesis translate_on
     data <= '1'
         WHEN ((((decode_in_pipe.first(3 DOWNTO 0) = execute_in_pipe.output) AND (decode_in_pipe.info(2) = '1'))
         OR ((decode_in_pipe.second(3 DOWNTO 0) = execute_in_pipe.output) AND (decode_in_pipe.info(3) = '1')))

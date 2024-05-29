@@ -1,7 +1,6 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE WORK.DRAGON.ALL;
-USE WORK.DRAGONSPY.ALL;
 
 ENTITY TestDragonUnit IS
 END ENTITY;
@@ -19,24 +18,7 @@ ARCHITECTURE Behavioral OF TestDragonUnit IS
 
     SIGNAL clk, rst      : std_logic;
     SIGNAL input, output : std_logic_vector(15 DOWNTO 0);
-    -- synthesis translate_off
-    SIGNAL jump, aller                : std_logic;
-    SIGNAL pipe1, pipe2, pipe3, pipe4 : pipe_line;
-    SIGNAL pc, jump_addr              : std_logic_vector(7 DOWNTO 0);
-    SIGNAL registers                  : ttab;
-    -- synthesis translate_on
 BEGIN
-    -- synthesis translate_off
-    pipe1     <= spy_pipe1;
-    pipe2     <= spy_pipe2;
-    pipe3     <= spy_pipe3;
-    pipe4     <= spy_pipe4;
-    pc        <= spy_pc;
-    jump      <= spy_jump;
-    jump_addr <= spy_jump_addr;
-    registers <= spy_registers;
-    aller     <= spy_aller;
-    -- synthesis translate_on
 
     uut : DragonUnit PORT MAP(
         clk  => clk,

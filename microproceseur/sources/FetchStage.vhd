@@ -1,7 +1,6 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE WORK.DRAGON.ALL;
-USE WORK.DRAGONSPY.ALL;
 
 ENTITY FetchStage IS PORT (
     clk, rst, en, lod : IN std_logic;
@@ -35,10 +34,6 @@ BEGIN
         lod => lod,
         a   => go_to,
         s   => pc);
-
-    -- synthesis translate_off
-    spy_pc <= pc;
-    -- synthesis translate_on
 
     instruction_memory : InstructionMemory PORT MAP(
         addr => pc,
