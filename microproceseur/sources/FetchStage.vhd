@@ -74,15 +74,10 @@ BEGIN
     pipeline.output <= (OTHERS => '0') WHEN mode(0) = '0' ELSE
     data(19 DOWNTO 16);
 
-    pipeline.first <=
-    (OTHERS => '0') WHEN mode(2 DOWNTO 1) = "00" ELSE
-    data(23 DOWNTO 16) WHEN code_tmp = op_jump OR code_tmp = op_branch OR code_tmp = op_store OR code_tmp = op_jump_r OR code_tmp = op_branch_r ELSE
+    pipeline.first <= (OTHERS => '0') WHEN mode(2) = '0' OR mode(2) = '0' ELSE
     data(15 DOWNTO 8);
 
-    pipeline.second <=
-    (OTHERS => '0') WHEN mode(3) = '0' ELSE
-    data(23 DOWNTO 16) WHEN code_tmp = op_display ELSE
-    data(15 DOWNTO 8) WHEN code_tmp = op_branch OR code_tmp = op_load OR code_tmp = op_store OR code_tmp = op_branch_r OR code_tmp = op_negate OR code_tmp = op_bitwise_not ELSE
+    pipeline.second <= (OTHERS => '0') WHEN mode(3) = '0' ELSE
     data(7 DOWNTO 0);
 
 END ARCHITECTURE;
