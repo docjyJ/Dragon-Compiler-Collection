@@ -5,15 +5,15 @@ void main() {
 
     int i = 0;
 
-    print(0xFF);
+    print(ioleast, 0xFF);
 
     while (i < 10) {
-        print(i);
+        print(ioleast, i);
         i = i + 1;
     }
 
     do {
-        print(i);
+        print(ioleast, i);
         i = i - 1;
     } while (i > 0);
 }

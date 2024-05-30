@@ -5,14 +5,14 @@ void main() {
     a[0] = 9;
     a[1] = 5;
     a[2] = 1;
-    print(a[0]);
+    print(ioleast, a[0]);
 
     int *p = a;
-    print(p[0]);
-    print(p[1]);
-    print(p[2]);
+    print(ioleast, p[0]);
+    print(ioleast, p[1]);
+    print(ioleast, p[2]);
 
     int **p2 = &p;
-    print(**p2);
+    print(ioleast, **p2);
 
 }

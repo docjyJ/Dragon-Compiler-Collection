@@ -5,7 +5,7 @@ int b =2+2;
 int c;
 
 void main (){
-    print(a);
-    print(b);
-    print(c);
+    print(ioleast, a);
+    print(ioleast, b);
+    print(ioleast, c);
 }

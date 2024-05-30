@@ -42,5 +42,5 @@ void part_var_global(){
     alloc_stack_before(first_function, nb_var+2); // on en rajoutte une pour $ qui n'est pour l'instant pas une variable global
                             // todo: la mettre en var global
 
-    jump_before(first_function+2, main_addr-1);
+    jump_before(first_function+2, main_addr);
 }

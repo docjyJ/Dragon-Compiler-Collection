@@ -5,12 +5,21 @@
 
 /**
  * Affichage la valeur d'une variable.
- * `print(i)`
+ * `print(cnl) << i`
+ * @param chn le canal d'affichage
  * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
  */
-void display(label i);
+void display(address cnl, label i);
 
-void nop ();
+/**
+ * Lecture d'une valeur numérique.
+ * `read(cnl) > 0`
+ * @param cnl le canal de lecture
+ * @param o le nom de la variable de sortie ou NULL pour créer un temporaire
+ */
+void get_input(address cnl, label o);
+
+void nop();
 
 /**
  * Affectation d'une valeur numérique à une variable.
@@ -27,7 +36,6 @@ void number_copy(label o, number c);
  * @param c une constante numérique
  */
 void number_define(label o, number c);
-
 
 /**
  * Affectation d'une valeur numérique à une variable, tout en ajoutant cette variable au symbole définie.
@@ -98,7 +106,6 @@ void subtract(label o, label i1, label i2);
  * @param i2 le nom de la deuxième variable d'entrée ou NULL pour obtenir un temporaire
  */
 void multiply(label o, label i1, label i2);
-
 
 /**
  * Division de deux variables et le stock dans une autre.
@@ -208,8 +215,7 @@ void branch(label i, address c);
  * @param i le nom de la variable de condition ou NULL pour obtenir un temporaire
  * @param c l'adresse de saut en mémoire
  */
-void branch_mem (label i, label c);
-
+void branch_mem(label i, label c);
 
 /**
  * Permet d'ajouter un vide qui pourra être compléter plus tard pendant l'analyse.
@@ -306,7 +312,6 @@ void var_to_address(label o, label i);
 
 void alloc_stack(address c);
 void free_stack(address c);
-void alloc_stack_before(address line ,address c);
-
+void alloc_stack_before(address line, address c);
 
 #endif

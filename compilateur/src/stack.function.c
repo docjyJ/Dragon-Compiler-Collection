@@ -96,8 +96,8 @@ void end_go_function() {
     alloc_stack(offsetGoFun);
     add_hint("jum pour aller à la fonction ");
 
-    jump(tab_fnc[indexGoFun]->fun-1);
-    number_copy_after("$", get_instruction_count()-1 , start_go);
+    jump(tab_fnc[indexGoFun]->fun);
+    number_copy_after("$", get_instruction_count() , start_go);
 
     free_stack(offsetGoFun);
 

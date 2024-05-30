@@ -23,11 +23,11 @@ void end_branch(address offset) {
     b_id--;
     struct b_stak b = b_stak[b_id];
     if (!b.padding)
-        jump(b.index);
+        jump(b.index + 1);
     else if (!b.cond)
-        jump_before(b.index, get_instruction_count() - 1);
+        jump_before(b.index, get_instruction_count());
     else
-        branch_before(b.index, get_instruction_count(), offset);
+        branch_before(b.index, get_instruction_count() + 1, offset);
     remove_visibility();
 }
 

@@ -7,7 +7,7 @@ int factoriel(int a){
 
     if (a > 0){
 
-        c = factoriel(b) * a;
+        c = factoriel(a-1) * a;
     }else {
         c = 1;
     }
@@ -20,5 +20,5 @@ void main(void) {
     int a = 1;
 
     a = factoriel (2);
-    print(a);
+    print(ioleast, a);
 }

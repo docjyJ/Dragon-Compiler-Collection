@@ -16,8 +16,8 @@ int yylex();
 
 %token <s> LABEL
 %token <i> STATIC_INT
-%token IF ELSE DO WHILE PRINT TYPE_INT TYPE_VOID MAIN RETURN
-%token LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET
+%token IF ELSE DO WHILE PRINT READ TYPE_INT TYPE_VOID MAIN RETURN
+%token LPAR RPAR LBRACE RBRACE LBRACKET RBRACKET IOMOST IOLEAST
 %token ADD SUB MUL DIV MOD
 %token LOWEQ GRTEQ LOW GRT EQ NEQ
 %token LNOT LAND LOR
@@ -53,7 +53,8 @@ code_one_line: operators END { free($1); }
              | defvars END
              | if { end_branch(1); }
              | while_do { end_branch(0); end_branch(0); }
-             | PRINT LPAR operators RPAR END { display($3); free($3); }
+             | PRINT LPAR IOMOST COMMA operators RPAR END { display(0, $5); free($5); }
+             | PRINT LPAR IOLEAST COMMA operators RPAR END { display(1, $5); free($5); }
              | END
              ;
 
@@ -81,25 +82,25 @@ while_do: WHILE init_loop init_cond single_boddy
 /* Gestion des fonctions */
 
 functions: functions_header_void code_block { end_function(); }
-                | functions_header_main code_block
-                | functions_header_int code_block
+         | functions_header_main code_block
+         | functions_header_int code_block
          ;
 
 functions_header_void: TYPE_VOID function_name functions_args
-                ;
+                     ;
 
 functions_header_int: TYPE_INT function_name functions_args
                 ;
 
-functions_header_main:  TYPE_INT main_name functions_args
-                        |TYPE_VOID main_name functions_args
-                ;
+functions_header_main: TYPE_INT main_name functions_args
+                     | TYPE_VOID main_name functions_args
+                     ;
 
 function_name : LABEL { start_function($1); free($1); }
               ;
 
 main_name : MAIN {  start_function("main"); }
-              ;
+          ;
 
 
 functions_args: LPAR functions_args_list RPAR
@@ -132,6 +133,8 @@ pointer: table { $$ = $1; }
 number: STATIC_INT { $$ = NULL; number_copy($$, $1); }
       | pointer { $$ = $1; }
       | callable {$$ = NULL; }
+      | READ LPAR IOMOST RPAR { $$ = NULL; get_input(0, $$); }
+      | READ LPAR IOLEAST RPAR { $$ = NULL; get_input(1, $$); }
       ;
 
 unary: number { $$ = $1 ; }

@@ -17,7 +17,7 @@ void main(void) {
     int b;
     b = compute(a, 1);
     a = compute(1, a);
-    print(a);
-    print(b);
+    print(ioleast, a);
+    print(ioleast, b);
 
 }

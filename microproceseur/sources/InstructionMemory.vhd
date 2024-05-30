@@ -40,8 +40,41 @@ ARCHITECTURE Behavioral OF InstructionMemory IS
     x"02000002", -- 12# mul r0 r0 r2
     x"07030000", -- 13# jmp 3
     OTHERS => (OTHERS => '0'));
+    
+    CONSTANT program : mem_t := (
+    x"06010200",
+    x"01000001",
+    x"07000400",
+    x"00000000",
+    x"06010100",
+    x"06020000",
+    x"01020200",
+    x"11000102",
+    x"06010000",
+    x"01010100",
+    x"10010001",
+    x"08001D01",
+    x"14010100",
+    x"06020000",
+    x"01020200",
+    x"11000102",
+    x"06010000",
+    x"01010100",
+    x"10010001",
+    x"0C000001",
+    x"14010000",
+    x"06020000",
+    x"01020200",
+    x"11000102",
+    x"06010000",
+    x"01010100",
+    x"10010001",
+    x"0C000101",
+    x"07000400",
+        OTHERS => (OTHERS => '0'));
 
-    CONSTANT mem : mem_t := papa_noel;
+
+    CONSTANT mem : mem_t := program;
 BEGIN
     data <= mem(conv_integer(addr));
 END ARCHITECTURE;

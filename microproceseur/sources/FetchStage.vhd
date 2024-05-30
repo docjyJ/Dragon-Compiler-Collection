@@ -74,7 +74,7 @@ BEGIN
     pipeline.output <= (OTHERS => '0') WHEN mode(0) = '0' ELSE
     data(19 DOWNTO 16);
 
-    pipeline.first <= (OTHERS => '0') WHEN mode(2) = '0' OR mode(2) = '0' ELSE
+    pipeline.first <= (OTHERS => '0') WHEN mode(1) = '0' and mode(2) = '0' ELSE
     data(15 DOWNTO 8);
 
     pipeline.second <= (OTHERS => '0') WHEN mode(3) = '0' ELSE

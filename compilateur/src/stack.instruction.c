@@ -35,7 +35,6 @@ address get_instruction_count() {
 }
 
 void add_hint(char hint[]) {
-    printf("%s", hint);
     char *old = tab_instruct[inst_count].hint;
     tab_instruct[inst_count].hint = printf_alloc("%s%s", old == NULL ? "" : old, hint);
     free(old);

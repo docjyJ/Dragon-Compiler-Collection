@@ -27,9 +27,18 @@ typedef unsigned char __uint8__;
 #define register ___disable_keyword_register___
 #define inline ___disable_keyword_inline___
 
+#define iomost 0
+#define ioleast 1
 
 void main();
 
-void print(int a) {
-    printf("%u\n", a);
+int read(int io) {
+    int val;
+    printf("%d> ", io);
+    scanf("%u\n", &val);
+    return val;
+}
+
+void print(int io, int val) {
+    printf("%d> %u\n", io, val);
 }

@@ -27,12 +27,12 @@ PACKAGE Dragon IS
     CONSTANT op_jump_r       : std_logic_vector (7 DOWNTO 0) := x"12";
     CONSTANT op_branch_r     : std_logic_vector (7 DOWNTO 0) := x"13";
     CONSTANT op_read         : std_logic_vector (7 DOWNTO 0) := x"14";
-    CONSTANT op_negate       : std_logic_vector (7 DOWNTO 0) := x"30";
-    CONSTANT op_modulo       : std_logic_vector (7 DOWNTO 0) := x"31";
-    CONSTANT op_bitwise_and  : std_logic_vector (7 DOWNTO 0) := x"50";
-    CONSTANT op_bitwise_or   : std_logic_vector (7 DOWNTO 0) := x"51";
-    CONSTANT op_bitwise_not  : std_logic_vector (7 DOWNTO 0) := x"52";
-    CONSTANT op_bitwise_xor  : std_logic_vector (7 DOWNTO 0) := x"53";
+    CONSTANT op_negate       : std_logic_vector (7 DOWNTO 0) := x"18";
+    CONSTANT op_modulo       : std_logic_vector (7 DOWNTO 0) := x"19";
+    CONSTANT op_bitwise_and  : std_logic_vector (7 DOWNTO 0) := x"20";
+    CONSTANT op_bitwise_or   : std_logic_vector (7 DOWNTO 0) := x"21";
+    CONSTANT op_bitwise_not  : std_logic_vector (7 DOWNTO 0) := x"22";
+    CONSTANT op_bitwise_xor  : std_logic_vector (7 DOWNTO 0) := x"23";
 
     FUNCTION code_to_alu (code : std_logic_vector(7 DOWNTO 0)) RETURN std_logic_vector;
 

@@ -17,7 +17,6 @@ typedef enum { RS, R1, R2, R3 } register_t;
 const char *r_name[] = {"RS", "R1", "R2", "R3"};
 
 const char *pattern_c = "%02X#%8s x%02X //%d\n";
-const char *pattern_ca = "%02X#%8s x%02X  %2s //%d\n";
 const char *pattern_a = "%02X#%8s %2s\n";
 const char *pattern_ = "%02X#%8s\n";
 const char *pattern_ac = "%02X#%8s %2s x%02X //%d\n";
@@ -45,111 +44,102 @@ const op_code op_load = {"LOD", 0x10};
 const op_code op_store = {"STR", 0x11};
 const op_code op_jump_register = {"JMPR", 0x12};
 const op_code op_branch_register = {"JMFR", 0x13};
+const op_code op_read = {"REA", 0x14};
 
 // Instructions ajoutées (arithmétiques)
-const op_code op_negate = {"NEG", 0x30};
-const op_code op_modulo = {"MOD", 0x31};
+const op_code op_negate = {"NEG", 0x18};
+const op_code op_modulo = {"MOD", 0x19};
 
 // Instructions ajoutées (bit à bit)
-const op_code op_bitwise_and = {"AND", 0x50};
-const op_code op_bitwise_or = {"OR", 0x51};
-const op_code op_bitwise_not = {"NOT", 0x52};
-const op_code op_bitwise_xor = {"XOR", 0x53};
+const op_code op_bitwise_and = {"AND", 0x20};
+const op_code op_bitwise_or = {"OR", 0x21};
+const op_code op_bitwise_not = {"NOT", 0x22};
+const op_code op_bitwise_xor = {"XOR", 0x23};
 
-void op_r(op_code code, register_t r) {
-    inst k = {{code.id, r, 0, 0},
-              printf_alloc(pattern_a, get_instruction_count(), code.name, r_name[r]), NULL};
-    add_instruction(k);
-}
 
-inst op_np (address addr) {
-    inst k = {{op_nop.id, 0, 0, 0},
-              printf_alloc(pattern_, addr, op_nop.name), NULL};
+inst op_000(op_code code, address addr) {
+    inst k = {{code.id, 0, 0, 0},
+              printf_alloc(pattern_, addr, code.name), NULL};
     return k;
 }
 
-void op_rc(op_code code, register_t r, address c) {
-    inst k = {{code.id, r, c, 0},
-              printf_alloc(pattern_ac, get_instruction_count(), code.name, r_name[r], c, c), NULL};
-    add_instruction(k);
+inst op_00r(op_code code, register_t r, address addr) {
+    inst k = {{code.id, 0, 0, r},
+              printf_alloc(pattern_a, addr, code.name, r_name[r]), NULL};
+    return k;
 }
 
-inst op_rc_after (op_code code, register_t r, address c, address addr) {
-    inst k = {{code.id, r, c, 0},
+inst op_0c0(op_code code, address c, address addr) {
+    inst k = {{code.id, 0, c, 0},
+              printf_alloc(pattern_c, addr, code.name, c, c), NULL};
+    return k;
+}
+
+inst op_0cr(op_code code, register_t r, address c, address addr) {
+    inst k = {{code.id, 0,c, r},
               printf_alloc(pattern_ac, addr, code.name, r_name[r], c, c), NULL};
     return k;
 }
 
-
-void op_rr(op_code code, register_t r1, register_t r2) {
-    inst k = {{code.id, r1, r2, 0},
-              printf_alloc(pattern_aa, get_instruction_count(), code.name, r_name[r1], r_name[r2]), NULL};
-    add_instruction(k);
-}
-
-inst op_rr_after(op_code code, register_t r1, register_t r2,address addr) {
-    inst k = {{code.id, r1, r2, 0},
+inst op_0rr(op_code code, register_t r1, register_t r2, address addr) {
+    inst k = {{code.id, 0,r1, r2},
               printf_alloc(pattern_aa, addr, code.name, r_name[r1], r_name[r2]), NULL};
     return k;
 }
 
-void op_rrr(op_code code, register_t r1, register_t r2, register_t r3) {
-    inst k = {{code.id, r1, r2, r3},
-              printf_alloc(pattern_aaa, get_instruction_count(), code.name, r_name[r1], r_name[r2], r_name[r3]), NULL};
-    add_instruction(k);
+inst op_r0r(op_code code, register_t r1, register_t r2, address addr) {
+    inst k = {{code.id, r1, 0, r2},
+              printf_alloc(pattern_aa, addr, code.name, r_name[r1], r_name[r2]), NULL};
+    return k;
 }
 
-inst op_rrr_after(op_code code, register_t r1, register_t r2, register_t r3, address addr) {
+inst op_rc0(op_code code, register_t r, address c, address addr) {
+    inst k = {{code.id, r, c, 0},
+              printf_alloc(pattern_ac, addr, code.name, r_name[r], c), NULL};
+    return k;
+}
+
+inst op_rrr(op_code code, register_t r1, register_t r2, register_t r3, address addr) {
     inst k = {{code.id, r1, r2, r3},
               printf_alloc(pattern_aaa, addr, code.name, r_name[r1], r_name[r2], r_name[r3]), NULL};
     return k;
 }
 
-inst op_jump_c(address line, address target) {
-    inst k = {{op_jump.id, target, 0, 0},
-              printf_alloc(pattern_c, line, op_jump.name, target, target), NULL};
-    return k;
+void op_0rr_now(op_code code, register_t r1, register_t r2) {
+    add_instruction(op_0rr(code, r1, r2, get_instruction_count()));
 }
 
-inst op_jump_r(address line, register_t target) {
-    inst k = {{op_jump_register.id, target, 0, 0},
-              printf_alloc(pattern_a, line, op_jump_register.name, r_name[target], r_name[target]), NULL};
-    return k;
+void op_r0r_now(op_code code, register_t r1, register_t r2) {
+    add_instruction(op_r0r(code, r1, r2, get_instruction_count()));
 }
 
-inst op_jump_ca(address line, address target, register_t r) {
-    inst k = {{op_branch.id, target, r, 0},
-              printf_alloc(pattern_ca, line, op_branch.name, target, r_name[r], target), NULL};
-    return k;
+
+void op_rrr_now(op_code code, register_t r1, register_t r2, register_t r3) {
+    add_instruction(op_rrr(code, r1, r2, r3, get_instruction_count()));
 }
 
-inst op_jump_ra(address line, register_t target, register_t r) {
-    inst k = {{op_branch_register.id, target, r, 0},
-              printf_alloc(pattern_aa, line, op_branch_register.name, r_name[target], r_name[r], r_name[target]), NULL};
-    return k;
-}
 
 void load_const(register_t r, number c) {
-    op_rc(op_define, r, c);
+    add_instruction(op_rc0(op_define, r, c, get_instruction_count()));
 }
 
 void load_const_after(register_t r, number c, address addr) {
-   set_instruction( op_rc_after(op_define, r, c, addr), addr);
+   set_instruction(op_rc0(op_define, r, c, addr), addr);
 }
 
 void var_adr(register_t r, memory_address a) {
     load_const(r, a.value);
     if (a.isLocal)
-        op_rrr(op_add, r, r, RS);
+        op_rrr_now(op_add, r, r, RS);
 }
 
 void var_adr_after(register_t r, memory_address a, address addr) {
     load_const_after(r, a.value, addr);
     if (a.isLocal){
-        set_instruction (op_rrr_after(op_add, r, r, RS, addr+1), addr +1);
+        set_instruction (op_rrr(op_add, r, r, RS, addr + 1), addr +1);
 
     }else {
-        set_instruction(op_np(addr+1),addr+1);
+        set_instruction(op_000(op_nop, addr + 1), addr+1);
     }
 
 
@@ -157,41 +147,46 @@ void var_adr_after(register_t r, memory_address a, address addr) {
 
 void load_var(register_t r, label l) {
     var_adr(r, var_get_or_temp_pop(l));
-    op_rr(op_load, r, r);
-}
-
-void load_var_after(register_t r, label l, address addr) {
-     var_adr_after(r, var_get_or_temp_pop(l), addr);
-     set_instruction(op_rr_after(op_load, r, r, addr+2), addr +2);
+    op_r0r_now(op_load, r, r);
 }
 
 void store_var(register_t r, register_t tmp, label l) {
     var_adr(tmp, var_get_or_temp_push(l));
-    op_rr(op_store, r, tmp);
+    op_0rr_now(op_store, r, tmp);
 }
 
 void store_var_after(register_t r, register_t tmp, label l, address addr) {
      var_adr_after(tmp, var_get_or_temp_push(l), addr);
-     set_instruction(op_rr_after(op_store, r, tmp, addr +2), addr +2);
+     set_instruction(op_0rr(op_store, r, tmp, addr + 2), addr +2);
 }
 
 void unite_operation(op_code code, label o, label i) {
     load_var(R1, i);
-    op_rr(code, R1, R1);
+    op_r0r_now(code, R1, R1);
     store_var(R1, R2, o);
 }
 
 void operation(op_code code, label o, label i1, label i2) {
     load_var(R2, i2);
     load_var(R1, i1);
-    op_rrr(code, R1, R1, R2);
+    op_rrr_now(code, R1, R1, R2);
     store_var(R1, R2, o);
 }
 
 
-void display(label i) {
+/*
+ * PUBLIC
+ */
+
+
+void display(address cnl, label i) {
     load_var(R1, i);
-    op_r(op_display, R1);
+    add_instruction(op_0cr(op_display, R1, cnl, get_instruction_count()));
+}
+
+void get_input(address cnl, label o) {
+    add_instruction(op_rc0(op_read, R1, cnl, get_instruction_count()));
+    store_var(R1, R2, o);
 }
 
 void number_copy(label o, number c) {
@@ -213,7 +208,7 @@ void tab_define(label o, address length) {
     var_create(o);
     memory_address adr = tab_alloc(length);
     load_const(R1, adr.value);
-    if (adr.isLocal) op_rrr(op_add, R1, R1, RS);
+    if (adr.isLocal) op_rrr_now(op_add, R1, R1, RS);
     store_var(R1, R2, o);
 }
 
@@ -225,8 +220,8 @@ void var_copy(label o, label i) {
 void var_copy_address_local(address o, label i) { // todo : refactor possible
     load_var(R1, i);
     load_const(R2, o);
-    op_rrr(op_add, R2, R2, RS);
-    op_rr(op_store, R1, R2);
+    op_rrr_now(op_add, R2, R2, RS);
+    op_0rr_now(op_store, R1, R2);
 }
 
 void var_define(label o, label i) {
@@ -235,7 +230,7 @@ void var_define(label o, label i) {
 }
 
 void nop (){
-    add_instruction(op_np(get_instruction_count()));
+    add_instruction(op_000(op_nop, get_instruction_count()));
 }
 
 void negate(label o, label i) {
@@ -291,23 +286,23 @@ void equal_to(label o, label i1, label i2) {
 }
 
 void jump(address c) {
-    add_instruction(op_jump_c(get_instruction_count(), c));
+    add_instruction(op_0c0(op_jump, c, get_instruction_count()));
 }
 
 void jump_mem(label c){
     load_var(R2, c);
-    add_instruction(op_jump_r(get_instruction_count(), R2));
+    add_instruction(op_00r(op_jump_register, R2, get_instruction_count()));
 }
 
 void branch(label i, address c) {
     load_var(R1, i);
-    add_instruction(op_jump_ca(get_instruction_count(), c, R1));
+    add_instruction(op_0cr(op_branch, R1, c, get_instruction_count()));
 }
 
 void branch_mem(label i, label c) {
     load_var(R1, i);
     load_var(R2, c);
-    add_instruction(op_jump_ra(get_instruction_count(), R2, R1));
+    add_instruction(op_0rr(op_branch_register, R1, R2, get_instruction_count()));
 }
 
 address padding_for_later_jump() {
@@ -322,11 +317,11 @@ address padding_for_later_branch(label cond) {
 }
 
 void jump_before(address line, address address) {
-    set_instruction(op_jump_c(line, address), line);
+    set_instruction(op_0c0(op_jump, address, line), line);
 }
 
 void branch_before(address line, address addr, address offset) {
-    set_instruction(op_jump_ca(line, addr - offset, R1), line);
+    set_instruction(op_0cr(op_branch, R1, addr - offset, line), line);
 }
 
 void load_offset(label o, label i, label c) {
@@ -336,7 +331,7 @@ void load_offset(label o, label i, label c) {
 
 void load(label o, label i) {
     load_var(R1, i);
-    op_rr(op_load, R1, R1);
+    op_r0r_now(op_load, R1, R1);
     store_var(R1, R2, o);
 }
 
@@ -345,7 +340,7 @@ void store_offset(label o, label i, label c) {
     add(NULL, c, o);
     add_hint("//store_var\n");
     load_var(R1, NULL);
-    op_rr(op_store, R3, R1);
+    op_0rr_now(op_store, R3, R1);
 
 }
 
@@ -361,13 +356,13 @@ void return_label( label i){
     remove_visibility();
     memory_address l = {0,1};
     var_adr(R1, l);
-    op_rr(op_store, R2, R1);
+    op_0rr_now(op_store, R2, R1);
 }
 
 void store(label o, label i) {
     load_var(R2, i);
     load_var(R1, o);
-    op_rr(op_store, R3, R1);
+    op_0rr_now(op_store, R3, R1);
 }
 
 void var_to_address(label o, label i) {
@@ -379,19 +374,19 @@ void var_to_address(label o, label i) {
     store_var(R1, R2, o);
 }
 
-
 void alloc_stack(address c){
     load_const(R1, c);
-    op_rrr(op_add, RS, RS, R1);
+    op_rrr_now(op_add, RS, RS, R1);
 }
+
 void free_stack(address c){
   load_const(R1, c);
-  op_rrr(op_subtract, RS, RS, R1);
+    op_rrr_now(op_subtract, RS, RS, R1);
 }
 
 void alloc_stack_before(address line ,address c){
     load_const_after(R1, c, line);
-    set_instruction( op_rrr_after(op_add, RS, RS, R1,line+1), line+1);
+    set_instruction(op_rrr(op_add, RS, RS, R1, line + 1), line+1);
 }
 
 

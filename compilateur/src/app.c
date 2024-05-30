@@ -1,7 +1,7 @@
+#include "app.h"
+#include <argp.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <argp.h>
-#include "app.h"
 
 extern int yylineno;
 extern int yyparse();
@@ -11,31 +11,27 @@ void yyerror(const char *msg) {
     exit(1);
 }
 
-
-
-//const char *argp_program_version = "argp-ex4 1.0";
-//const char *argp_program_bug_address = "<bug-gnu-utils@prep.ai.mit.edu>";
+// const char *argp_program_version = "argp-ex4 1.0";
+// const char *argp_program_bug_address = "<bug-gnu-utils@prep.ai.mit.edu>";
 
 static char doc[] = "Compile simple C code to a Dragon program.";
 
 static char args_doc[] = "[INPUT_FILE]";
 
 static struct argp_option options[] = {
-        {"output", 'o', "FILE", 0, "Output to FILE instead of standard output", 0},
-        {"asm", 'a', 0, 0, "Output assembly code instead of binary", 0},
-        {"hint-srcs", 's', 0, 0, "Output hint sources between instructions, only with assembly", 0},
-        {0}
-};
+    {"output", 'o', "FILE", 0, "Output to FILE instead of standard output", 0},
+    {"asm", 'a', 0, 0, "Output assembly code instead of binary", 0},
+    {"hint-srcs", 's', 0, 0, "Output hint sources between instructions, only with assembly", 0},
+    {0}};
 
 struct arguments {
     char *input_file;
     char *output_file;
-    unsigned int asm_mode: 1;
-    unsigned int hint_srcs_mode: 1;
+    unsigned int asm_mode : 1;
+    unsigned int hint_srcs_mode : 1;
 };
 
-static error_t
-parse_opt(int key, char *arg, struct argp_state *state) {
+static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
     switch (key) {
         case 'o':
@@ -63,10 +59,8 @@ parse_opt(int key, char *arg, struct argp_state *state) {
     return 0;
 }
 
-
 static struct argp argp = {options, parse_opt, args_doc, doc, 0, 0, 0};
 struct arguments arguments = {0};
-FILE *output_file;
 
 int main(int argc, char **argv) {
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
@@ -79,35 +73,18 @@ int main(int argc, char **argv) {
     if (arguments.input_file != NULL)
         freopen(arguments.input_file, "r", stdin);
     if (arguments.output_file != NULL)
-        output_file = fopen(arguments.output_file, "w");
-    else
-        output_file = fopen(arguments.asm_mode ? "output.s" : "a.out", "w");
+        freopen(arguments.output_file, "w", stdout);
 
     return yyparse();
 }
 
 void write_output(inst s) {
-    if (arguments.asm_mode) {
-        if (s.code == NULL) {
-            fputs("Stop ! // No code here ???\n", output_file);
-            return;
-        }
-        if (arguments.hint_srcs_mode && s.hint != NULL) {
-            if (fputs(s.hint, output_file) == EOF) {
-                fprintf(stderr, "error: failed to write to output file.\n");
-                exit(1);
-            }
-        }
-        if (fputs(s.code, output_file) == EOF) {
-            fprintf(stderr, "error: failed to write to output file.\n");
-            exit(1);
-        }
-    } else {
-        for (int i = 0; i < 4; i++) {
-            if (fputc(s.bin[i], output_file) == EOF) {
-                fprintf(stderr, "error: failed to write to output file.\n");
-                exit(1);
-            }
-        }
-    }
+    if (!arguments.asm_mode)
+        printf("%c%c%c%c", s.bin[0], s.bin[1], s.bin[2], s.bin[3]);
+    else if (s.code == NULL)
+        printf("Stop ! // No code here ???\n");
+    else if (arguments.hint_srcs_mode && s.hint != NULL)
+        printf("%s%s", s.hint, s.code);
+    else
+        printf("%s", s.code);
 }

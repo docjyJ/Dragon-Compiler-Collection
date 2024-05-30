@@ -34,7 +34,7 @@ emulate: clean $(TEST_SRC:.c=-emulate)
 	@echo --------------------------------
 	@echo Execution de $<
 	@echo --------------------------------
-	@python3 emulator $<
+	@./qemu-latias $<
 	@echo --------------------------------
 
 %-test: %.out %.s
@@ -42,7 +42,7 @@ emulate: clean $(TEST_SRC:.c=-emulate)
 	@echo Comparaison de $^
 	@echo --------------------------------
 	./$*.out > test/$*.gcc.report || true
-	python3 emulator $*.s > test/$*.emulate.report
+	./qemu-latias $*.s > test/$*.emulate.report
 	@diff test/$*.gcc.report test/$*.emulate.report
 	@echo --------------------------------
 

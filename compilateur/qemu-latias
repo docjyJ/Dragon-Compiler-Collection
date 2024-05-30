@@ -70,15 +70,15 @@ class VM:
                 case "AFC":
                     r_write(1, get_int(2))
                 case "JMP":
-                    self.pc = get_int(1)
+                    self.pc = get_int(1) - 1
                 case "JMPR":
-                    self.pc = r_read(1)
+                    self.pc = r_read(1) - 1
                 case "JMF":
-                    if r_read(2) == 0:
-                        self.pc = get_int(1)
+                    if r_read(1) == 0:
+                        self.pc = get_int(2) - 1
                 case "JMF":
-                    if r_read(2) == 0:
-                        self.pc = r_read(1)
+                    if r_read(1) == 0:
+                        self.pc = r_read(2) - 1
                 case "INF":
                     r_write(1, (r_read(2) < r_read(3)))
                 case "SUP":
@@ -86,7 +86,9 @@ class VM:
                 case "EQU":
                     r_write(1, (r_read(2) == r_read(3)))
                 case "PRI":
-                    print(r_read(1))
+                    print(f"{get_int(2)}> {r_read(1)}")
+                case "REA":
+                    r_write(1, int(input(f"{get_int(2)}> ")))
                 # Instruction technique
                 case "LOD":
                     r_write(1, self.datas[r_read(2)])
@@ -144,7 +146,7 @@ def parse_file(file_path: str) -> list[tuple[str, list[str]]]:
         lines = [
             (i[:-1], j[1].split()) for i, j in (
                 (i, i.split('#')) for i in (
-                    (i.split('//')[0]) for i in f.readlines())) if len(j) == 2]
+                (i.split('//')[0]) for i in f.readlines())) if len(j) == 2]
     return lines
 
 

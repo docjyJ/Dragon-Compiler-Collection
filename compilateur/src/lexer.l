@@ -26,10 +26,13 @@
 "do" { return DO; }
 "while" { return WHILE; }
 "print" { return PRINT; }
+"read" { return READ; }
 "int" { return TYPE_INT; }
 "void" { return TYPE_VOID; }
 "main" { return MAIN; }
 "return" { return RETURN; }
+"iomost" { return IOMOST; }
+"ioleast" { return IOLEAST; }
 
 [a-zA-Z][_a-zA-Z0-9]* {
     yylval.s = copy_alloc(yytext);
