@@ -217,7 +217,7 @@ void var_copy(label o, label i) {
     store_var(R1, R2, o);
 }
 
-void var_copy_address_local(address o, label i) { // todo : refactor possible
+void var_copy_address_local(address o, label i) {
     load_var(R1, i);
     load_const(R2, o);
     op_rrr_now(op_add, R2, R2, RS);

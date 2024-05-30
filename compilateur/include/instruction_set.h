@@ -19,7 +19,6 @@ void display(address cnl, label i);
  */
 void get_input(address cnl, label o);
 
-void nop();
 
 /**
  * Affectation d'une valeur numérique à une variable.
