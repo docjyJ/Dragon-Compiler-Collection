@@ -7,31 +7,31 @@ END TestCounter;
 ARCHITECTURE Behavioral OF TestCounter IS
     COMPONENT Counter IS
         PORT (
-            clk : IN STD_LOGIC;
-            en : IN STD_LOGIC;
-            rst : IN STD_LOGIC;
-            dir : IN STD_LOGIC;
-            lod : IN STD_LOGIC;
-            a : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
-            s : OUT STD_LOGIC_VECTOR (7 DOWNTO 0));
+            clk : IN std_logic;
+            en  : IN std_logic;
+            rst : IN std_logic;
+            dir : IN std_logic;
+            lod : IN std_logic;
+            a   : IN std_logic_vector (7 DOWNTO 0);
+            s   : OUT std_logic_vector (7 DOWNTO 0));
     END COMPONENT;
 
-    SIGNAL sclk : STD_LOGIC;
-    SIGNAL srst : STD_LOGIC;
-    SIGNAL ssens : STD_LOGIC;
-    SIGNAL sload : STD_LOGIC;
-    SIGNAL sDin : STD_LOGIC_VECTOR (7 DOWNTO 0);
-    SIGNAL sDout : STD_LOGIC_VECTOR (7 DOWNTO 0);
-    SIGNAL sEN : STD_LOGIC;
+    SIGNAL sclk  : std_logic;
+    SIGNAL srst  : std_logic;
+    SIGNAL ssens : std_logic;
+    SIGNAL sload : std_logic;
+    SIGNAL sDin  : std_logic_vector (7 DOWNTO 0);
+    SIGNAL sDout : std_logic_vector (7 DOWNTO 0);
+    SIGNAL sEN   : std_logic;
 BEGIN
     uut : Counter PORT MAP(
         clk => sclk,
-        en => sEN,
+        en  => sEN,
         rst => srst,
         dir => ssens,
         lod => sload,
-        a => sDin,
-        s => sDout);
+        a   => sDin,
+        s   => sDout);
 
     pCLK : PROCESS
     BEGIN

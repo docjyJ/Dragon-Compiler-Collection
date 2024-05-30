@@ -1,73 +1,71 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
 
-entity TestRegisterBank is
-end TestRegisterBank;
+ENTITY TestRegisterBank IS
+END TestRegisterBank;
 
-architecture Behavioral of TestRegisterBank is
+! DEPRECATED
 
-    component RegisterBank is
-        Port (
-            read1: in STD_LOGIC_VECTOR (2 downto 0);
-            read2: in STD_LOGIC_VECTOR (2 downto 0);
-            write: in STD_LOGIC_VECTOR (2 downto 0);
-            input: in STD_LOGIC_VECTOR (7 downto 0);
-            output1: out STD_LOGIC_VECTOR (7 downto 0);
-            output2: out STD_LOGIC_VECTOR (7 downto 0)
+ARCHITECTURE Behavioral OF TestRegisterBank IS
+
+    COMPONENT RegisterBank IS
+        PORT (
+            read1   : IN std_logic_vector (2 DOWNTO 0);
+            read2   : IN std_logic_vector (2 DOWNTO 0);
+            write   : IN std_logic_vector (2 DOWNTO 0);
+            input   : IN std_logic_vector (7 DOWNTO 0);
+            output1 : OUT std_logic_vector (7 DOWNTO 0);
+            output2 : OUT std_logic_vector (7 DOWNTO 0)
         );
-    end component;
+    END COMPONENT;
+    SIGNAL sread1   : std_logic_vector (2 DOWNTO 0);
+    SIGNAL sread2   : std_logic_vector (2 DOWNTO 0);
+    SIGNAL swrite   : std_logic_vector (2 DOWNTO 0);
+    SIGNAL sinput   : std_logic_vector (7 DOWNTO 0);
+    SIGNAL soutput1 : std_logic_vector (7 DOWNTO 0);
+    SIGNAL soutput2 : std_logic_vector (7 DOWNTO 0);
 
+BEGIN
+    uut : RegisterBank PORT MAP(sread1, sread2, swrite, sinput, soutput1, soutput2);
 
-    signal  sread1: STD_LOGIC_VECTOR (2 downto 0);
-    signal  sread2: STD_LOGIC_VECTOR (2 downto 0);
-    signal  swrite: STD_LOGIC_VECTOR (2 downto 0);
-    signal  sinput: STD_LOGIC_VECTOR (7 downto 0);
-    signal  soutput1: STD_LOGIC_VECTOR (7 downto 0);
-    signal  soutput2: STD_LOGIC_VECTOR (7 downto 0);
-
-begin
-    uut: RegisterBank port map(sread1, sread2, swrite, sinput, soutput1, soutput2);
-
-    pwrite: process
-    begin
+    pwrite : PROCESS
+    BEGIN
         swrite <= "000";
         sinput <= "00000001";
-        wait for 5 ns;
+        WAIT FOR 5 ns;
         swrite <= "001";
         sinput <= "00000011";
-        wait for 5 ns;
+        WAIT FOR 5 ns;
         swrite <= "011";
         sinput <= "00000111";
-        wait for 5 ns;
+        WAIT FOR 5 ns;
         sinput <= "00111111";
         swrite <= "010";
         sinput <= "00001111";
-        wait for 50000 ns;
-    end process pwrite;
-
-
-    pread1: process
-    begin
-        wait for 5 ns;
+        WAIT FOR 50000 ns;
+    END PROCESS pwrite;
+    pread1 : PROCESS
+    BEGIN
+        WAIT FOR 5 ns;
         sread1 <= "001";
-        wait for 25 ns;
+        WAIT FOR 25 ns;
         sread1 <= "001";
-        wait for 5 ns;
+        WAIT FOR 5 ns;
         sread1 <= "011";
-        wait for 5 ns;
+        WAIT FOR 5 ns;
         sread1 <= "010";
-    end process pread1;
+    END PROCESS pread1;
 
-    pread2: process
-    begin
-        wait for 5 ns;
+    pread2 : PROCESS
+    BEGIN
+        WAIT FOR 5 ns;
         sread2 <= "001";
-        wait for 25 ns;
+        WAIT FOR 25 ns;
         sread2 <= "001";
-        wait for 5 ns;
+        WAIT FOR 5 ns;
         sread2 <= "010";
-        wait for 5 ns;
+        WAIT FOR 5 ns;
         sread2 <= "011";
-    end process pread2;
+    END PROCESS pread2;
 
-end Behavioral;
+END Behavioral;

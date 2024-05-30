@@ -1,210 +1,212 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.std_logic_arith.all;
-use IEEE.std_logic_unsigned.all;
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.std_logic_arith.ALL;
+USE IEEE.std_logic_unsigned.ALL;
 
-entity TestALU is
-end TestALU;
+! DEPRECATED
 
-architecture Behavioral of TestALU is
-    component ALU is
-        Port (
-            CMD: in STD_LOGIC_VECTOR (3 downto 0);
-            A: in STD_LOGIC_VECTOR (7 downto 0);
-            B: in STD_LOGIC_VECTOR (7 downto 0);
-            S: out STD_LOGIC_VECTOR (7 downto 0);
-            Z: out STD_LOGIC;
-            C: out STD_LOGIC;
-            O: out STD_LOGIC;
-            N: out STD_LOGIC
+ENTITY TestALU IS
+END TestALU;
+
+ARCHITECTURE Behavioral OF TestALU IS
+    COMPONENT ALU IS
+        PORT (
+            CMD : IN std_logic_vector (3 DOWNTO 0);
+            A   : IN std_logic_vector (7 DOWNTO 0);
+            B   : IN std_logic_vector (7 DOWNTO 0);
+            S   : OUT std_logic_vector (7 DOWNTO 0);
+            Z   : OUT std_logic;
+            C   : OUT std_logic;
+            O   : OUT std_logic;
+            N   : OUT std_logic
         );
-    end component;
+    END COMPONENT;
 
-    constant length: integer := 8;
+    CONSTANT length : integer := 8;
 
-    signal sCMD: STD_LOGIC_VECTOR (3 downto 0);
-    signal sS: STD_LOGIC_VECTOR (7 downto 0);
-    signal sZCON: STD_LOGIC_VECTOR (3 downto 0);
-    signal sA: STD_LOGIC_VECTOR (7 downto 0);
-    signal sB: STD_LOGIC_VECTOR (7 downto 0);
-    signal intA: integer range -128 to 255;
-    signal intB: integer range -128 to 255;
+    SIGNAL sCMD  : std_logic_vector (3 DOWNTO 0);
+    SIGNAL sS    : std_logic_vector (7 DOWNTO 0);
+    SIGNAL sZCON : std_logic_vector (3 DOWNTO 0);
+    SIGNAL sA    : std_logic_vector (7 DOWNTO 0);
+    SIGNAL sB    : std_logic_vector (7 DOWNTO 0);
+    SIGNAL intA  : integer RANGE -128 TO 255;
+    SIGNAL intB  : integer RANGE -128 TO 255;
 
-    constant lOR: STD_LOGIC_VECTOR(3 downto 0) := "0000";
-    constant lNOR: STD_LOGIC_VECTOR(3 downto 0) := "0001";
-    constant lAND: STD_LOGIC_VECTOR(3 downto 0) := "0010";
-    constant lNAND: STD_LOGIC_VECTOR(3 downto 0) := "0011";
-    constant lXOR: STD_LOGIC_VECTOR(3 downto 0) := "0100";
-    constant lEQ: STD_LOGIC_VECTOR(3 downto 0) := "0101";
+    CONSTANT lOR   : std_logic_vector(3 DOWNTO 0) := "0000";
+    CONSTANT lNOR  : std_logic_vector(3 DOWNTO 0) := "0001";
+    CONSTANT lAND  : std_logic_vector(3 DOWNTO 0) := "0010";
+    CONSTANT lNAND : std_logic_vector(3 DOWNTO 0) := "0011";
+    CONSTANT lXOR  : std_logic_vector(3 DOWNTO 0) := "0100";
+    CONSTANT lEQ   : std_logic_vector(3 DOWNTO 0) := "0101";
     --constant UNUSE : STD_LOGIC_VECTOR(3 downto 0) := "0110";
     --constant UNUSE : STD_LOGIC_VECTOR(3 downto 0) := "0111";
-    constant uADD: STD_LOGIC_VECTOR(3 downto 0) := "1000";
-    constant uSUB: STD_LOGIC_VECTOR(3 downto 0) := "1001";
-    constant uMUL: STD_LOGIC_VECTOR(3 downto 0) := "1010";
+    CONSTANT uADD : std_logic_vector(3 DOWNTO 0) := "1000";
+    CONSTANT uSUB : std_logic_vector(3 DOWNTO 0) := "1001";
+    CONSTANT uMUL : std_logic_vector(3 DOWNTO 0) := "1010";
     --constant UNUSE : STD_LOGIC_VECTOR(3 downto 0) := "1011";
-    constant sADD: STD_LOGIC_VECTOR(3 downto 0) := "1100";
-    constant sSUB: STD_LOGIC_VECTOR(3 downto 0) := "1101";
-    constant sMUL: STD_LOGIC_VECTOR(3 downto 0) := "1110";
+    CONSTANT sADD : std_logic_vector(3 DOWNTO 0) := "1100";
+    CONSTANT sSUB : std_logic_vector(3 DOWNTO 0) := "1101";
+    CONSTANT sMUL : std_logic_vector(3 DOWNTO 0) := "1110";
     --constant UNUSE : STD_LOGIC_VECTOR(3 downto 0) := "1111";
-begin
+BEGIN
     sA <= conv_std_logic_vector (intA, length);
     sB <= conv_std_logic_vector (intB, length);
 
-    uut: ALU port map (
+    uut : ALU PORT MAP(
         CMD => sCMD,
-        A => sA,
-        B => sB,
-        S => sS,
-        Z => sZCON(3),
-        C => sZCON(2),
-        O => sZCON(1),
-        N => sZCON(0)
+        A   => sA,
+        B   => sB,
+        S   => sS,
+        Z   => sZCON(3),
+        C   => sZCON(2),
+        O   => sZCON(1),
+        N   => sZCON(0)
     );
 
-    pTest: process
-    begin
+    pTest : PROCESS
+    BEGIN
         intA <= 16#AA#;
         intB <= 16#F0#;
 
         -- OR
         sCMD <= lOR;
-        wait for 5 ns;
-        assert (sS = 16#FA#) report "OR failed: bad output" severity error;
-        assert (sZCON = 0) report "OR failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 16#FA#) REPORT "OR failed: bad output" SEVERITY error;
+        ASSERT (sZCON = 0) REPORT "OR failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- NOR
         sCMD <= lNOR;
-        wait for 5 ns;
-        assert (sS = 16#05#) report "NOR failed: bad output" severity error;
-        assert (sZCON = 0) report "NOR failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 16#05#) REPORT "NOR failed: bad output" SEVERITY error;
+        ASSERT (sZCON = 0) REPORT "NOR failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- AND
         sCMD <= lAND;
-        wait for 5 ns;
-        assert (sS = 16#A0#) report "AND failed: bad output" severity error;
-        assert (sZCON = 0) report "AND failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 16#A0#) REPORT "AND failed: bad output" SEVERITY error;
+        ASSERT (sZCON = 0) REPORT "AND failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- NAND
         sCMD <= lNAND;
-        wait for 5 ns;
-        assert (sS = 16#5F#) report "NAND failed: bad output" severity error;
-        assert (sZCON = 0) report "NAND failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 16#5F#) REPORT "NAND failed: bad output" SEVERITY error;
+        ASSERT (sZCON = 0) REPORT "NAND failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- XOR
         sCMD <= lXOR;
-        wait for 5 ns;
-        assert (sS = 16#5A#) report "XOR failed: bad output" severity error;
-        assert (sZCON = 0) report "XOR failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 16#5A#) REPORT "XOR failed: bad output" SEVERITY error;
+        ASSERT (sZCON = 0) REPORT "XOR failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- EQ
         sCMD <= lEQ;
-        wait for 5 ns;
-        assert (sS = 16#A5#) report "EQ failed: bad output" severity error;
-        assert (sZCON = 0) report "EQ failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 16#A5#) REPORT "EQ failed: bad output" SEVERITY error;
+        ASSERT (sZCON = 0) REPORT "EQ failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- Logical Z flag
         intA <= 16#0F#;
-        wait for 5 ns;
-        assert (sS = 0) report "Logical Z flag failed: bad output" severity error;
-        assert (sZCON = "1000") report "Logical Z flag failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 0) REPORT "Logical Z flag failed: bad output" SEVERITY error;
+        ASSERT (sZCON = "1000") REPORT "Logical Z flag failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- uADD (simple)
         sCMD <= uADD;
         intA <= 78;
         intB <= 96;
-        wait for 5 ns;
-        assert (sS = 174) report "uADD failed: bad output" severity error;
-        assert (sZCON = 0) report "uADD failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 174) REPORT "uADD failed: bad output" SEVERITY error;
+        ASSERT (sZCON = 0) REPORT "uADD failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- uADD (carry)
         intA <= 96;
         intB <= 174;
-        wait for 5 ns;
-        assert (sS = 14) report "uADD C failed: bad output" severity error;
-        assert (sZCON = "0100") report "uADD C failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 14) REPORT "uADD C failed: bad output" SEVERITY error;
+        ASSERT (sZCON = "0100") REPORT "uADD C failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- uSUB (simple)
         sCMD <= uSUB;
         intA <= 174;
         intB <= 96;
-        wait for 5 ns;
-        assert (sS = 78) report "uSUB failed: bad output" severity error;
-        assert (sZCON = 0) report "uSUB failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 78) REPORT "uSUB failed: bad output" SEVERITY error;
+        ASSERT (sZCON = 0) REPORT "uSUB failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- uSUB (carry)
         intA <= 14;
         intB <= 96;
-        wait for 5 ns;
-        assert (sS = 174) report "uSUB C failed: bad output" severity error;
-        assert (sZCON = "0101") report "uSUB C failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 174) REPORT "uSUB C failed: bad output" SEVERITY error;
+        ASSERT (sZCON = "0101") REPORT "uSUB C failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- TODO uMUL
 
         -- ADD (simple)
         sCMD <= sADD;
         intA <= 96;
-        intB <= -14;
-        wait for 5 ns;
-        assert (sS = 82) report "ADD failed: bad output" severity error;
-        assert (sZCON = 0) report "ADD failed: bad flag" severity error;
-        wait for 5 ns;
+        intB <= - 14;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 82) REPORT "ADD failed: bad output" SEVERITY error;
+        ASSERT (sZCON = 0) REPORT "ADD failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- ADD (carry up)
         intA <= 78;
         intB <= 96;
-        wait for 5 ns;
-        assert (sS = conv_std_logic_vector (-82,
-            length)) report "ADD Cup failed: bad output" severity error;
-        assert (sZCON = "0100") report "ADD Cup failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = conv_std_logic_vector (-82,
+        length)) REPORT "ADD Cup failed: bad output" SEVERITY error;
+        ASSERT (sZCON = "0100") REPORT "ADD Cup failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- ADD (carry down)
-        intA <= -96;
-        intB <= -78;
-        wait for 5 ns;
-        assert (sS = 82) report "ADD Cdown failed: bad output" severity error;
-        assert (sZCON = "0101") report "ADD Cdown failed: bad flag" severity error;
-        wait for 5 ns;
+        intA <= - 96;
+        intB <= - 78;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 82) REPORT "ADD Cdown failed: bad output" SEVERITY error;
+        ASSERT (sZCON = "0101") REPORT "ADD Cdown failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- SUB (simple)
         sCMD <= sSUB;
-        intA <= -14;
+        intA <= - 14;
         intB <= 82;
-        wait for 5 ns;
-        assert (sS = conv_std_logic_vector (-96,
-            length)) report "SUB failed: bad output" severity error;
-        assert (sZCON = "0001") report "SUB failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = conv_std_logic_vector (-96,
+        length)) REPORT "SUB failed: bad output" SEVERITY error;
+        ASSERT (sZCON = "0001") REPORT "SUB failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- SUB (carry up)
         intA <= 96;
-        intB <= -78;
-        wait for 5 ns;
-        assert (sS = conv_std_logic_vector (-82,
-            length)) report "SUB Cup failed: bad output" severity error;
-        assert (sZCON = "0100") report "SUB Cup failed: bad flag" severity error;
-        wait for 5 ns;
+        intB <= - 78;
+        WAIT FOR 5 ns;
+        ASSERT (sS = conv_std_logic_vector (-82,
+        length)) REPORT "SUB Cup failed: bad output" SEVERITY error;
+        ASSERT (sZCON = "0100") REPORT "SUB Cup failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- SUB (carry down)
-        intA <= -96;
+        intA <= - 96;
         intB <= 78;
-        wait for 5 ns;
-        assert (sS = 82) report "SUB Cdown failed: bad output" severity error;
-        assert (sZCON = "0101") report "SUB Cdown failed: bad flag" severity error;
-        wait for 5 ns;
+        WAIT FOR 5 ns;
+        ASSERT (sS = 82) REPORT "SUB Cdown failed: bad output" SEVERITY error;
+        ASSERT (sZCON = "0101") REPORT "SUB Cdown failed: bad flag" SEVERITY error;
+        WAIT FOR 5 ns;
 
         -- TODO MUL
 
-    end process;
-end Behavioral;
+    END PROCESS;
+END Behavioral;
