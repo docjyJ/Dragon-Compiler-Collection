@@ -29,17 +29,18 @@ int yylex();
 
 %%
 
-global : {var_create("$");} global_code_list {part_var_global(); print_instruction();}
+global : {var_create("$");} global_defvars_list {part_var_global(); print_instruction();}
        ;
 
 
-global_code_list: global_code
-                | global_code_list global_code
+global_defvars_list: global_function_list
+                | defvars END global_defvars_list
                 ;
 
-global_code: functions
-           | defvars END
-           ;
+global_function_list: main
+                | functions global_function_list
+                ;
+
 
 code_block: LBRACE code_line_list RBRACE
             |LBRACE RBRACE
@@ -83,9 +84,10 @@ while_do: WHILE init_loop init_cond single_boddy
 /* Gestion des fonctions */
 
 functions: functions_header_void code_block { end_function(); }
-         | functions_header_main code_block
          | functions_header_int code_block
          ;
+
+main :  functions_header_main code_block
 
 functions_header_void: TYPE_VOID function_name functions_args
                      ;

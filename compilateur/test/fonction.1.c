@@ -1,7 +1,6 @@
 #include "dragon.h"
 
 int compute(int a , int d) {
-
     int  c = a + d;
     int b = a;
     while (c > 0) {
@@ -20,4 +19,5 @@ void main(void) {
     print(ioleast, a);
     print(ioleast, b);
 
+    b   = 5;
 }
