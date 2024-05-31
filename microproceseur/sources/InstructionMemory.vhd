@@ -13,8 +13,8 @@ ARCHITECTURE Behavioral OF InstructionMemory IS
     CONSTANT switch_chanel : mem_t := (
     x"14010000", --read r1 1
     x"14020100", --read r2 2 
-    x"0C010100", --print r1 2
-    x"0C020000", --print r2 1
+    x"0C000101", --print r1 2
+    x"0C000002", --print r2 1
     x"07000000", --jump 0
     OTHERS => (OTHERS => '0'));
 
@@ -74,7 +74,7 @@ ARCHITECTURE Behavioral OF InstructionMemory IS
         OTHERS => (OTHERS => '0'));
 
 
-    CONSTANT mem : mem_t := program;
+    CONSTANT mem : mem_t := switch_chanel;
 BEGIN
     data <= mem(conv_integer(addr));
 END ARCHITECTURE;

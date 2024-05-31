@@ -23,11 +23,11 @@ ARCHITECTURE Behavioral OF DigitalIO IS
     SIGNAL state : std_logic_vector(1 DOWNTO 0);
     SIGNAL digit : std_logic_vector(3 DOWNTO 0);
     SIGNAL clkms : std_logic;
-    SIGNAL nul   : std_logic_vector(16 DOWNTO 0);
+    SIGNAL nul   : std_logic_vector(12 DOWNTO 0);
 
 BEGIN
     clkDiviser : Counter GENERIC
-    MAP (18) -- 2**18 * 10 ns => 2.62144 ms
+    MAP (14) -- 2**14= * 100 ns => 1.6384 ms
     PORT MAP(
         clk            => clk,
         rst            => rst,
@@ -35,8 +35,8 @@ BEGIN
         dir            => '0',
         lod            => '0',
         a => (OTHERS => '0'),
-        s(16 DOWNTO 0) => nul,
-        s(17)          => clkms);
+        s(12 DOWNTO 0) => nul,
+        s(13)          => clkms);
 
     PROCESS (clkms, rst)
     BEGIN
