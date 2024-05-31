@@ -8,7 +8,13 @@ Déplacér le ficher `my-test.c` dans le dossier `test/` et lancer la commande `
 
 Pour importé un programme C en VHDL:
 
-TODO
+Générer la constate VHDL :
+    
+```bash
+cat ./demo/swap.c | ./rapido.sh > ./demo/swap.vhd
+```
+
+Copier la constante dans le fichier `InstructionMemory.vhd` du projet VHDL.
 
 ## IO
 
