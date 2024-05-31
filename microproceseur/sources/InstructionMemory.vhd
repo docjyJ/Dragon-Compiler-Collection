@@ -40,8 +40,8 @@ ARCHITECTURE Behavioral OF InstructionMemory IS
     x"02000002", -- 12# mul r0 r0 r2
     x"07000300", -- 13# jmp 3
     OTHERS => (OTHERS => '0'));
-    
-    CONSTANT program1 : mem_t := (
+
+    CONSTANT program1 : mem_t := (-- marche pas :c
     x"06010200",
     x"01000001",
     x"07000400",
@@ -71,9 +71,9 @@ ARCHITECTURE Behavioral OF InstructionMemory IS
     x"10010001",
     x"0C000101",
     x"07000400",
-        OTHERS => (OTHERS => '0'));
-        
-        CONSTANT program2 : mem_t := (
+    OTHERS => (OTHERS => '0'));
+
+    CONSTANT program2 : mem_t := (-- marche pas :c
     x"06010100",
     x"01000001",
     x"07000300",
@@ -274,8 +274,6 @@ ARCHITECTURE Behavioral OF InstructionMemory IS
     x"11000102",
     x"07001100",
     OTHERS => (OTHERS => '0'));
-
-
 
     CONSTANT mem : mem_t := switch_chanel;
 BEGIN

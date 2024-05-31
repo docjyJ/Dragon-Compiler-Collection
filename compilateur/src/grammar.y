@@ -29,21 +29,21 @@ int yylex();
 
 %%
 
-global : {var_create("$");} global_defvars_list {part_var_global(); print_instruction();}
-       ;
+global: {var_create("$");} global_defvars_list {part_var_global(); print_instruction();}
+      ;
 
 
 global_defvars_list: global_function_list
-                | defvars END global_defvars_list
-                ;
+                   | defvars END global_defvars_list
+                   ;
 
 global_function_list: main
-                | functions global_function_list
-                ;
+                    | functions global_function_list
+                    ;
 
 
 code_block: LBRACE code_line_list RBRACE
-            |LBRACE RBRACE
+          | LBRACE RBRACE
           ;
 
 code_line_list: code_line
@@ -87,20 +87,20 @@ functions: functions_header_void code_block { end_function(); }
          | functions_header_int code_block
          ;
 
-main :  functions_header_main code_block
+main:  functions_header_main code_block
 
 functions_header_void: TYPE_VOID function_name functions_args
                      ;
 
 functions_header_int: TYPE_INT function_name functions_args
-                ;
+                    ;
 
 functions_header_main: TYPE_INT main_name functions_args
                      | TYPE_VOID main_name functions_args
                      ;
 
-function_name : LABEL { start_function($1); free($1); }
-              ;
+function_name: LABEL { start_function($1); free($1); }
+             ;
 
 main_name : MAIN {  start_function("main"); }
           ;
@@ -174,12 +174,12 @@ bitwise_and: equality { $$ = $1 ; }
         | bitwise_and BAND equality { $$ = NULL; bitwise_and($$, $1, $3); free($1); free($3); }
         ;
 bitwise_xor: bitwise_and { $$ = $1 ; }
-        | bitwise_xor BXOR bitwise_and { $$ = NULL; bitwise_xor($$, $1, $3); free($1); free($3); }
-        ;
+           | bitwise_xor BXOR bitwise_and { $$ = NULL; bitwise_xor($$, $1, $3); free($1); free($3); }
+           ;
 
 bitwise_or: bitwise_xor { $$ = $1 ; }
-        | bitwise_or BOR bitwise_xor { $$ = NULL; bitwise_or($$, $1, $3); free($1); free($3); }
-        ;
+          | bitwise_or BOR bitwise_xor { $$ = NULL; bitwise_or($$, $1, $3); free($1); free($3); }
+          ;
 
 operators: bitwise_or { $$ = $1 ; }
          | LABEL ASSIGN operators { var_copy($1, $3); $$ = $1; free($3); }
@@ -194,7 +194,7 @@ operators: bitwise_or { $$ = $1 ; }
 /* Gestion des variable */
 
 defvars: TYPE_INT defvars_list
-      ;
+       ;
 
 defvars_list: defvar
             | defvars_list COMMA defvar

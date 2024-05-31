@@ -5,9 +5,10 @@
 
 void var_create_global(char *a);
 
-void main_nb_inst (address addr);
+void main_nb_inst(address addr);
 
 void part_var_global();
 
 void start_first_function();
+
 #endif

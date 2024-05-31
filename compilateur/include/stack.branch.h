@@ -24,5 +24,4 @@ void start_loop();
  */
 void end_branch(address offset);
 
-
 #endif

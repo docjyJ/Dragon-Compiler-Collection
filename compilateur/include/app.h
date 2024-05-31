@@ -6,7 +6,6 @@
 #define MAX_FUNCTION 10
 #define MAX_VAR_GLOBAL 20
 
-
 typedef unsigned char address;
 typedef unsigned short number;
 typedef char *label;

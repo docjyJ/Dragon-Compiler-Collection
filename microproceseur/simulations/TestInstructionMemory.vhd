@@ -56,16 +56,16 @@ BEGIN
     test : PROCESS
     BEGIN
         scnt <= x"01020302";
-        WAIT FOR 5ns;
+        WAIT FOR 5 ns;
 
         scnt <= x"07050300";
-        WAIT FOR 5ns;
+        WAIT FOR 5 ns;
 
         scnt <= x"0C050000";
-        WAIT FOR 5ns;
+        WAIT FOR 5 ns;
 
         scnt <= x"10020300";
-        WAIT FOR 5ns;
+        WAIT FOR 5 ns;
     END PROCESS;
 
 END Behavioral;

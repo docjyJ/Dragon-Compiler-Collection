@@ -1,39 +1,43 @@
 # Dragon Compiler Collection
 
-## Démarage rapide
+## Démarrage rapide
 
-Pour tester la syntaxe d'un fichier C:
+Pour tester la syntaxe d'un fichier C :
 
-Déplacér le ficher `my-test.c` dans le dossier `test/` et lancer la commande `make my-test-test`.
+Déplacer le fichier `my-test.c` dans le dossier `test/` et lancer la commande `make my-test-test`.
 
-Pour importé un programme C en VHDL:
+Pour importer un programme C en VHDL :
 
 Générer la constate VHDL :
-    
+
 ```bash
 cat ./demo/swap.c | ./rapido.sh > ./demo/swap.vhd
 ```
 
 Copier la constante dans le fichier `InstructionMemory.vhd` du projet VHDL.
 
+> [!WARNING]
+> Il semble que des bugs, dont nous n'avons pas eu le temps d'y enquêter sont toujours présent.
+
 ## IO
 
-Le projet sur une carte BASYS3 pocède 2 canaux d'enrée et 2 canaux de sortie.
+Le projet sur une carte BASYS3 procède 2 canaux d'entrée et 2 canaux de sortie.
 
-Ils sont défini via la rangé de led et de switch de la carte.
+Ils sont défini via la rangée de led et de switch de la carte.
 Le bouton haut permet le reset de la carte.
-Le bouton gauche permet d'afficher l'entrée en hexadécimal sur l'afficheur 7 segments (par défault la sortie est afficher).
+Le bouton gauche permet d'afficher l'entrée en hexadécimal sur l'afficheur 7 segments (par défault la sortie est
+affichée).
 
-_À la base on voulait mettre un troisème canal pour une comunications série / RS232 via les pins RX et TX de la carte.
-Par manque de temps ça n'a pu aboutir._
+_À la base, on voulait mettre un troisième canal pour une communication série / RS232 via les pins RX et TX de la
+carte. Par manque de temps ça n'a pu aboutir._
 
-## Outils et Commeandes pour la compilation
+## Outils et Commends pour la compilation
 
 ### Dragon Compiler Collection
 
 Dragon Compiler Collection est l'outil de compilation du code C vers la cible DragonUnit FPGA.
 
-_Enfin collection est un grand mot pour il n'y a qu'un seul compilateur. Il se sent un peut seul le pauvre..._
+_Enfin collection est un grand mot pour, il n'y a qu'un seul compilateur. Il se sent un peu seul le pauvre..._
 
 Usage : `dcc [-?] [-a] [-o FILE] [-s] [-?] [INPUT_FILE]`
 
@@ -47,11 +51,11 @@ Usage : `dcc [-?] [-a] [-o FILE] [-s] [-?] [INPUT_FILE]`
 
 ### QEMU Latias
 
-QEMU Latias est la machine virtuelle à privilégier pour l'éxécution des fichier assembleur généré par DCC.
+QEMU Latias est la machine virtuelle à privilégier pour l'exécution des fichiers assembleur généré par DCC.
 
 > [!WARNING]
-> QUEMU Latias ne prend en charge que les fichier assembleur généré par DCC.
-> Les fichier binaire ne sont pas supporté.
+> QEMU Latias ne prend en charge que les fichiers assembleur généré par DCC.
+> Les fichiers binaires ne sont pas supporté.
 
 Usage : `qemu-latias [-h] [-i MAX_ITER] [-d] [-r CSV_RAM] file`
 
@@ -60,8 +64,8 @@ Usage : `qemu-latias [-h] [-i MAX_ITER] [-d] [-r CSV_RAM] file`
 | -h --help              | Affiche l'aide.                                                                                              |
 | -i INT --max-iter INT  | Nombre maximum d'itérations, un entier pour prévenir les boucle infinie, par défault 1024.                   |
 | -d --debug             | Active le mode debug, affiche plus d'information dans la sortie standard.                                    |
-| -r FILE --csv-ram FILE | Fichier CSV détallant l'éxécution tick par tick avec l'instruction en cours et l'état complet de la mémoire. |
-| file                   | Fichier assembleur éxécuter.                                                                                 |
+| -r FILE --csv-ram FILE | Fichier CSV détallant l'exécution tick par tick avec l'instruction en cours et l'état complet de la mémoire. |
+| file                   | Fichier assembleur exécuter.                                                                                 |
 
 ### Makefile
 
@@ -80,18 +84,18 @@ Voici les différentes cibles du Makefile pour le compilateur.
 | Commande              | Description                                                           |
 | --------------------- | --------------------------------------------------------------------- |
 | clean full-clean      | Supprime les fichiers généré par le Makefile.                         |
-| %-open-diag open-diag | Ouvre le diagnostic de gramaire.                                      |
-| %-rapport rapport     | Génère un rapport de gramaire et le graph de l'automate               |
+| %-open-diag open-diag | Ouvre le diagnostic de grammaire.                                     |
+| %-rapport rapport     | Génère un rapport de grammaire et le graph de l'automate              |
 | %-test test           | Test le fichier %.out et %.s, ça permet de challenger DCC face à GCC. |
 | %-emulate emulate     | Éxécute le fichier %.s avec QEMU Latias.                              |
 
 > [!INFO]
-> Les commandes peuvent être préfixé ou non du non du fichier (yacc pour les raport et test pour les émulations).
-> Sans préfixe tout les fichier sont concerné.
+> Les commandes peuvent être préfixées ou non du fichier (yacc pour les rapport et test pour les émulations).
+> Sans préfixe tous les fichiers sont concerné.
 
 ### Rapido Build VHDL
 
-Pour générer une constate programme le script rapido peut être utilisé.
+Pour générer une constante programme le script rapido peut être utilisé.
 
 Usage : cat input.c | ./rapido.sh > outputfile.vhd
 
@@ -105,7 +109,7 @@ Légende :
 - :no_entry_sign: Sans effet
 
 | Nom                            | Id   | 31-24 | 23-16                 | 15-8                    | 7-0                     |
-|--------------------------------|------|-------|-----------------------|-------------------------|-------------------------|
+| ------------------------------ | ---- | ----- | --------------------- | ----------------------- | ----------------------- |
 |                                | NOP  | `00`  | :no_entry_sign:       | :no_entry_sign:         | :no_entry_sign:         |
 | Addition                       | ADD  | `01`  | :red_circle: A+B      | :large_blue_diamond: A  | :large_blue_diamond: B  |
 | Multiplication                 | MUL  | `02`  | :red_circle: A\*B     | :large_blue_diamond: A  | :large_blue_diamond: B  |
@@ -117,7 +121,7 @@ Légende :
 | Branchement                    | JMF  | `08`  | :no_entry_sign:       | :green_square: @        | :large_blue_diamond: 0? |
 | Inférieur                      | INF  | `09`  | :red_circle: A < B    | :large_blue_diamond: A  | :large_blue_diamond: B  |
 | Supérieur                      | SUP  | `0A`  | :red_circle: A &gt; B | :large_blue_diamond: A  | :large_blue_diamond: B  |
-| Eguale                         | EQU  | `0B`  | :red_circle: A == B   | :large_blue_diamond: A  | :large_blue_diamond: B  |
+| Égale                          | EQU  | `0B`  | :red_circle: A == B   | :large_blue_diamond: A  | :large_blue_diamond: B  |
 | Écriture                       | PRI  | `0C`  | :no_entry_sign:       | :green_square: PORT     | :large_blue_diamond: IN |
 |                                |      | `0D`  |                       |                         |                         |
 |                                |      | `0E`  |                       |                         |                         |

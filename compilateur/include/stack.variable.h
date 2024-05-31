@@ -3,7 +3,10 @@
 
 #include "app.h"
 
-
+/**
+ * Retourne la taille de la pile.
+ * @return la taille de la pile
+ */
 address nb_declaration();
 
 /**

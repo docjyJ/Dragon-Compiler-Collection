@@ -1,6 +1,6 @@
-#include <malloc.h>
-#include "memory.h"
 #include "stack.instruction.h"
+#include "memory.h"
+#include <malloc.h>
 
 address inst_count = 0;
 inst tab_instruct[MAX_ADDRESS] = {0};

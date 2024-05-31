@@ -1,10 +1,9 @@
-#include <malloc.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "memory.h"
 #include "app.h"
+#include <malloc.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 unsigned long parse_number(const char *s, const int base) {
     char *endptr;

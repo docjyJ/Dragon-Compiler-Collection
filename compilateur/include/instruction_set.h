@@ -19,7 +19,6 @@ void display(address cnl, label i);
  */
 void get_input(address cnl, label o);
 
-
 /**
  * Affectation d'une valeur numérique à une variable.
  * `o = c`
@@ -61,6 +60,12 @@ void tab_define(label o, address length);
  */
 void var_copy(label o, label i);
 
+/**
+ * Copie de l'adresse d'une variable dans un emplacement mémoire.
+ * `*o = i`
+ * @param o l'adresse de la variable de sortie
+ * @param i le nom de la variable d'entrée ou NULL pour obtenir un temporaire
+ */
 void var_copy_address_local(address o, label i);
 
 /**
@@ -309,8 +314,23 @@ void switch_tmp();
  */
 void var_to_address(label o, label i);
 
+/**
+ * Permet de réserver un bloc de mémoire.
+ * @param c la taille du bloc
+ */
 void alloc_stack(address c);
+
+/**
+ * Permet de libérer un bloc de mémoire.
+ * @param c la taille du bloc
+ */
 void free_stack(address c);
+
+/**
+ * Permet de réserver un bloc de mémoire plus tot.
+ * @param line la ligne d'ajout au code
+ * @param c la taille du bloc
+ */
 void alloc_stack_before(address line, address c);
 
 #endif

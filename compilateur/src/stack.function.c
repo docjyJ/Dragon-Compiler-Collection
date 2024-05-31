@@ -5,14 +5,13 @@
 #include "instruction_set.h"
 #include "memory.h"
 #include "stack.function.h"
-#include "stack.variable.h"
 #include "stack.instruction.h"
 #include "stack.var_global.h"
-
+#include "stack.variable.h"
 
 typedef struct {
     address debut_pile_function;
-    char* name;
+    char *name;
     int nb_param;
     int fun;
 } function;
@@ -25,11 +24,10 @@ int offsetGoFun;
 int nb_param;
 int start_go;
 
-
 void start_function(char *a) {
-    start_first_function (); //on l'appel avant au cas ou main est la première fonction
+    start_first_function(); // on l'appel avant au cas ou main est la première fonction
 
-    if (!strcmp(a, "main")){
+    if (!strcmp(a, "main")) {
         main_nb_inst(get_instruction_count());
     }
 
@@ -42,14 +40,12 @@ void start_function(char *a) {
     tab_fnc[nb_fun]->nb_param = 0;
     tab_fnc[nb_fun]->fun = get_instruction_count();
     tab_fnc[nb_fun]->debut_pile_function = nb_declaration();
-
 }
 
 void add_param(char *a) {
     var_create(a);
     tab_fnc[nb_fun]->nb_param++;
 }
-
 
 void end_function() {
     remove_visibility();
@@ -62,10 +58,9 @@ void go_function(char *a) {
     while (indexGoFun >= 1 && strcmp(a, tab_fnc[indexGoFun]->name)) {
         indexGoFun--;
     }
-    if ( strcmp(a, tab_fnc[0]->name)){
+    if (strcmp(a, tab_fnc[0]->name)) {
         indexGoFun = 0;
-    }
-    else if(strcmp(a, tab_fnc[indexGoFun]->name) ){
+    } else if (strcmp(a, tab_fnc[indexGoFun]->name)) {
         yyerror("Unknow function");
     }
 
@@ -81,24 +76,20 @@ void go_function(char *a) {
     padding_for_later_jump();
     padding_for_later_jump();
 
-
-
     nb_param = 0;
-
 }
 
 void end_go_function() {
 
-    for (int index = 0; index < nb_param; index++){
+    for (int index = 0; index < nb_param; index++) {
         temp_pop();
-    }   // on désempile les protection des paramètre avant de changer RS
-
+    } // on désempile les protection des paramètre avant de changer RS
 
     alloc_stack(offsetGoFun);
     add_hint("jum pour aller à la fonction ");
 
     jump(tab_fnc[indexGoFun]->fun);
-    number_copy_after("$", get_instruction_count() , start_go);
+    number_copy_after("$", get_instruction_count(), start_go);
 
     free_stack(offsetGoFun);
 
@@ -109,17 +100,15 @@ void end_go_function() {
     add_hint("copie dans $ de NULL");
     var_copy("$", NULL);
 
-
     if (nb_param != tab_fnc[indexGoFun]->nb_param) {
         yyerror("Wrong number of parameters");
     }
-
 }
 
 void give_param(char *a) {
 
     add_hint("passage de l'argument ");
-    var_copy_address_local(offsetGoFun+nb_param ,a);
+    var_copy_address_local(offsetGoFun + nb_param, a);
     temp_push(); // protège l'argument des autres arguments
     add_hint("fin passage de l'argument ");
     nb_param++;
